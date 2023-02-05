@@ -1,14 +1,27 @@
-import { Center, Flex, Heading, HStack, Text } from "@chakra-ui/react";
+import { Center, Flex, Heading, HStack, Link, Text } from "@chakra-ui/react";
 import Auth from "./Auth";
 
 export default function Navbar() {
   return (
-    <Flex w="100vw" px="10vw" h="5vh">
-      <Center>
-        <Heading>BlockEstate</Heading>
+    <Flex w="100vw" px="5vw" h="10vh">
+      <Center flex={1}>
+        <Link href="/">
+          <Heading>BlockEstate</Heading>
+        </Link>
       </Center>
 
-      <Center ml="1rem">
+      <Center flex={1}>
+        <HStack spacing="4rem">
+          <Link href="/">
+            <Text>Home</Text>
+          </Link>
+          <Link href="/assets">
+            <Text>Assets</Text>
+          </Link>
+        </HStack>
+      </Center>
+
+      <Center flex={1}>
         <Auth />
       </Center>
     </Flex>

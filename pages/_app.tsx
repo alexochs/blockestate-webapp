@@ -25,9 +25,9 @@ const client = createClient({
   connectors,
 });
 
-Moralis.start({
+/*Moralis.start({
   apiKey: "s2suL7NNBzruq1sh5388dE8gGvHfryjc4GuskhPInusulgHK6siJguaWzdCjgeya",
-});
+});*/
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
