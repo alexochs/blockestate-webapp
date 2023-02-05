@@ -2,14 +2,14 @@ import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/react";
 import { createClient, configureChains, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
-import { mainnet, goerli } from "wagmi/chains";
+import { mainnet, goerli, polygonMumbai } from "wagmi/chains";
 import { SessionProvider } from "next-auth/react";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import Moralis from "moralis";
 
 const { provider, webSocketProvider, chains } = configureChains(
-  [mainnet, goerli],
+  [polygonMumbai],
   [publicProvider()]
 );
 

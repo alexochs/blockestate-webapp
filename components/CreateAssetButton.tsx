@@ -9,11 +9,11 @@ import {
 } from "wagmi";
 import { abi } from "../abi/BlockEstate.json";
 
-export default function CreateEstateButton() {
+export default function CreateAssetButton() {
   const session = useSession();
 
-  const address = "0x32BC1f907DB63B0eeee3676fb72f31e3fE68d7FF";
-  const functionName = "createEstate";
+  const address = "0x23C5D5eF6dC89aA0Db38509e63aE8bF8Dc5bf189";
+  const functionName = "createAsset";
 
   const {
     config,
@@ -23,7 +23,7 @@ export default function CreateEstateButton() {
     address,
     abi,
     functionName,
-    args: ["Apartment", "Some Street 42"],
+    args: [0, "Street", 1, "City", "Country"],
   });
 
   console.log(session);
@@ -41,9 +41,9 @@ export default function CreateEstateButton() {
         isLoading={isLoading}
         onClick={() => write?.()}
       >
-        {session.data ? "Create Estate" : "Connect to create Estate"}
+        {session.data ? "Create Asset" : "Connect to create Asset"}
       </Button>
-      {isSuccess && <Text pt=".5rem">Successfully created Estate!</Text>}
+      {isSuccess && <Text pt=".5rem">Successfully created Asset!</Text>}
       {(isPrepareError || isError) && (
         <Text pt=".5rem">Error: {(prepareError || error)?.message}</Text>
       )}

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Inter } from "@next/font/google";
 import { Button, Center, Heading, Link } from "@chakra-ui/react";
 import Navbar from "@/components/Navbar";
-import CreateEstateButton from "@/components/CreateEstateButton";
+import CreateAssetButton from "@/components/CreateAssetButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +22,7 @@ export default function Home() {
       <main>
         <Navbar />
         <Center w="100vw" h="95vh">
-          <CreateEstateButton />
+          <CreateAssetButton />
         </Center>
       </main>
     </>
