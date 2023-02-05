@@ -6,9 +6,10 @@ import { mainnet, goerli } from "wagmi/chains";
 import { SessionProvider } from "next-auth/react";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
+import Moralis from "moralis";
 
 const { provider, webSocketProvider, chains } = configureChains(
-  [mainnet],
+  [mainnet, goerli],
   [publicProvider()]
 );
 
@@ -22,6 +23,10 @@ const client = createClient({
   webSocketProvider,
   autoConnect: true,
   connectors,
+});
+
+Moralis.start({
+  apiKey: "s2suL7NNBzruq1sh5388dE8gGvHfryjc4GuskhPInusulgHK6siJguaWzdCjgeya",
 });
 
 export default function App({ Component, pageProps }: AppProps) {

@@ -1,7 +1,9 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
-import { Button, Heading, Link } from "@chakra-ui/react";
+import { Button, Center, Heading, Link } from "@chakra-ui/react";
+import Navbar from "@/components/Navbar";
+import CreateEstateButton from "@/components/CreateEstateButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +20,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Heading>Welcome to BlockEstate! :)</Heading>
-        <Link href="/signin">
-          <Button>Sign In</Button>
-        </Link>
+        <Navbar />
+        <Center w="100vw" h="95vh">
+          <CreateEstateButton />
+        </Center>
       </main>
     </>
   );
