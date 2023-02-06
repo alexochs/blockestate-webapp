@@ -7,22 +7,23 @@ import { SessionProvider } from "next-auth/react";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import Moralis from "moralis";
+import Layout from "@/components/Layout/Layout";
 
 const { provider, webSocketProvider, chains } = configureChains(
-  [polygonMumbai],
-  [publicProvider()]
+    [polygonMumbai],
+    [publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "BlockEstate",
-  chains,
+    appName: "BlockEstate",
+    chains,
 });
 
 const client = createClient({
-  provider,
-  webSocketProvider,
-  autoConnect: true,
-  connectors,
+    provider,
+    webSocketProvider,
+    autoConnect: true,
+    connectors,
 });
 
 /*Moralis.start({
@@ -30,15 +31,20 @@ const client = createClient({
 });*/
 
 export default function App({ Component, pageProps }: AppProps) {
-  return (
-    <ChakraProvider>
-      <WagmiConfig client={client}>
-        <SessionProvider session={pageProps.session} refetchInterval={0}>
-          <RainbowKitProvider chains={chains}>
-            <Component {...pageProps} />
-          </RainbowKitProvider>
-        </SessionProvider>
-      </WagmiConfig>
-    </ChakraProvider>
-  );
+    return (
+        <ChakraProvider>
+            <WagmiConfig client={client}>
+                <SessionProvider
+                    session={pageProps.session}
+                    refetchInterval={0}
+                >
+                    <RainbowKitProvider chains={chains}>
+                        <Layout>
+                            <Component {...pageProps} />
+                        </Layout>
+                    </RainbowKitProvider>
+                </SessionProvider>
+            </WagmiConfig>
+        </ChakraProvider>
+    );
 }

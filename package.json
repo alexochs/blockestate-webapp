@@ -19,6 +19,7 @@
     "@types/node": "18.11.18",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
+    "@wagmi/connectors": "^0.2.4",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
     "eslint": "8.33.0",

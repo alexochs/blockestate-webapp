@@ -1,36 +1,42 @@
+import { Button, Center, Heading } from "@chakra-ui/react";
 import { getSession, signOut } from "next-auth/react";
 
 // gets a prop from getServerSideProps
 function User({ user }: any) {
-  return (
-    <div>
-      <h4>User session:</h4>
-      <pre>{JSON.stringify(user, null, 2)}</pre>
-      <button
-        onClick={() => signOut({ redirect: false, callbackUrl: "/signin" })}
-      >
-        Sign out
-      </button>
-    </div>
-  );
+    return (
+        <Center h="80vh" flexDir="column">
+            <Heading fontSize="8xl">Hello 👋</Heading>
+            <Heading pb="2rem">{user.address}</Heading>
+
+            <Button
+                rounded="xl"
+                colorScheme="red"
+                onClick={() =>
+                    signOut({ redirect: true, callbackUrl: "/signin" })
+                }
+            >
+                Sign out
+            </Button>
+        </Center>
+    );
 }
 
 export async function getServerSideProps(context: any) {
-  const session = await getSession(context);
+    const session = await getSession(context);
 
-  // redirect if not authenticated
-  if (!session) {
+    // redirect if not authenticated
+    if (!session) {
+        return {
+            redirect: {
+                destination: "/signin",
+                permanent: false,
+            },
+        };
+    }
+
     return {
-      redirect: {
-        destination: "/signin",
-        permanent: false,
-      },
+        props: { user: session.user },
     };
-  }
-
-  return {
-    props: { user: session.user },
-  };
 }
 
 export default User;
