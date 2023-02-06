@@ -17,7 +17,7 @@ import { Asset } from "@/helpers/types";
 import AssetPreview from "@/components/AssetPreview";
 
 export default function AssetsPage() {
-    const [assets, setAssets] = useState<Object[]>([]);
+    const [assets, setAssets] = useState<Object[] | null>(null);
 
     const readAllAssets = useContractRead({
         address,
@@ -48,16 +48,21 @@ export default function AssetsPage() {
                 </Link>
             </Box>
 
-            {assets.length < 1 ? (
+            {!assets ? (
                 <Center>
                     <Spinner size="xl" />
                 </Center>
-            ) : (
+            ) : assets.length > 0 ? (
                 <SimpleGrid columns={[2, 3]} spacing="1rem">
                     {assets.map((asset) => (
                         <AssetPreview asset={asset} />
                     ))}
                 </SimpleGrid>
+            ) : (
+                <Center flexDir={"column"}>
+                    <Text>No assets have been tokenized yet.</Text>
+                    <Text fontWeight={"bold"}>Be the first one!</Text>
+                </Center>
             )}
         </Box>
     );
