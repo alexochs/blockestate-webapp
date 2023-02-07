@@ -49,12 +49,13 @@ export default function AssetsPage() {
             {!asset ? (
                 <Spinner size="xl" />
             ) : (
-                <VStack spacing="4rem" align={"start"}>
+                <VStack spacing="12rem" align={"start"}>
                     <Box>
-                        <Heading>{asset?.country.toLocaleUpperCase()}</Heading>
-                        <Text fontSize="3xl">{asset?.city}</Text>
-                        <Text fontSize="2xl">
+                        <Heading fontSize="8xl">
                             {asset?.street + " " + asset?.number}
+                        </Heading>
+                        <Text fontSize="4xl">
+                            {asset?.city + ", " + asset?.country}
                         </Text>
                     </Box>
 
@@ -62,7 +63,9 @@ export default function AssetsPage() {
                         {AssetCategory[asset?.category as AssetCategory]}
                     </Heading>
 
-                    <Text fontSize="sm">BlockEstate: #{asset?.tokenId}</Text>
+                    <Text fontSize="sm" color="gray.400">
+                        BlockEstate: #{asset?.tokenId}
+                    </Text>
                 </VStack>
             )}
 

@@ -36,7 +36,7 @@ export default function AssetsPage() {
 
     return (
         <Box>
-            <Heading fontSize="6xl" pb="2rem">
+            <Heading fontSize="8xl" pb="2rem">
                 Assets
             </Heading>
 
@@ -48,7 +48,9 @@ export default function AssetsPage() {
                 </Link>
             </Box>
 
-            {!assets ? (
+            {readAllAssets.isError ? (
+                <Text color="red">Error!</Text>
+            ) : !assets ? (
                 <Center>
                     <Spinner size="xl" />
                 </Center>

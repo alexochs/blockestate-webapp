@@ -5,13 +5,23 @@ export default function AssetPreview({ asset }: any) {
     const _asset = asset as Asset;
 
     return (
-        <Link href={"/assets/" + _asset.tokenId}>
-            <Box border="1px solid gray" rounded="3xl" p="1rem">
-                <Heading fontSize="2xl">{_asset.country}</Heading>
-                <Text fontSize="lg">{_asset.city}</Text>
-                <Text fontSize="sm">{_asset.street + " " + _asset.number}</Text>
+        <Link
+            href={"/assets/" + _asset.tokenId}
+            style={{ textDecoration: "none" }}
+        >
+            <Box
+                border="1px solid gray"
+                rounded="3xl"
+                p="1rem"
+                textDecor="none"
+            >
+                <Heading fontSize="4xl">
+                    {_asset.street + " " + _asset.number}
+                </Heading>
 
-                <Text pt=".5rem" fontSize="xs" color="gray.400">
+                <Text fontSize="xl">{_asset.city + ", " + _asset.country}</Text>
+
+                <Text pt="2rem" fontSize="xs" color="gray.400">
                     {"BlockEstate #" + _asset.tokenId}
                 </Text>
             </Box>
