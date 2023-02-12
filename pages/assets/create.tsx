@@ -15,7 +15,9 @@ export default function CreateAssetPage() {
     const [category, setCategory] = useState("0");
     const [street, setStreet] = useState("");
     const [number, setNumber] = useState(0);
+    const [apNumber, setApNumber] = useState(0);
     const [city, setCity] = useState("");
+    const [zip, setZip] = useState("");
     const [country, setCountry] = useState("");
 
     return (
@@ -45,11 +47,26 @@ export default function CreateAssetPage() {
                     onChange={(e) => setNumber(e.target.valueAsNumber)}
                 />
 
+                <FormLabel pt="2rem">Apartment Number</FormLabel>
+                <Input
+                    isDisabled={category === "1"}
+                    type={"number"}
+                    value={apNumber}
+                    onChange={(e) => setApNumber(e.target.valueAsNumber)}
+                />
+
                 <FormLabel pt="2rem">City</FormLabel>
                 <Input
                     type={"text"}
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
+                />
+
+                <FormLabel pt="2rem">ZIP</FormLabel>
+                <Input
+                    type={"text"}
+                    value={zip}
+                    onChange={(e) => setZip(e.target.value)}
                 />
 
                 <FormLabel pt="2rem">Country</FormLabel>
@@ -64,7 +81,9 @@ export default function CreateAssetPage() {
                 category={parseInt(category)}
                 street={street}
                 number={number}
+                apNumber={apNumber}
                 city={city}
+                zip={zip}
                 country={country}
             />
         </Box>

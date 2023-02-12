@@ -14,28 +14,30 @@ import { EvmChain } from "@moralisweb3/common-evm-utils";
 import Moralis from "moralis";
 import { useSession } from "next-auth/react";
 import {
+    useContractEvent,
     useContractWrite,
     usePrepareContractWrite,
     useWaitForTransaction,
 } from "wagmi";
-import { abi } from "@/helpers/BlockEstateAssets.json";
-import { assetsContractAddress } from "@/helpers/contractAddresses";
-import { useEffect, useState } from "react";
+import { abi } from "@/helpers/BlockEstateMarket.json";
+import { marketContractAddress } from "@/helpers/contractAddresses";
+import { useState } from "react";
 import { useRouter } from "next/router";
 
-export default function CreateAssetButton({ tokenId }: any) {
-    const session = useSession();
+export default function CreateAssetListingButton({ tokenId, price }: any) {
     const router = useRouter();
+    const session = useSession();
+    const functionName = "createAssetListing";
 
     const {
         config,
         error: prepareError,
         isError: isPrepareError,
     } = usePrepareContractWrite({
-        address: assetsContractAddress,
+        address: marketContractAddress,
         abi,
-        functionName: "deleteAsset",
-        args: [tokenId],
+        functionName,
+        args: [tokenId, price],
     });
 
     const { data, error, isError, write } = useContractWrite(config);
@@ -44,26 +46,23 @@ export default function CreateAssetButton({ tokenId }: any) {
         hash: data?.hash,
     });
 
-    useEffect(() => {
-        if (isSuccess) {
-            router.replace("/assets");
-        }
-    }, [isSuccess]);
-
     return (
         <Center flexDir={"column"}>
             <Button
                 isDisabled={!write || !session.data}
                 isLoading={isLoading}
                 onClick={() => write?.()}
-                colorScheme="red"
+                size="lg"
+                colorScheme="blue"
                 rounded="xl"
-                variant="ghost"
+                border="1px solid black"
             >
-                Delete Asset
+                {session.data ? "Create Listing" : "Connect to create Listing"}
             </Button>
 
-            {isSuccess && <Text pt=".5rem">Successfully deleted Asset!</Text>}
+            {isSuccess && (
+                <Text pt=".5rem">Successfully created Asset Listing!</Text>
+            )}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
                     Error: {(prepareError || error)?.message}

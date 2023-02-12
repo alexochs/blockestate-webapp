@@ -10,8 +10,12 @@ import {
     VStack,
 } from "@chakra-ui/react";
 import { useContractRead } from "wagmi";
-import { abi } from "@/helpers/BlockEstate.json";
-import address from "@/helpers/contractAddress";
+import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
+import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
+import {
+    assetsContractAddress,
+    sharesContractAddress,
+} from "@/helpers/contractAddresses";
 import { useEffect, useState } from "react";
 import { Asset, AssetCategory } from "@/helpers/types";
 import AssetPreview from "@/components/AssetPreview";
@@ -23,25 +27,54 @@ export default function AssetsPage() {
     const session = useSession();
     const router = useRouter();
     const { tokenId } = router.query;
+
     const [asset, setAsset] = useState<Asset | null>(null);
-    const [ownedTokens, setOwnedTokens] = useState<number[]>([]);
+    const [assetOwner, setAssetOwner] = useState<string>("");
+    const [sharesBalance, setSharesBalance] = useState<number>(0);
+    const [sharesTotalSupply, setSharesTotalSupply] = useState<number>(0);
 
     const readAsset = useContractRead({
-        address,
-        abi,
+        address: assetsContractAddress,
+        abi: assetsAbi,
         functionName: "readAsset",
         args: [tokenId],
         onSuccess: (data) => setAsset(Asset.fromSingleEntry(data)),
     });
 
-    const getOwnedTokens = useContractRead({
-        address,
-        abi,
-        functionName: "getOwnedTokens",
-        args: [session.data?.user!.address as string],
-        onSuccess: (data: any) =>
-            data.length > 0 &&
-            setOwnedTokens(data.map((x: any) => parseInt(x, 16))),
+    const ownerOf = useContractRead({
+        address: assetsContractAddress,
+        abi: assetsAbi,
+        functionName: "ownerOf",
+        args: [tokenId],
+        onSuccess: (data: any) => setAssetOwner(data),
+    });
+
+    const readSharesBalance = useContractRead({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "balanceOf",
+        args: [session?.data?.user!.address, tokenId],
+        onError: (error) =>
+            console.log(
+                `balanceOf(${session?.data?.user!.address}, ${tokenId}) => `,
+                error
+            ),
+        onSuccess: (data: any) => {
+            const sharesBalance = parseInt(data._hex, 16);
+            console.log(sharesBalance);
+            setSharesBalance(parseInt(data._hex, 16));
+        },
+    });
+
+    const readSharesTotalSupply = useContractRead({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "totalSupply",
+        args: [tokenId],
+        onError: (error) => console.log(`totalSupply(${tokenId}) => `, error),
+        onSuccess: (data: any) => {
+            setSharesTotalSupply(parseInt(data._hex, 16));
+        },
     });
 
     return (
@@ -59,9 +92,14 @@ export default function AssetsPage() {
                         </Text>
                     </Box>
 
-                    <Heading>
-                        {AssetCategory[asset?.category as AssetCategory]}
-                    </Heading>
+                    <Box>
+                        <Heading>
+                            {AssetCategory[asset?.category as AssetCategory]}
+                        </Heading>
+                        {asset?.category == AssetCategory.APARTMENT && (
+                            <Text>Nr. {asset?.apNumber}</Text>
+                        )}
+                    </Box>
 
                     <Text fontSize="sm" color="gray.400">
                         BlockEstate: #{asset?.tokenId}
@@ -69,19 +107,76 @@ export default function AssetsPage() {
                 </VStack>
             )}
 
-            {ownedTokens.includes(asset?.tokenId!) && (
-                <VStack pt="8rem" spacing="2rem" align="start">
-                    <HStack spacing="1rem">
-                        <Button isDisabled rounded="xl">
-                            Create Shares
-                        </Button>
+            <Text>
+                You own {sharesBalance} out of {sharesTotalSupply} (
+                {((sharesBalance / sharesTotalSupply) * 100).toFixed(2)}%) Share
+                {sharesTotalSupply > 1 ? "s" : ""}.
+            </Text>
+
+            {session.status == "authenticated" && sharesBalance > 0 && (
+                <Button
+                    colorScheme={"red"}
+                    variant="ghost"
+                    rounded="xl"
+                    onClick={() =>
+                        router.push("/shares/burn?tokenId=" + tokenId)
+                    }
+                >
+                    Burn Shares
+                </Button>
+            )}
+
+            {session.status == "authenticated" &&
+                assetOwner == session.data?.user!.address && (
+                    <VStack pt="8rem" spacing="2rem" align="start">
+                        <HStack spacing="1rem">
+                            <Button
+                                variant="outline"
+                                border="1px"
+                                rounded="xl"
+                                onClick={() =>
+                                    router.push(
+                                        "/shares/list?tokenId=" + tokenId
+                                    )
+                                }
+                            >
+                                List Shares
+                            </Button>
+
+                            <Button
+                                variant="outline"
+                                border="1px"
+                                rounded="xl"
+                                onClick={() =>
+                                    router.push(
+                                        "/shares/create?tokenId=" + tokenId
+                                    )
+                                }
+                            >
+                                Create Shares
+                            </Button>
+
+                            <Button
+                                colorScheme={"red"}
+                                variant="ghost"
+                                rounded="xl"
+                                onClick={() =>
+                                    router.push(
+                                        "/shares/burn?tokenId=" + tokenId
+                                    )
+                                }
+                            >
+                                Burn Shares
+                            </Button>
+                        </HStack>
+
                         <Button isDisabled rounded="xl">
                             Update
                         </Button>
-                    </HStack>
-                    <DeleteAssetButton tokenId={asset?.tokenId} />
-                </VStack>
-            )}
+
+                        <DeleteAssetButton tokenId={asset?.tokenId} />
+                    </VStack>
+                )}
         </Box>
     );
 }

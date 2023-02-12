@@ -3,9 +3,9 @@ import Auth from "../Auth";
 
 export default function Navbar() {
     return (
-        <Flex w="100vw" px="5vw" h="10vh">
+        <Flex w="100vw" px="10vw" h="10vh">
             <Center flex={1}>
-                <Link href="/">
+                <Link href="/" style={{ textDecoration: "none" }}>
                     <Heading>
                         Block<span style={{ color: "#3182CE" }}>Estate</span>
                     </Heading>
@@ -14,11 +14,14 @@ export default function Navbar() {
 
             <Center flex={1}>
                 <HStack spacing="4rem">
-                    <Link href="/">
-                        <Text>Home</Text>
-                    </Link>
                     <Link href="/assets">
                         <Text>Assets</Text>
+                    </Link>
+                    <Link href="/shares">
+                        <Text>Shares</Text>
+                    </Link>
+                    <Link href="/market">
+                        <Text>Market</Text>
                     </Link>
                 </HStack>
             </Center>

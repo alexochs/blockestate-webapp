@@ -19,33 +19,24 @@ import {
     usePrepareContractWrite,
     useWaitForTransaction,
 } from "wagmi";
-import { abi } from "@/helpers/BlockEstateAssets.json";
-import { assetsContractAddress } from "@/helpers/contractAddresses";
+import { abi } from "@/helpers/BlockEstateShares.json";
+import { sharesContractAddress } from "@/helpers/contractAddresses";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
-export default function CreateAssetButton({
-    category,
-    street,
-    apNumber,
-    number,
-    city,
-    zip,
-    country,
-}: any) {
+export default function BurnSharesButton({ tokenId, amount }: any) {
     const router = useRouter();
     const session = useSession();
-    const functionName = "createAsset";
 
     const {
         config,
         error: prepareError,
         isError: isPrepareError,
     } = usePrepareContractWrite({
-        address: assetsContractAddress,
+        address: sharesContractAddress,
         abi,
-        functionName,
-        args: [category, street, number, apNumber, city, zip, country],
+        functionName: "burnShares",
+        args: [tokenId, amount],
     });
 
     const { data, error, isError, write } = useContractWrite(config);
@@ -55,17 +46,19 @@ export default function CreateAssetButton({
     });
 
     useContractEvent({
-        address: assetsContractAddress,
+        address: sharesContractAddress,
         abi,
-        eventName: "Transfer",
-        listener(from, to, tokenId) {
-            console.log("Transfer", from, to, tokenId);
+        eventName: "TransferSingle",
+        listener(operator, from, to, id, amount) {
+            console.log("TransferSingle", operator, from, to, id, amount);
             if (
-                from == "0x0000000000000000000000000000000000000000" &&
-                to == session.data?.user?.address
+                (to == "0x0000000000000000000000000000000000000000" &&
+                    from == session.data?.user?.address &&
+                    id == tokenId,
+                amount == amount)
             ) {
-                const _tokenId = tokenId as any;
-                router.push(`/assets/${parseInt(_tokenId._hex)}`);
+                const _id = id as any;
+                router.push(`/assets/${parseInt(_id._hex, 16)}}`);
             }
         },
     });
@@ -75,16 +68,18 @@ export default function CreateAssetButton({
             <Button
                 isDisabled={!write || !session.data}
                 isLoading={isLoading}
-                onClick={() => write?.()}
-                size="lg"
-                colorScheme="blue"
+                colorScheme={"red"}
+                border="rgb(0, 0, 0, 0.5)"
                 rounded="xl"
-                border="1px solid black"
+                onClick={() => {
+                    write?.();
+                }}
+                size="lg"
             >
-                {session.data ? "Create Asset" : "Connect to create Asset"}
+                {session.data ? `Burn Shares` : `Connect to burn Shares`}
             </Button>
 
-            {isSuccess && <Text pt=".5rem">Successfully created Asset!</Text>}
+            {isSuccess && <Text pt=".5rem">Successfully burned Shares!</Text>}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
                     Error: {(prepareError || error)?.message}

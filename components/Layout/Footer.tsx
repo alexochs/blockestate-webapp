@@ -3,10 +3,10 @@ import Auth from "../Auth";
 
 export default function Footer() {
     return (
-        <Flex w="100vw" px="5vw" h="5vh">
+        <Flex w="100vw" mt="5vh" py="2rem" px="5vw" h="5vh">
             <Center flex={1}>
                 <Link href="/">
-                    <Text>BlockEstate © 2023</Text>
+                    <Text>© 2023 BlockEstate</Text>
                 </Link>
             </Center>
 

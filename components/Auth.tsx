@@ -10,8 +10,6 @@ export default function Auth() {
     const session = useSession();
     const router = useRouter();
 
-    console.log(session);
-
     return session.status == "loading" ? (
         <Spinner size="md" />
     ) : session.status == "unauthenticated" ? (
