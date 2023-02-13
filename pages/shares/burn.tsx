@@ -58,13 +58,17 @@ export default function BurnSharesPage() {
         },
     });
 
-    const { getInputProps, getIncrementButtonProps, getDecrementButtonProps } =
-        useNumberInput({
-            step: 1,
-            defaultValue: 1,
-            min: 1,
-            max: sharesBalance,
-        });
+    const {
+        getInputProps,
+        getIncrementButtonProps,
+        getDecrementButtonProps,
+        value,
+    } = useNumberInput({
+        step: 1,
+        defaultValue: 1,
+        min: 1,
+        max: sharesBalance,
+    });
 
     const inc = getIncrementButtonProps();
     const dec = getDecrementButtonProps();
@@ -100,7 +104,7 @@ export default function BurnSharesPage() {
                 </Center>
 
                 <Box pt="4rem">
-                    <BurnSharesButton tokenId={tokenId} amount={amount} />
+                    <BurnSharesButton tokenId={tokenId} amount={value} />
                 </Box>
             </VStack>
         </Box>

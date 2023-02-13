@@ -19,12 +19,17 @@ import {
     usePrepareContractWrite,
     useWaitForTransaction,
 } from "wagmi";
-import { abi } from "@/helpers/BlockEstateShares.json";
-import { sharesContractAddress } from "@/helpers/contractAddresses";
+import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
+import { abi as marketAbi } from "@/helpers/BlockEstateMarket.json";
+import {
+    sharesContractAddress,
+    marketContractAddress,
+} from "@/helpers/contractAddresses";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { ethers } from "ethers";
 
-export default function BurnSharesButton({ tokenId, amount }: any) {
+export default function BuySharesButton({ listingId, price }: any) {
     const router = useRouter();
     const session = useSession();
 
@@ -33,10 +38,13 @@ export default function BurnSharesButton({ tokenId, amount }: any) {
         error: prepareError,
         isError: isPrepareError,
     } = usePrepareContractWrite({
-        address: sharesContractAddress,
-        abi,
-        functionName: "burnShares",
-        args: [tokenId, amount],
+        address: marketContractAddress,
+        abi: marketAbi,
+        functionName: "purchaseSharesListing",
+        args: [listingId],
+        overrides: {
+            value: price.toString(),
+        },
     });
 
     const { data, error, isError, write } = useContractWrite(config);
@@ -45,7 +53,7 @@ export default function BurnSharesButton({ tokenId, amount }: any) {
         hash: data?.hash,
     });
 
-    useContractEvent({
+    /*useContractEvent({
         address: sharesContractAddress,
         abi,
         eventName: "TransferSingle",
@@ -61,14 +69,14 @@ export default function BurnSharesButton({ tokenId, amount }: any) {
                 router.push(`/assets/${parseInt(_id._hex, 16)}}`);
             }
         },
-    });
+    });*/
 
     return (
         <Center flexDir={"column"}>
             <Button
                 isDisabled={!write || !session.data}
                 isLoading={isLoading}
-                colorScheme={"red"}
+                colorScheme={"blue"}
                 border="rgb(0, 0, 0, 0.5)"
                 rounded="xl"
                 onClick={() => {
@@ -76,12 +84,10 @@ export default function BurnSharesButton({ tokenId, amount }: any) {
                 }}
                 size="lg"
             >
-                {session.data ? `Burn Shares` : `Connect to burn Shares`}
+                {session.data ? `Buy Shares` : `Connect to buy Shares`}
             </Button>
 
-            <Text>Shares: {amount}</Text>
-
-            {isSuccess && <Text pt=".5rem">Successfully burned Shares!</Text>}
+            {isSuccess && <Text pt=".5rem">Successfully bought Shares!</Text>}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
                     Error: {(prepareError || error)?.message}

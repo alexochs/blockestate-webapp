@@ -19,36 +19,13 @@ export default function MarketPage() {
     const session = useSession();
 
     const [userListings, setUserListings] = useState<SharesListing[]>([]);
-    giconst[(assetListings, setAssetListings)] = useState<AssetListing[]>([]);
     const [sharesListings, setSharesListings] = useState<SharesListing[]>([]);
-
-    const readAllAssetListings = useContractRead({
-        address: marketContractAddress,
-        abi: marketAbi,
-        functionName: "readAllAssetListings",
-        onError: (error) => {
-            console.log("readAllAssetListings() => ", error);
-        },
-        onSuccess: (data: Object[]) => {
-            let assetListings = [];
-
-            for (let i = 0; i < data.length; i++) {
-                console.log(data[i]);
-                assetListings.push(AssetListing.fromSingleEntry(data[i]));
-            }
-
-            console.log(assetListings);
-
-            setAssetListings(
-                assetListings.filter((assetListing) => assetListing.tokenId > 0)
-            );
-        },
-    });
 
     const readListingsByAccount = useContractRead({
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "readListingsByAccount",
+        args: [session?.data?.user?.address],
         onError: (error) => {
             console.log("readListingsByAccount() => ", error);
         },
@@ -63,6 +40,30 @@ export default function MarketPage() {
             console.log(shareListings);
 
             setUserListings(
+                shareListings.filter((shareListing) => shareListing.tokenId > 0)
+            );
+        },
+    });
+
+    const readAllSharesListings = useContractRead({
+        address: marketContractAddress,
+        abi: marketAbi,
+        functionName: "readAllSharesListings",
+        args: [],
+        onError: (error) => {
+            console.log("readAllSharesListings() => ", error);
+        },
+        onSuccess: (data: Object[]) => {
+            let shareListings = [];
+
+            for (let i = 0; i < data.length; i++) {
+                console.log(data[i]);
+                shareListings.push(SharesListing.fromSingleEntry(data[i]));
+            }
+
+            console.log(shareListings);
+
+            setSharesListings(
                 shareListings.filter((shareListing) => shareListing.tokenId > 0)
             );
         },
@@ -97,10 +98,18 @@ export default function MarketPage() {
                     <Center>
                         <Spinner size="xl" />
                     </Center>
-                ) : sharesListings && sharesListings.length > 0 ? (
+                ) : userListings && userListings.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {sharesListings.map((sharesListing) => (
-                            <Text>{JSON.stringify(sharesListing)}</Text>
+                        {userListings.map((sharesListing, index) => (
+                            <Link href={`/market/buy?listingId=${index}`}>
+                                <Text
+                                    border="1px solid black"
+                                    p="1rem"
+                                    rounded="3xl"
+                                >
+                                    {JSON.stringify(sharesListing)}
+                                </Text>
+                            </Link>
                         ))}
                     </SimpleGrid>
                 ) : (
@@ -118,16 +127,24 @@ export default function MarketPage() {
                     Explore Listings
                 </Heading>
 
-                {readAllAssetListings.isError ? (
+                {readAllSharesListings.isError ? (
                     <Text color="red">Error!</Text>
-                ) : readAllAssetListings.isLoading ? (
+                ) : readAllSharesListings.isLoading ? (
                     <Center>
                         <Spinner size="xl" />
                     </Center>
-                ) : assetListings && assetListings.length > 0 ? (
+                ) : sharesListings && sharesListings.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {assetListings.map((assetListing) => (
-                            <Text>{JSON.stringify(assetListing)}</Text>
+                        {sharesListings.map((sharesListing, index) => (
+                            <Link href={`/market/buy?listingId=${index}`}>
+                                <Text
+                                    border="1px solid black"
+                                    p="1rem"
+                                    rounded="3xl"
+                                >
+                                    {JSON.stringify(sharesListing)}
+                                </Text>
+                            </Link>
                         ))}
                     </SimpleGrid>
                 ) : (

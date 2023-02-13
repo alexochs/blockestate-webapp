@@ -33,7 +33,7 @@ export default function ListSharesPage() {
     const [asset, setAsset] = useState<Asset | null>(null);
     const [sharesBalance, setSharesBalance] = useState<number>(0);
     const [amount, setAmount] = useState<number>(1);
-    const [price, setPrice] = useState<number>(1);
+    const [price, setPrice] = useState<string>("1");
 
     const readAsset = useContractRead({
         address: assetsContractAddress,
@@ -92,7 +92,7 @@ export default function ListSharesPage() {
                     <Input
                         type="number"
                         value={price}
-                        onChange={(e) => setPrice(e.target.valueAsNumber)}
+                        onChange={(e) => setPrice(e.target.value)}
                     />
                 </Center>
 
