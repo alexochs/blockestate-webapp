@@ -17,9 +17,6 @@ export default function Navbar() {
                     <Link href="/assets">
                         <Text>Assets</Text>
                     </Link>
-                    <Link href="/shares">
-                        <Text>Shares</Text>
-                    </Link>
                     <Link href="/market">
                         <Text>Market</Text>
                     </Link>

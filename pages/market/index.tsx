@@ -100,8 +100,10 @@ export default function MarketPage() {
                     </Center>
                 ) : userListings && userListings.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {userListings.map((sharesListing, index) => (
-                            <Link href={`/market/buy?listingId=${index}`}>
+                        {userListings.map((sharesListing) => (
+                            <Link
+                                href={`/market/buy?listingId=${sharesListing.listingId}`}
+                            >
                                 <Text
                                     border="1px solid black"
                                     p="1rem"

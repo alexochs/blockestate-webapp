@@ -57,8 +57,7 @@ export default function BurnSharesButton({ tokenId, amount }: any) {
                     id == tokenId,
                 amount == amount)
             ) {
-                const _id = id as any;
-                router.push(`/assets/${parseInt(_id._hex, 16)}}`);
+                router.push("/assets/" + tokenId);
             }
         },
     });

@@ -4,6 +4,7 @@ import {
     Button,
     Center,
     Heading,
+    Link,
     SimpleGrid,
     Spinner,
     Text,
@@ -53,16 +54,19 @@ export default function MarketListPage() {
                 ) : userAssets && userAssets.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
                         {userAssets.map((asset: any) => (
-                            <Box>
-                                <Heading>
-                                    {asset.street} {asset.number}
-                                </Heading>
-
-                                <CreateAssetListingButton
-                                    tokenId={asset.tokenId}
-                                    price={ethers.utils.parseEther("0.01")}
-                                />
-                            </Box>
+                            <Link
+                                href={"/shares/list?tokenId=" + asset.tokenId}
+                            >
+                                <Box
+                                    p="1rem"
+                                    border="1px solid black"
+                                    rounded="3xl"
+                                >
+                                    <Heading>
+                                        {asset.street} {asset.number}
+                                    </Heading>
+                                </Box>
+                            </Link>
                         ))}
                     </SimpleGrid>
                 ) : (

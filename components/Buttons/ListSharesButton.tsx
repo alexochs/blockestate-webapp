@@ -15,6 +15,7 @@ import Moralis from "moralis";
 import { useSession } from "next-auth/react";
 import {
     useContractEvent,
+    useContractRead,
     useContractWrite,
     usePrepareContractWrite,
     useWaitForTransaction,
@@ -33,6 +34,8 @@ export default function ListSharesButton({ tokenId, amount, price }: any) {
     const router = useRouter();
     const session = useSession();
 
+    const [isApprovedForAll, setIsApprovedForAll] = useState(false);
+
     const {
         config,
         error: prepareError,
@@ -48,6 +51,27 @@ export default function ListSharesButton({ tokenId, amount, price }: any) {
 
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: data?.hash,
+    });
+
+    const setApprovalForAll = usePrepareContractWrite({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "setApprovalForAll",
+        args: [marketContractAddress, true],
+    });
+
+    const fetchIsApprovedForAll = useContractRead({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "isApprovedForAll",
+        args: [session.data?.user?.address, marketContractAddress],
+        onError: (error) => {
+            console.log("isApprovedForAll() => ", error);
+        },
+        onSuccess: (data: any) => {
+            console.log(data);
+            setIsApprovedForAll(data);
+        },
     });
 
     /*useContractEvent({
@@ -70,19 +94,21 @@ export default function ListSharesButton({ tokenId, amount, price }: any) {
 
     return (
         <Center flexDir={"column"}>
-            <Button
-                isDisabled={!write || !session.data}
-                isLoading={isLoading}
-                colorScheme={"blue"}
-                border="rgb(0, 0, 0, 0.5)"
-                rounded="xl"
-                onClick={() => {
-                    write?.();
-                }}
-                size="lg"
-            >
-                {session.data ? `List Shares` : `Connect to list Shares`}
-            </Button>
+            {
+                <Button
+                    isDisabled={!write || !session.data}
+                    isLoading={isLoading}
+                    colorScheme={"blue"}
+                    border="rgb(0, 0, 0, 0.5)"
+                    rounded="xl"
+                    onClick={() => {
+                        write?.();
+                    }}
+                    size="lg"
+                >
+                    {session.data ? `List Shares` : `Connect to list Shares`}
+                </Button>
+            }
 
             <Text>Shares: {amount}</Text>
             <Text>ETH: {price}</Text>

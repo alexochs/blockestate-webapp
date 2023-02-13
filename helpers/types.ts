@@ -84,6 +84,7 @@ class AssetListing {
 }
 
 class SharesListing {
+    listingId: number;
     tokenId: number;
     price: number;
     amount: number;
@@ -91,12 +92,14 @@ class SharesListing {
     isActive: boolean;
 
     constructor(
+        listingId: number,
         tokenId: number,
         price: number,
         amount: number,
         seller: string,
         isActive: boolean
     ) {
+        this.listingId = listingId;
         this.tokenId = tokenId;
         this.price = price;
         this.amount = amount;
@@ -109,8 +112,9 @@ class SharesListing {
             parseInt(entry[0]._hex, 16),
             parseInt(entry[1]._hex, 16),
             parseInt(entry[2]._hex, 16),
-            entry[3],
-            entry[4]
+            parseInt(entry[3]._hex, 16),
+            entry[4],
+            entry[5]
         );
     }
 }
