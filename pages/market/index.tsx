@@ -14,6 +14,7 @@ import { useContractRead } from "wagmi";
 import { abi as marketAbi } from "@/helpers/BlockEstateMarket.json";
 import { AssetListing, SharesListing } from "@/helpers/types";
 import { useState } from "react";
+import ListingPreview from "@/components/ListingPreview";
 
 export default function MarketPage() {
     const session = useSession();
@@ -33,11 +34,8 @@ export default function MarketPage() {
             let shareListings = [];
 
             for (let i = 0; i < data.length; i++) {
-                console.log(data[i]);
                 shareListings.push(SharesListing.fromSingleEntry(data[i]));
             }
-
-            console.log(shareListings);
 
             setUserListings(
                 shareListings.filter((shareListing) => shareListing.tokenId > 0)
@@ -57,11 +55,8 @@ export default function MarketPage() {
             let shareListings = [];
 
             for (let i = 0; i < data.length; i++) {
-                console.log(data[i]);
                 shareListings.push(SharesListing.fromSingleEntry(data[i]));
             }
-
-            console.log(shareListings);
 
             setSharesListings(
                 shareListings.filter((shareListing) => shareListing.tokenId > 0)
@@ -76,22 +71,6 @@ export default function MarketPage() {
                     Your Listings
                 </Heading>
 
-                <Box pb="2rem">
-                    <Link
-                        href="/market/list"
-                        style={{ textDecoration: "none" }}
-                    >
-                        <Button
-                            rounded="xl"
-                            colorScheme="blue"
-                            size="lg"
-                            border="1px solid black"
-                        >
-                            List your Shares
-                        </Button>
-                    </Link>
-                </Box>
-
                 {readListingsByAccount.isError ? (
                     <Text color="red">Error!</Text>
                 ) : readListingsByAccount.isLoading ? (
@@ -101,17 +80,7 @@ export default function MarketPage() {
                 ) : userListings && userListings.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
                         {userListings.map((sharesListing) => (
-                            <Link
-                                href={`/market/buy?listingId=${sharesListing.listingId}`}
-                            >
-                                <Text
-                                    border="1px solid black"
-                                    p="1rem"
-                                    rounded="3xl"
-                                >
-                                    {JSON.stringify(sharesListing)}
-                                </Text>
-                            </Link>
+                            <ListingPreview listing={sharesListing} />
                         ))}
                     </SimpleGrid>
                 ) : (
@@ -137,16 +106,8 @@ export default function MarketPage() {
                     </Center>
                 ) : sharesListings && sharesListings.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {sharesListings.map((sharesListing, index) => (
-                            <Link href={`/market/buy?listingId=${index}`}>
-                                <Text
-                                    border="1px solid black"
-                                    p="1rem"
-                                    rounded="3xl"
-                                >
-                                    {JSON.stringify(sharesListing)}
-                                </Text>
-                            </Link>
+                        {sharesListings.map((sharesListing) => (
+                            <ListingPreview listing={sharesListing} />
                         ))}
                     </SimpleGrid>
                 ) : (

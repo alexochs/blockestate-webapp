@@ -16,6 +16,8 @@ import { AssetListing, SharesListing } from "@/helpers/types";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import BuySharesButton from "@/components/Buttons/BuySharesButton";
+import DeleteSharesListingButton from "@/components/Buttons/DeleteSharesListingButton";
+import { ethers } from "ethers";
 
 export default function MarketPage() {
     const router = useRouter();
@@ -24,6 +26,7 @@ export default function MarketPage() {
     const { listingId } = router.query;
 
     const [listing, setListing] = useState<SharesListing | null>(null);
+    const [isSeller, setIsSeller] = useState<boolean>(false);
 
     const getListing = useContractRead({
         address: marketContractAddress,
@@ -34,7 +37,9 @@ export default function MarketPage() {
             console.log("getListing() => ", error);
         },
         onSuccess: (data: Object) => {
-            setListing(SharesListing.fromSingleEntry(data));
+            const listing = SharesListing.fromSingleEntry(data);
+            setListing(listing);
+            setIsSeller(listing.seller == session?.data?.user?.address);
         },
     });
 
@@ -52,20 +57,36 @@ export default function MarketPage() {
                         <Spinner size="xl" />
                     </Center>
                 ) : listing ? (
-                    <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        <Text>{JSON.stringify(listing)}</Text>
-                    </SimpleGrid>
+                    <Box>
+                        <Heading>BlockEstate Asset #{listing.tokenId}</Heading>
+
+                        <Text fontSize="2xl">
+                            {listing.amount} Shares for{" "}
+                            {parseFloat(
+                                ethers.utils.formatEther(
+                                    listing.price.toString()
+                                )
+                            ).toFixed(2)}{" "}
+                            MATIC
+                        </Text>
+
+                        <Text>Sold by {listing.seller}</Text>
+                    </Box>
                 ) : (
                     <Center flexDir={"column"}>
                         <Text>Listings loaded but returned null!</Text>
                     </Center>
                 )}
 
-                <Center>
-                    <BuySharesButton
-                        listingId={listingId}
-                        price={listing ? listing.price : 0}
-                    />
+                <Center pt="4rem">
+                    {!isSeller ? (
+                        <BuySharesButton
+                            listingId={listingId}
+                            price={listing ? listing.price : 0}
+                        />
+                    ) : (
+                        <DeleteSharesListingButton listingId={listingId} />
+                    )}
                 </Center>
             </Box>
         </Box>

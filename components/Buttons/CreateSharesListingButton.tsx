@@ -30,7 +30,11 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 
-export default function ListSharesButton({ tokenId, amount, price }: any) {
+export default function CreateSharesListingButton({
+    tokenId,
+    amount,
+    price,
+}: any) {
     const router = useRouter();
     const session = useSession();
 
@@ -53,14 +57,26 @@ export default function ListSharesButton({ tokenId, amount, price }: any) {
         hash: data?.hash,
     });
 
-    const setApprovalForAll = usePrepareContractWrite({
+    const prepareApprovalForAll = usePrepareContractWrite({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "setApprovalForAll",
         args: [marketContractAddress, true],
     });
 
-    const fetchIsApprovedForAll = useContractRead({
+    const writeApprovalForAll = useContractWrite(prepareApprovalForAll.config);
+
+    const {
+        isLoading: approvalForAllLoading,
+        isSuccess: approvalForAllSuccess,
+    } = useWaitForTransaction({
+        hash: writeApprovalForAll.data?.hash,
+        onSuccess(data) {
+            setIsApprovedForAll(data);
+        },
+    });
+
+    const getIsApprovedForAll = useContractRead({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "isApprovedForAll",
@@ -69,8 +85,9 @@ export default function ListSharesButton({ tokenId, amount, price }: any) {
             console.log("isApprovedForAll() => ", error);
         },
         onSuccess: (data: any) => {
-            console.log(data);
+            console.log("approved: " + data);
             setIsApprovedForAll(data);
+            console.log(session.data);
         },
     });
 
@@ -94,7 +111,7 @@ export default function ListSharesButton({ tokenId, amount, price }: any) {
 
     return (
         <Center flexDir={"column"}>
-            {
+            {isApprovedForAll ? (
                 <Button
                     isDisabled={!write || !session.data}
                     isLoading={isLoading}
@@ -106,17 +123,47 @@ export default function ListSharesButton({ tokenId, amount, price }: any) {
                     }}
                     size="lg"
                 >
-                    {session.data ? `List Shares` : `Connect to list Shares`}
+                    {session.data
+                        ? `List your Shares`
+                        : `Connect to list Shares`}
                 </Button>
-            }
-
-            <Text>Shares: {amount}</Text>
-            <Text>ETH: {price}</Text>
+            ) : (
+                <Button
+                    isDisabled={!writeApprovalForAll.write || !session.data}
+                    isLoading={approvalForAllLoading}
+                    colorScheme={"blue"}
+                    border="rgb(0, 0, 0, 0.5)"
+                    rounded="xl"
+                    onClick={() => {
+                        writeApprovalForAll.write?.();
+                    }}
+                    size="lg"
+                >
+                    {session.data
+                        ? `Allow Market to transfer your Shares`
+                        : `Connect to list Shares`}
+                </Button>
+            )}
 
             {isSuccess && <Text pt=".5rem">Successfully listed Shares!</Text>}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
                     Error: {(prepareError || error)?.message}
+                </Text>
+            )}
+
+            {approvalForAllSuccess && (
+                <Text pt=".5rem">Approval successful!</Text>
+            )}
+            {(prepareApprovalForAll.error || prepareApprovalForAll.isError) && (
+                <Text pt=".5rem" maxW={"90vw"}>
+                    Error:{" "}
+                    {
+                        (
+                            prepareApprovalForAll.error ||
+                            prepareApprovalForAll.error
+                        )?.message
+                    }
                 </Text>
             )}
         </Center>

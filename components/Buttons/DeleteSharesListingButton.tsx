@@ -15,6 +15,7 @@ import Moralis from "moralis";
 import { useSession } from "next-auth/react";
 import {
     useContractEvent,
+    useContractRead,
     useContractWrite,
     usePrepareContractWrite,
     useWaitForTransaction,
@@ -29,7 +30,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 
-export default function BuySharesButton({ listingId, price }: any) {
+export default function DeleteSharesListingButton({ listingId }: any) {
     const router = useRouter();
     const session = useSession();
 
@@ -40,57 +41,39 @@ export default function BuySharesButton({ listingId, price }: any) {
     } = usePrepareContractWrite({
         address: marketContractAddress,
         abi: marketAbi,
-        functionName: "purchaseSharesListing",
+        functionName: "deleteSharesListing",
         args: [listingId],
-        overrides: {
-            value: price.toString(),
-        },
     });
 
     const { data, error, isError, write } = useContractWrite(config);
 
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: data?.hash,
-    });
-
-    /*useContractEvent({
-        address: sharesContractAddress,
-        abi,
-        eventName: "TransferSingle",
-        listener(operator, from, to, id, amount) {
-            console.log("TransferSingle", operator, from, to, id, amount);
-            if (
-                (to == "0x0000000000000000000000000000000000000000" &&
-                    from == session.data?.user?.address &&
-                    id == tokenId,
-                amount == amount)
-            ) {
-                const _id = id as any;
-                router.push(`/assets/${parseInt(_id._hex, 16)}}`);
-            }
+        onSuccess: () => {
+            router.push("/market");
         },
-    });*/
+    });
 
     return (
         <Center flexDir={"column"}>
             <Button
                 isDisabled={!write || !session.data}
                 isLoading={isLoading}
-                colorScheme={"blue"}
+                colorScheme={"red"}
+                variant="ghost"
                 border="rgb(0, 0, 0, 0.5)"
                 rounded="xl"
                 onClick={() => {
                     write?.();
                 }}
-                size="lg"
             >
-                {session.data ? `Buy Shares` : `Connect to buy Shares`}
+                {session.data ? `Delete Listing` : `Connect to delete Listing`}
             </Button>
 
-            {isSuccess && <Text pt=".5rem">Successfully bought Shares!</Text>}
+            {isSuccess && <Text pt=".5rem">Successfully deleted Listing!</Text>}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
-                    Error: {prepareError?.message}
+                    Error: {(prepareError || error)?.message}
                 </Text>
             )}
         </Center>

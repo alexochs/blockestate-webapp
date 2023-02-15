@@ -22,7 +22,7 @@ import {
 } from "@/helpers/contractAddresses";
 import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
 import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
-import ListSharesButton from "@/components/Buttons/ListSharesButton";
+import ListSharesButton from "@/components/Buttons/CreateSharesListingButton";
 
 export default function ListSharesPage() {
     const session = useSession();
@@ -48,7 +48,10 @@ export default function ListSharesPage() {
         abi: sharesAbi,
         functionName: "balanceOf",
         args: [session.data?.user?.address, tokenId],
-        onError: (error) => router.push(`/shares`),
+        onError: (error) =>
+            session.data?.user?.address
+                ? router.push(`/shares`)
+                : console.log("Not logged in!"),
         onSuccess: (data: any) => {
             setSharesBalance(parseInt(data._hex, 16));
 
@@ -86,7 +89,7 @@ export default function ListSharesPage() {
 
                 <Center>
                     <Text textAlign={"start"} fontSize="xl" pr="2rem">
-                        Price (ETH)
+                        Price (MATIC)
                     </Text>
 
                     <Input

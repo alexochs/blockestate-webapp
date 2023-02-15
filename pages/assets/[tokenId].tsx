@@ -113,68 +113,65 @@ export default function AssetsPage() {
                 {sharesTotalSupply > 1 ? "s" : ""}.
             </Text>
 
-            {session.status == "authenticated" && sharesBalance > 0 && (
-                <Button
-                    colorScheme={"red"}
-                    variant="ghost"
-                    rounded="xl"
-                    onClick={() =>
-                        router.push("/shares/burn?tokenId=" + tokenId)
-                    }
-                >
-                    Burn Shares
-                </Button>
-            )}
-
             {session.status == "authenticated" &&
-                assetOwner == session.data?.user!.address && (
+                session.data?.user!.address && (
                     <VStack pt="8rem" spacing="2rem" align="start">
                         <HStack spacing="1rem">
-                            <Button
-                                variant="outline"
-                                border="1px"
-                                rounded="xl"
-                                onClick={() =>
-                                    router.push(
-                                        "/shares/list?tokenId=" + tokenId
-                                    )
-                                }
-                            >
-                                List Shares
-                            </Button>
+                            {sharesBalance > 0 && (
+                                <Button
+                                    variant="outline"
+                                    border="1px"
+                                    rounded="xl"
+                                    onClick={() =>
+                                        router.push(
+                                            "/shares/list?tokenId=" + tokenId
+                                        )
+                                    }
+                                >
+                                    List Shares
+                                </Button>
+                            )}
 
-                            <Button
-                                variant="outline"
-                                border="1px"
-                                rounded="xl"
-                                onClick={() =>
-                                    router.push(
-                                        "/shares/create?tokenId=" + tokenId
-                                    )
-                                }
-                            >
-                                Create Shares
-                            </Button>
+                            {assetOwner == session.data.user.address && (
+                                <Button
+                                    variant="outline"
+                                    border="1px"
+                                    rounded="xl"
+                                    onClick={() =>
+                                        router.push(
+                                            "/shares/create?tokenId=" + tokenId
+                                        )
+                                    }
+                                >
+                                    Create Shares
+                                </Button>
+                            )}
 
-                            <Button
-                                colorScheme={"red"}
-                                variant="ghost"
-                                rounded="xl"
-                                onClick={() =>
-                                    router.push(
-                                        "/shares/burn?tokenId=" + tokenId
-                                    )
-                                }
-                            >
-                                Burn Shares
-                            </Button>
+                            {sharesBalance > 0 && (
+                                <Button
+                                    colorScheme={"red"}
+                                    variant="ghost"
+                                    rounded="xl"
+                                    onClick={() =>
+                                        router.push(
+                                            "/shares/burn?tokenId=" + tokenId
+                                        )
+                                    }
+                                >
+                                    Burn Shares
+                                </Button>
+                            )}
                         </HStack>
 
-                        <Button isDisabled rounded="xl">
-                            Update
-                        </Button>
+                        {assetOwner == session.data.user.address && (
+                            <Button isDisabled rounded="xl">
+                                Update
+                            </Button>
+                        )}
 
-                        <DeleteAssetButton tokenId={asset?.tokenId} />
+                        {assetOwner == session.data.user.address && (
+                            <DeleteAssetButton tokenId={asset?.tokenId} />
+                        )}
                     </VStack>
                 )}
         </Box>

@@ -10,22 +10,106 @@ import {
     Text,
 } from "@chakra-ui/react";
 import { useContractRead } from "wagmi";
-import { abi } from "@/helpers/BlockEstateAssets.json";
-import { assetsContractAddress } from "@/helpers/contractAddresses";
+import { readContract } from "@wagmi/core";
+import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
+import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
+import {
+    assetsContractAddress,
+    sharesContractAddress,
+} from "@/helpers/contractAddresses";
 import { useEffect, useState } from "react";
 import { Asset } from "@/helpers/types";
 import AssetPreview from "@/components/AssetPreview";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
+
+export async function getServerSideProps(context: any) {
+    const session = await getSession(context);
+
+    // redirect if not authenticated
+    if (!session) {
+        return {
+            redirect: {
+                destination: "/signin",
+                permanent: false,
+            },
+        };
+    }
+
+    const data = (await readContract({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "readSharesByHolder",
+        args: [session.user?.address],
+    })) as any;
+
+    const shares = data.map((share: any) => parseInt(share._hex, 16));
+
+    return {
+        props: { user: session.user },
+    };
+}
 
 export default function AssetsPage() {
     const session = useSession();
 
-    const [assets, setAssets] = useState<Object[] | null>(null);
+    const [allAssets, setAllAssets] = useState<Object[] | null>(null);
     const [userAssets, setUserAssets] = useState<Object[] | null>(null);
+
+    const [assets, setAssets] = useState<Asset[] | null>(null);
+    const [shares, setShares] = useState<Object[] | null>(null);
+    const [balances, setBalances] = useState<number[] | null>(null);
+    const [supplies, setSupplies] = useState<number[] | null>(null);
+
+    const readShares = useContractRead({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "readSharesByHolder",
+        args: [session?.data?.user!.address],
+        onSuccess: (data: Object[]) => {
+            setShares(
+                data
+                    .map((share: any) => parseInt(share._hex, 16))
+                    .filter((x, i, a) => a.indexOf(x) == i)
+            );
+        },
+    });
+
+    const readBalances = useContractRead({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "balanceOfBatch",
+        args: [
+            Array(shares?.length).fill(session?.data?.user!.address),
+            shares,
+        ],
+        onSuccess: (data: Object[]) => {
+            setBalances(data.map((balance: any) => parseInt(balance._hex, 16)));
+        },
+    });
+
+    const readSupplies = useContractRead({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "totalSupplyBatch",
+        args: [assets?.map((asset) => asset.tokenId)],
+        onSuccess: (data: Object[]) => {
+            setSupplies(data.map((supply: any) => parseInt(supply._hex, 16)));
+        },
+    });
+
+    const readAssets = useContractRead({
+        address: assetsContractAddress,
+        abi: assetsAbi,
+        functionName: "readAssetBatch",
+        args: [shares],
+        onSuccess: (data: Object[]) => {
+            setAssets(data.map((asset: any) => Asset.fromSingleEntry(asset)));
+        },
+    });
 
     const readAllAssets = useContractRead({
         address: assetsContractAddress,
-        abi,
+        abi: assetsAbi,
         functionName: "readAllAssets",
         onSuccess: (data: Object[]) => {
             let assets = [];
@@ -34,13 +118,13 @@ export default function AssetsPage() {
                 assets.push(Asset.fromSingleEntry(data[i]));
             }
 
-            setAssets(assets);
+            setAllAssets(assets);
         },
     });
 
     const readAssetsByHolder = useContractRead({
         address: assetsContractAddress,
-        abi,
+        abi: assetsAbi,
         functionName: "readAssetsByHolder",
         args: [session?.data?.user?.address],
         onError: (error) => {
@@ -86,9 +170,9 @@ export default function AssetsPage() {
                     <Center>
                         <Spinner size="xl" />
                     </Center>
-                ) : userAssets && userAssets.length > 0 ? (
+                ) : assets && assets.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {userAssets.map((asset) => (
+                        {assets.map((asset) => (
                             <AssetPreview asset={asset} />
                         ))}
                     </SimpleGrid>
@@ -107,13 +191,13 @@ export default function AssetsPage() {
 
                 {readAllAssets.isError ? (
                     <Text color="red">Error!</Text>
-                ) : !assets ? (
+                ) : !allAssets ? (
                     <Center>
                         <Spinner size="xl" />
                     </Center>
-                ) : assets.length > 0 ? (
+                ) : allAssets.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {assets.map((asset) => (
+                        {allAssets.map((asset) => (
                             <AssetPreview asset={asset} />
                         ))}
                     </SimpleGrid>

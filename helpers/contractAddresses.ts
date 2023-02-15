@@ -1,5 +1,5 @@
-const assetsContractAddress = "0xE3ba8406791D668B0A90cAc4B8375508973AC761";
-const sharesContractAddress = "0x103Ee59F0F14f9ea5d5c17B0cD997bEBF27E4aD3";
-const marketContractAddress = "0x035Ca26624A66A419b40A99E860DD5c1C74bb572";
+const assetsContractAddress = "0x23d46bDe21A2B8080d9aAEdDC235F88362A1b61D";
+const sharesContractAddress = "0xBA046ac1115763C0836FD361aCbEB0f574FC78A0";
+const marketContractAddress = "0x05157Be13620640C3FA130CB0E726d8724aBfb16";
 
 export { assetsContractAddress, sharesContractAddress, marketContractAddress };
