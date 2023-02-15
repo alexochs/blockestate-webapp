@@ -29,7 +29,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 
-export default function BuySharesButton({ listingId, price }: any) {
+export default function BuySharesButton({ listing }: any) {
     const router = useRouter();
     const session = useSession();
 
@@ -41,9 +41,9 @@ export default function BuySharesButton({ listingId, price }: any) {
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "purchaseSharesListing",
-        args: [listingId],
+        args: [listing.listingId],
         overrides: {
-            value: price.toString(),
+            value: listing.price.toString(),
         },
     });
 

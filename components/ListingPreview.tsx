@@ -7,7 +7,7 @@ export default function ListingPreview({ listing }: any) {
 
     return (
         <Link
-            href={"/market/buy?listingId=" + _listing.listingId}
+            href={"/market/" + _listing.listingId}
             style={{ textDecoration: "none" }}
         >
             <Box

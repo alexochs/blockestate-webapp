@@ -35,169 +35,120 @@ export async function getServerSideProps(context: any) {
         };
     }
 
-    const data = (await readContract({
+    // read all assets
+    const allAssetsData = (await readContract({
+        address: assetsContractAddress,
+        abi: assetsAbi,
+        functionName: "readAllAssets",
+    })) as any;
+
+    const allAssets = allAssetsData.map((asset: any) =>
+        Asset.fromSingleEntry(asset)
+    );
+
+    // read history of held shares
+    const tokenHistoryData = (await readContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "readSharesByHolder",
         args: [session.user?.address],
     })) as any;
 
-    const shares = data.map((share: any) => parseInt(share._hex, 16));
+    const tokenHistory = tokenHistoryData
+        .map((share: any) => parseInt(share._hex, 16))
+        .filter(
+            (value: number, index: number, array: number[]) =>
+                array.indexOf(value) === index
+        );
 
-    return {
-        props: { user: session.user },
-    };
-}
-
-export default function AssetsPage() {
-    const session = useSession();
-
-    const [allAssets, setAllAssets] = useState<Object[] | null>(null);
-    const [userAssets, setUserAssets] = useState<Object[] | null>(null);
-
-    const [assets, setAssets] = useState<Asset[] | null>(null);
-    const [shares, setShares] = useState<Object[] | null>(null);
-    const [balances, setBalances] = useState<number[] | null>(null);
-    const [supplies, setSupplies] = useState<number[] | null>(null);
-
-    const readShares = useContractRead({
-        address: sharesContractAddress,
-        abi: sharesAbi,
-        functionName: "readSharesByHolder",
-        args: [session?.data?.user!.address],
-        onSuccess: (data: Object[]) => {
-            setShares(
-                data
-                    .map((share: any) => parseInt(share._hex, 16))
-                    .filter((x, i, a) => a.indexOf(x) == i)
-            );
-        },
-    });
-
-    const readBalances = useContractRead({
+    // read balances of held shares
+    const sharesBalancesData = (await readContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "balanceOfBatch",
         args: [
-            Array(shares?.length).fill(session?.data?.user!.address),
-            shares,
+            Array(tokenHistory.length).fill(session.user?.address),
+            tokenHistory,
         ],
-        onSuccess: (data: Object[]) => {
-            setBalances(data.map((balance: any) => parseInt(balance._hex, 16)));
+    })) as any;
+
+    const sharesBalances = sharesBalancesData.map((balance: any) =>
+        parseInt(balance._hex, 16)
+    );
+
+    // create tokenId + balance pairs and filter out 0 balances
+    const shares = sharesBalances
+        .map((balance: number, index: number) => ({
+            tokenId: tokenHistory[index],
+            balance,
+        }))
+        .filter((share: any) => share.balance > 0);
+
+    return {
+        props: {
+            user: session.user,
+            allAssets: JSON.parse(JSON.stringify(allAssets)),
+            shares,
         },
-    });
+    };
+}
 
-    const readSupplies = useContractRead({
-        address: sharesContractAddress,
-        abi: sharesAbi,
-        functionName: "totalSupplyBatch",
-        args: [assets?.map((asset) => asset.tokenId)],
-        onSuccess: (data: Object[]) => {
-            setSupplies(data.map((supply: any) => parseInt(supply._hex, 16)));
-        },
-    });
-
-    const readAssets = useContractRead({
-        address: assetsContractAddress,
-        abi: assetsAbi,
-        functionName: "readAssetBatch",
-        args: [shares],
-        onSuccess: (data: Object[]) => {
-            setAssets(data.map((asset: any) => Asset.fromSingleEntry(asset)));
-        },
-    });
-
-    const readAllAssets = useContractRead({
-        address: assetsContractAddress,
-        abi: assetsAbi,
-        functionName: "readAllAssets",
-        onSuccess: (data: Object[]) => {
-            let assets = [];
-
-            for (let i = 0; i < data.length; i++) {
-                assets.push(Asset.fromSingleEntry(data[i]));
-            }
-
-            setAllAssets(assets);
-        },
-    });
-
-    const readAssetsByHolder = useContractRead({
-        address: assetsContractAddress,
-        abi: assetsAbi,
-        functionName: "readAssetsByHolder",
-        args: [session?.data?.user?.address],
-        onError: (error) => {
-            console.log("readAssetsByHolder() => ", error);
-        },
-        onSuccess: (data: Object[]) => {
-            let assets = [];
-
-            for (let i = 0; i < data.length; i++) {
-                assets.push(Asset.fromSingleEntry(data[i]));
-            }
-
-            setUserAssets(assets);
-        },
-    });
+export default function AssetsPage({ user, allAssets, shares }: any) {
+    const userAssets = allAssets.filter((asset: any) =>
+        shares.find((share: any) => share.tokenId === asset.tokenId)
+    );
 
     return (
         <Box>
-            <Box minH="50vh">
-                <Heading fontSize="8xl" pb="2rem">
-                    Your Assets
-                </Heading>
+            {user && (
+                <Box minH="50vh">
+                    <Heading fontSize="8xl" pb="2rem">
+                        Your Assets
+                    </Heading>
 
-                <Box pb="2rem">
-                    <Link
-                        href="/assets/create"
-                        style={{ textDecoration: "none" }}
-                    >
-                        <Button
-                            rounded="xl"
-                            colorScheme="blue"
-                            size="lg"
-                            border="1px solid black"
+                    <Box pb="2rem">
+                        <Link
+                            href="/assets/create"
+                            style={{ textDecoration: "none" }}
                         >
-                            Tokenize your Asset
-                        </Button>
-                    </Link>
-                </Box>
+                            <Button
+                                rounded="xl"
+                                colorScheme="blue"
+                                size="lg"
+                                border="1px solid black"
+                            >
+                                Tokenize your Asset
+                            </Button>
+                        </Link>
+                    </Box>
 
-                {readAssetsByHolder.isError ? (
-                    <Text color="red">Error!</Text>
-                ) : readAssetsByHolder.isLoading ? (
-                    <Center>
-                        <Spinner size="xl" />
-                    </Center>
-                ) : assets && assets.length > 0 ? (
-                    <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {assets.map((asset) => (
-                            <AssetPreview asset={asset} />
-                        ))}
-                    </SimpleGrid>
-                ) : (
-                    <Center flexDir={"column"}>
-                        <Text>You don't own any assets yet.</Text>
-                        <Text fontWeight={"bold"}>Tokenize one now!</Text>
-                    </Center>
-                )}
-            </Box>
+                    {userAssets && userAssets.length > 0 ? (
+                        <SimpleGrid columns={[2, 3]} spacing="1rem">
+                            {userAssets.map((asset: any) => (
+                                <AssetPreview asset={asset} />
+                            ))}
+                        </SimpleGrid>
+                    ) : (
+                        <Center flexDir={"column"}>
+                            <Text>You don't own any assets yet.</Text>
+                            <Text fontWeight={"bold"}>Tokenize one now!</Text>
+                        </Center>
+                    )}
+                </Box>
+            )}
 
             <Box minH="50vh">
                 <Heading fontSize="8xl" pt="8rem" pb="2rem">
                     Explore Assets
                 </Heading>
 
-                {readAllAssets.isError ? (
-                    <Text color="red">Error!</Text>
-                ) : !allAssets ? (
+                {!allAssets ? (
                     <Center>
                         <Spinner size="xl" />
                     </Center>
                 ) : allAssets.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {allAssets.map((asset) => (
+                        {allAssets.map((asset: any) => (
                             <AssetPreview asset={asset} />
                         ))}
                     </SimpleGrid>

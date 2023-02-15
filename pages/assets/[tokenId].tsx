@@ -10,6 +10,7 @@ import {
     VStack,
 } from "@chakra-ui/react";
 import { useContractRead } from "wagmi";
+import { readContract } from "@wagmi/core";
 import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
 import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
 import {
@@ -20,62 +21,83 @@ import { useEffect, useState } from "react";
 import { Asset, AssetCategory } from "@/helpers/types";
 import AssetPreview from "@/components/AssetPreview";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import DeleteAssetButton from "@/components/Buttons/DeleteAssetButton";
 
-export default function AssetsPage() {
-    const session = useSession();
-    const router = useRouter();
-    const { tokenId } = router.query;
+export async function getServerSideProps(context: any) {
+    const session = await getSession(context);
+    const tokenId = context.params.tokenId;
 
-    const [asset, setAsset] = useState<Asset | null>(null);
-    const [assetOwner, setAssetOwner] = useState<string>("");
-    const [sharesBalance, setSharesBalance] = useState<number>(0);
-    const [sharesTotalSupply, setSharesTotalSupply] = useState<number>(0);
+    // redirect if not authenticated
+    if (!session || !tokenId) {
+        return {
+            redirect: {
+                destination: "/signin",
+                permanent: false,
+            },
+        };
+    }
 
-    const readAsset = useContractRead({
+    // read asset
+    const assetData = (await readContract({
         address: assetsContractAddress,
         abi: assetsAbi,
         functionName: "readAsset",
         args: [tokenId],
-        onSuccess: (data) => setAsset(Asset.fromSingleEntry(data)),
-    });
+    })) as any;
 
-    const ownerOf = useContractRead({
-        address: assetsContractAddress,
-        abi: assetsAbi,
-        functionName: "ownerOf",
-        args: [tokenId],
-        onSuccess: (data: any) => setAssetOwner(data),
-    });
+    const asset = Asset.fromSingleEntry(assetData);
 
-    const readSharesBalance = useContractRead({
+    // read balance and total supply of shares
+    const sharesBalanceData = (await readContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "balanceOf",
-        args: [session?.data?.user!.address, tokenId],
-        onError: (error) =>
-            console.log(
-                `balanceOf(${session?.data?.user!.address}, ${tokenId}) => `,
-                error
-            ),
-        onSuccess: (data: any) => {
-            const sharesBalance = parseInt(data._hex, 16);
-            console.log(sharesBalance);
-            setSharesBalance(parseInt(data._hex, 16));
-        },
-    });
+        args: [session.user?.address, tokenId],
+    })) as any;
 
-    const readSharesTotalSupply = useContractRead({
+    const sharesTotalSupplyData = (await readContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "totalSupply",
         args: [tokenId],
-        onError: (error) => console.log(`totalSupply(${tokenId}) => `, error),
-        onSuccess: (data: any) => {
-            setSharesTotalSupply(parseInt(data._hex, 16));
+    })) as any;
+
+    const sharesBalance = parseInt(sharesBalanceData._hex, 16);
+    const sharesTotalSupply = parseInt(sharesTotalSupplyData._hex, 16);
+
+    // read if user is major shareholder
+    const isMajorShareholderData = (await readContract({
+        address: assetsContractAddress,
+        abi: assetsAbi,
+        functionName: "ownerOf",
+        args: [tokenId],
+    })) as any;
+    console.log(isMajorShareholderData);
+
+    const isMajorShareholder = isMajorShareholderData === session.user?.address;
+
+    return {
+        props: {
+            user: session.user,
+            asset: JSON.parse(JSON.stringify(asset)),
+            sharesBalance,
+            sharesTotalSupply,
+            isMajorShareholder,
         },
-    });
+    };
+}
+
+export default function AssetsPage({
+    user,
+    asset,
+    sharesBalance,
+    sharesTotalSupply,
+    isMajorShareholder,
+}: any) {
+    const session = useSession();
+    const router = useRouter();
+    const tokenId = asset.tokenId;
 
     return (
         <Box>
@@ -113,67 +135,66 @@ export default function AssetsPage() {
                 {sharesTotalSupply > 1 ? "s" : ""}.
             </Text>
 
-            {session.status == "authenticated" &&
-                session.data?.user!.address && (
-                    <VStack pt="8rem" spacing="2rem" align="start">
-                        <HStack spacing="1rem">
-                            {sharesBalance > 0 && (
-                                <Button
-                                    variant="outline"
-                                    border="1px"
-                                    rounded="xl"
-                                    onClick={() =>
-                                        router.push(
-                                            "/shares/list?tokenId=" + tokenId
-                                        )
-                                    }
-                                >
-                                    List Shares
-                                </Button>
-                            )}
-
-                            {assetOwner == session.data.user.address && (
-                                <Button
-                                    variant="outline"
-                                    border="1px"
-                                    rounded="xl"
-                                    onClick={() =>
-                                        router.push(
-                                            "/shares/create?tokenId=" + tokenId
-                                        )
-                                    }
-                                >
-                                    Create Shares
-                                </Button>
-                            )}
-
-                            {sharesBalance > 0 && (
-                                <Button
-                                    colorScheme={"red"}
-                                    variant="ghost"
-                                    rounded="xl"
-                                    onClick={() =>
-                                        router.push(
-                                            "/shares/burn?tokenId=" + tokenId
-                                        )
-                                    }
-                                >
-                                    Burn Shares
-                                </Button>
-                            )}
-                        </HStack>
-
-                        {assetOwner == session.data.user.address && (
-                            <Button isDisabled rounded="xl">
-                                Update
+            {session.status == "authenticated" && user.address && (
+                <VStack pt="8rem" spacing="2rem" align="start">
+                    <HStack spacing="1rem">
+                        {sharesBalance > 0 && (
+                            <Button
+                                variant="outline"
+                                border="1px"
+                                rounded="xl"
+                                onClick={() =>
+                                    router.push(
+                                        "/shares/list?tokenId=" + tokenId
+                                    )
+                                }
+                            >
+                                List Shares
                             </Button>
                         )}
 
-                        {assetOwner == session.data.user.address && (
-                            <DeleteAssetButton tokenId={asset?.tokenId} />
+                        {isMajorShareholder && (
+                            <Button
+                                variant="outline"
+                                border="1px"
+                                rounded="xl"
+                                onClick={() =>
+                                    router.push(
+                                        "/shares/create?tokenId=" + tokenId
+                                    )
+                                }
+                            >
+                                Create Shares
+                            </Button>
                         )}
-                    </VStack>
-                )}
+
+                        {sharesBalance > 0 && (
+                            <Button
+                                colorScheme={"red"}
+                                variant="ghost"
+                                rounded="xl"
+                                onClick={() =>
+                                    router.push(
+                                        "/shares/burn?tokenId=" + tokenId
+                                    )
+                                }
+                            >
+                                Burn Shares
+                            </Button>
+                        )}
+                    </HStack>
+
+                    {isMajorShareholder && (
+                        <Button isDisabled rounded="xl">
+                            Update
+                        </Button>
+                    )}
+
+                    {isMajorShareholder && (
+                        <DeleteAssetButton tokenId={asset?.tokenId} />
+                    )}
+                </VStack>
+            )}
         </Box>
     );
 }

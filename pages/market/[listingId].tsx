@@ -9,8 +9,9 @@ import {
     Heading,
     Spinner,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useContractRead } from "wagmi";
+import { readContract } from "@wagmi/core";
 import { abi as marketAbi } from "@/helpers/BlockEstateMarket.json";
 import { AssetListing, SharesListing } from "@/helpers/types";
 import { useState } from "react";
@@ -19,29 +20,43 @@ import BuySharesButton from "@/components/Buttons/BuySharesButton";
 import DeleteSharesListingButton from "@/components/Buttons/DeleteSharesListingButton";
 import { ethers } from "ethers";
 
-export default function MarketPage() {
-    const router = useRouter();
-    const session = useSession();
+export async function getServerSideProps(context: any) {
+    const session = await getSession(context);
+    const listingId = context.params.listingId;
 
-    const { listingId } = router.query;
+    // redirect if not authenticated
+    if (!session || !listingId) {
+        return {
+            redirect: {
+                destination: "/signin",
+                permanent: false,
+            },
+        };
+    }
 
-    const [listing, setListing] = useState<SharesListing | null>(null);
-    const [isSeller, setIsSeller] = useState<boolean>(false);
-
-    const getListing = useContractRead({
+    // read listing data
+    const listingData = (await readContract({
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "sharesListings",
         args: [listingId],
-        onError: (error) => {
-            console.log("getListing() => ", error);
+    })) as any;
+
+    const listing = SharesListing.fromSingleEntry(listingData);
+    const isSeller = listing.seller == session.user?.address;
+
+    return {
+        props: {
+            user: session.user,
+            listing: JSON.parse(JSON.stringify(listing)),
+            isSeller,
         },
-        onSuccess: (data: Object) => {
-            const listing = SharesListing.fromSingleEntry(data);
-            setListing(listing);
-            setIsSeller(listing.seller == session?.data?.user?.address);
-        },
-    });
+    };
+}
+
+export default function MarketPage({ user, listing, isSeller }: any) {
+    const router = useRouter();
+    const session = useSession();
 
     return (
         <Box>
@@ -50,13 +65,7 @@ export default function MarketPage() {
                     Buy Shares
                 </Heading>
 
-                {getListing.isError ? (
-                    <Text color="red">Error!</Text>
-                ) : getListing.isLoading ? (
-                    <Center>
-                        <Spinner size="xl" />
-                    </Center>
-                ) : listing ? (
+                {listing ? (
                     <Box>
                         <Heading>BlockEstate Asset #{listing.tokenId}</Heading>
 
@@ -80,12 +89,9 @@ export default function MarketPage() {
 
                 <Center pt="4rem">
                     {!isSeller ? (
-                        <BuySharesButton
-                            listingId={listingId}
-                            price={listing ? listing.price : 0}
-                        />
+                        <BuySharesButton listing={listing} />
                     ) : (
-                        <DeleteSharesListingButton listingId={listingId} />
+                        <DeleteSharesListingButton listing={listing} />
                     )}
                 </Center>
             </Box>

@@ -9,60 +9,52 @@ import {
     Heading,
     Spinner,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useContractRead } from "wagmi";
+import { readContract } from "@wagmi/core";
 import { abi as marketAbi } from "@/helpers/BlockEstateMarket.json";
 import { AssetListing, SharesListing } from "@/helpers/types";
 import { useState } from "react";
 import ListingPreview from "@/components/ListingPreview";
 
-export default function MarketPage() {
-    const session = useSession();
+export async function getServerSideProps(context: any) {
+    const session = await getSession(context);
 
-    const [userListings, setUserListings] = useState<SharesListing[]>([]);
-    const [sharesListings, setSharesListings] = useState<SharesListing[]>([]);
+    // redirect if not authenticated
+    if (!session) {
+        return {
+            redirect: {
+                destination: "/signin",
+                permanent: false,
+            },
+        };
+    }
 
-    const readListingsByAccount = useContractRead({
-        address: marketContractAddress,
-        abi: marketAbi,
-        functionName: "readListingsByAccount",
-        args: [session?.data?.user?.address],
-        onError: (error) => {
-            console.log("readListingsByAccount() => ", error);
-        },
-        onSuccess: (data: Object[]) => {
-            let shareListings = [];
-
-            for (let i = 0; i < data.length; i++) {
-                shareListings.push(SharesListing.fromSingleEntry(data[i]));
-            }
-
-            setUserListings(
-                shareListings.filter((shareListing) => shareListing.tokenId > 0)
-            );
-        },
-    });
-
-    const readAllSharesListings = useContractRead({
+    // read all listings
+    const allListingsData = (await readContract({
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "readAllSharesListings",
         args: [],
-        onError: (error) => {
-            console.log("readAllSharesListings() => ", error);
-        },
-        onSuccess: (data: Object[]) => {
-            let shareListings = [];
+    })) as any;
 
-            for (let i = 0; i < data.length; i++) {
-                shareListings.push(SharesListing.fromSingleEntry(data[i]));
-            }
+    const allListings = allListingsData
+        .map((listingData: any) => SharesListing.fromSingleEntry(listingData))
+        .filter((listing: SharesListing) => listing.tokenId > 0);
 
-            setSharesListings(
-                shareListings.filter((shareListing) => shareListing.tokenId > 0)
-            );
+    return {
+        props: {
+            user: session.user,
+            allListings: JSON.parse(JSON.stringify(allListings)),
         },
-    });
+    };
+}
+
+export default function MarketPage({ user, allListings }: any) {
+    const session = useSession();
+    const userListings = allListings.filter(
+        (listing: SharesListing) => listing.seller === user.address
+    );
 
     return (
         <Box>
@@ -71,15 +63,9 @@ export default function MarketPage() {
                     Your Listings
                 </Heading>
 
-                {readListingsByAccount.isError ? (
-                    <Text color="red">Error!</Text>
-                ) : readListingsByAccount.isLoading ? (
-                    <Center>
-                        <Spinner size="xl" />
-                    </Center>
-                ) : userListings && userListings.length > 0 ? (
+                {userListings && userListings.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {userListings.map((sharesListing) => (
+                        {userListings.map((sharesListing: SharesListing) => (
                             <ListingPreview listing={sharesListing} />
                         ))}
                     </SimpleGrid>
@@ -98,15 +84,9 @@ export default function MarketPage() {
                     Explore Listings
                 </Heading>
 
-                {readAllSharesListings.isError ? (
-                    <Text color="red">Error!</Text>
-                ) : readAllSharesListings.isLoading ? (
-                    <Center>
-                        <Spinner size="xl" />
-                    </Center>
-                ) : sharesListings && sharesListings.length > 0 ? (
+                {allListings && allListings.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {sharesListings.map((sharesListing) => (
+                        {allListings.map((sharesListing: SharesListing) => (
                             <ListingPreview listing={sharesListing} />
                         ))}
                     </SimpleGrid>

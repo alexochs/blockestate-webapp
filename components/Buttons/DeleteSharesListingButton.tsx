@@ -30,7 +30,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 
-export default function DeleteSharesListingButton({ listingId }: any) {
+export default function DeleteSharesListingButton({ listing }: any) {
     const router = useRouter();
     const session = useSession();
 
@@ -42,7 +42,7 @@ export default function DeleteSharesListingButton({ listingId }: any) {
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "deleteSharesListing",
-        args: [listingId],
+        args: [listing.listingId],
     });
 
     const { data, error, isError, write } = useContractWrite(config);
