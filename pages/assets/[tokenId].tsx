@@ -1,6 +1,8 @@
 import {
     Box,
     Button,
+    Center,
+    Flex,
     GridItem,
     Heading,
     HStack,
@@ -23,6 +25,7 @@ import AssetPreview from "@/components/AssetPreview";
 import { useRouter } from "next/router";
 import { getSession, useSession } from "next-auth/react";
 import DeleteAssetButton from "@/components/Buttons/DeleteAssetButton";
+import ListingsCard from "@/components/ListingsCard";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -100,60 +103,66 @@ export default function AssetsPage({
     const tokenId = asset.tokenId;
 
     return (
-        <Box>
-            {!asset ? (
-                <Spinner size="xl" />
-            ) : (
-                <VStack spacing="12rem" align={"start"}>
-                    <Box>
-                        <Heading fontSize="8xl">
-                            {asset?.street + " " + asset?.number}
-                        </Heading>
-                        <Text fontSize="4xl">
-                            {asset?.city + ", " + asset?.country}
-                        </Text>
-                    </Box>
+        <Flex>
+            <Box w="65%">
+                {!asset ? (
+                    <Spinner size="xl" />
+                ) : (
+                    <VStack spacing="12rem" align={"start"}>
+                        <Box>
+                            <Heading fontSize="8xl">
+                                {asset?.street + " " + asset?.number}
+                            </Heading>
+                            <Text fontSize="4xl">
+                                {asset?.city + ", " + asset?.country}
+                            </Text>
+                        </Box>
 
-                    <Box>
-                        <Heading>
-                            {AssetCategory[asset?.category as AssetCategory]}
-                        </Heading>
-                        {asset?.category == AssetCategory.APARTMENT && (
-                            <Text>Nr. {asset?.apNumber}</Text>
-                        )}
-                    </Box>
-
-                    <Text fontSize="sm" color="gray.400">
-                        BlockEstate: #{asset?.tokenId}
-                    </Text>
-                </VStack>
-            )}
-
-            <Text>
-                You own {sharesBalance} out of {sharesTotalSupply} (
-                {((sharesBalance / sharesTotalSupply) * 100).toFixed(2)}%) Share
-                {sharesTotalSupply > 1 ? "s" : ""}.
-            </Text>
-
-            {session.status == "authenticated" && user.address && (
-                <VStack pt="8rem" spacing="2rem" align="start">
-                    <HStack spacing="1rem">
-                        {sharesBalance > 0 && (
-                            <Button
-                                variant="outline"
-                                border="1px"
-                                rounded="xl"
-                                onClick={() =>
-                                    router.push(
-                                        "/shares/list?tokenId=" + tokenId
-                                    )
+                        <Box>
+                            <Heading>
+                                {
+                                    AssetCategory[
+                                        asset?.category as AssetCategory
+                                    ]
                                 }
-                            >
-                                List Shares
-                            </Button>
-                        )}
+                            </Heading>
+                            {asset?.category == AssetCategory.APARTMENT && (
+                                <Text>Nr. {asset?.apNumber}</Text>
+                            )}
+                        </Box>
 
-                        {isMajorShareholder && (
+                        <Text fontSize="sm" color="gray.400">
+                            BlockEstate: #{asset?.tokenId}
+                        </Text>
+                    </VStack>
+                )}
+            </Box>
+
+            <Center w="35%">
+                <ListingsCard
+                    sharesBalance={sharesBalance}
+                    sharesTotalSupply={sharesTotalSupply}
+                />
+
+                {session.status == "authenticated" && user.address && (
+                    <VStack pt="8rem" spacing="2rem" align="start">
+                        <HStack spacing="1rem">
+                            {sharesBalance > 0 && (
+                                <Button
+                                    variant="outline"
+                                    border="1px"
+                                    rounded="xl"
+                                    onClick={() =>
+                                        router.push(
+                                            "/shares/list?tokenId=" + tokenId
+                                        )
+                                    }
+                                >
+                                    List Shares
+                                </Button>
+                            )}
+
+                            {/*isMajorShareholder && (
                             <Button
                                 variant="outline"
                                 border="1px"
@@ -166,9 +175,9 @@ export default function AssetsPage({
                             >
                                 Create Shares
                             </Button>
-                        )}
+                            )*/}
 
-                        {sharesBalance > 0 && (
+                            {/*sharesBalance > 0 && (
                             <Button
                                 colorScheme={"red"}
                                 variant="ghost"
@@ -181,20 +190,21 @@ export default function AssetsPage({
                             >
                                 Burn Shares
                             </Button>
-                        )}
-                    </HStack>
+                            )*/}
+                        </HStack>
 
-                    {isMajorShareholder && (
+                        {/*isMajorShareholder && (
                         <Button isDisabled rounded="xl">
                             Update
                         </Button>
-                    )}
+                    )*/}
 
-                    {isMajorShareholder && (
+                        {/*isMajorShareholder && (
                         <DeleteAssetButton tokenId={asset?.tokenId} />
-                    )}
-                </VStack>
-            )}
-        </Box>
+                    )*/}
+                    </VStack>
+                )}
+            </Center>
+        </Flex>
     );
 }

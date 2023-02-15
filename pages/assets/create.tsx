@@ -24,7 +24,7 @@ export default function CreateAssetPage() {
         <Box>
             <Heading>Create an Asset</Heading>
 
-            <FormControl pt="1rem" pb="2rem">
+            <FormControl pt="1rem" pb="4rem">
                 <FormLabel>Category</FormLabel>
                 <RadioGroup value={category} onChange={setCategory}>
                     <HStack spacing="2rem">
@@ -33,48 +33,68 @@ export default function CreateAssetPage() {
                     </HStack>
                 </RadioGroup>
 
-                <FormLabel pt="2rem">Street</FormLabel>
-                <Input
-                    type={"text"}
-                    value={street}
-                    onChange={(e) => setStreet(e.target.value)}
-                />
+                <HStack pt="2rem">
+                    <Box w="30%">
+                        <FormLabel>Street</FormLabel>
+                        <Input
+                            type={"text"}
+                            value={street}
+                            onChange={(e) => setStreet(e.target.value)}
+                        />
+                    </Box>
 
-                <FormLabel pt="2rem">Number</FormLabel>
-                <Input
-                    type={"number"}
-                    value={number}
-                    onChange={(e) => setNumber(e.target.valueAsNumber)}
-                />
+                    <Box w="30%">
+                        <FormLabel>Number</FormLabel>
+                        <Input
+                            type={"number"}
+                            value={number}
+                            onChange={(e) => setNumber(e.target.valueAsNumber)}
+                        />
+                    </Box>
 
-                <FormLabel pt="2rem">Apartment Number</FormLabel>
-                <Input
-                    isDisabled={category === "1"}
-                    type={"number"}
-                    value={apNumber}
-                    onChange={(e) => setApNumber(e.target.valueAsNumber)}
-                />
+                    {category === "0" && (
+                        <Box w="30%">
+                            <FormLabel>Apartment Number</FormLabel>
+                            <Input
+                                isDisabled={category === "1"}
+                                type={"number"}
+                                value={apNumber}
+                                onChange={(e) =>
+                                    setApNumber(e.target.valueAsNumber)
+                                }
+                            />
+                        </Box>
+                    )}
+                </HStack>
 
-                <FormLabel pt="2rem">City</FormLabel>
-                <Input
-                    type={"text"}
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                />
+                <HStack>
+                    <Box w="30%">
+                        <FormLabel pt="2rem">City</FormLabel>
+                        <Input
+                            type={"text"}
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                        />
+                    </Box>
 
-                <FormLabel pt="2rem">ZIP</FormLabel>
-                <Input
-                    type={"text"}
-                    value={zip}
-                    onChange={(e) => setZip(e.target.value)}
-                />
+                    <Box w="30%">
+                        <FormLabel pt="2rem">ZIP</FormLabel>
+                        <Input
+                            type={"text"}
+                            value={zip}
+                            onChange={(e) => setZip(e.target.value)}
+                        />
+                    </Box>
 
-                <FormLabel pt="2rem">Country</FormLabel>
-                <Input
-                    type={"text"}
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                />
+                    <Box w="30%">
+                        <FormLabel pt="2rem">Country</FormLabel>
+                        <Input
+                            type={"text"}
+                            value={country}
+                            onChange={(e) => setCountry(e.target.value)}
+                        />
+                    </Box>
+                </HStack>
             </FormControl>
 
             <CreateAssetButton
