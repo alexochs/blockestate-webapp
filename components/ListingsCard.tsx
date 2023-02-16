@@ -1,3 +1,4 @@
+import { SharesListing } from "@/helpers/types";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import {
     Box,
@@ -12,13 +13,21 @@ import {
     Center,
     Divider,
     Link,
+    VStack,
+    useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import ListSharesModal from "./ListSharesModal";
 
 export default function ListingsCard({
     sharesBalance,
     sharesTotalSupply,
 }: any) {
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
+    // get listings
+    const [listings, setListings] = useState<SharesListing[]>([]);
+
     return (
         <Box
             mx="1rem"
@@ -37,7 +46,72 @@ export default function ListingsCard({
                     Share
                     {sharesTotalSupply > 1 ? "s" : ""}.
                 </Text>
+
+                <Divider />
+
+                <VStack spacing="1rem">
+                    <Flex>
+                        <HStack spacing="1rem">
+                            <Text fontWeight="bold" fontSize="2xl">
+                                Listings
+                            </Text>
+
+                            <Button
+                                fontSize="sm"
+                                size="sm"
+                                colorScheme={"blue"}
+                                variant="ghost"
+                                rounded="2xl"
+                                onClick={onOpen}
+                            >
+                                Sell your Shares
+                            </Button>
+                        </HStack>
+                    </Flex>
+
+                    <VStack align={"start"} spacing="1rem">
+                        <HStack spacing="1rem">
+                            <Box>
+                                <Text fontSize="lg">
+                                    42 Shares @ $13,337.00
+                                </Text>
+                                <Text fontSize="xs">
+                                    ${(42 * 13337).toLocaleString()}
+                                </Text>
+                            </Box>
+
+                            <Button
+                                variant="outline"
+                                colorScheme="blue"
+                                rounded="xl"
+                            >
+                                Buy
+                            </Button>
+                        </HStack>
+
+                        <HStack spacing="1rem">
+                            <Box>
+                                <Text fontSize="lg">
+                                    11 Shares @ $19,420.00
+                                </Text>
+                                <Text fontSize="xs">
+                                    ${(11 * 19420).toLocaleString()}
+                                </Text>
+                            </Box>
+
+                            <Button
+                                variant="outline"
+                                colorScheme="blue"
+                                rounded="xl"
+                            >
+                                Buy
+                            </Button>
+                        </HStack>
+                    </VStack>
+                </VStack>
             </Stack>
+
+            <ListSharesModal isOpen={isOpen} onClose={onClose} />
         </Box>
     );
 }

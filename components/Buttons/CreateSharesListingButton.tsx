@@ -121,7 +121,7 @@ export default function CreateSharesListingButton({
                     onClick={() => {
                         write?.();
                     }}
-                    size="lg"
+                    size="md"
                 >
                     {session.data
                         ? `List your Shares`
@@ -137,7 +137,7 @@ export default function CreateSharesListingButton({
                     onClick={() => {
                         writeApprovalForAll.write?.();
                     }}
-                    size="lg"
+                    size="md"
                 >
                     {session.data
                         ? `Allow Market to transfer your Shares`

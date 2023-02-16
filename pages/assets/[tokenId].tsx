@@ -143,67 +143,6 @@ export default function AssetsPage({
                     sharesBalance={sharesBalance}
                     sharesTotalSupply={sharesTotalSupply}
                 />
-
-                {session.status == "authenticated" && user.address && (
-                    <VStack pt="8rem" spacing="2rem" align="start">
-                        <HStack spacing="1rem">
-                            {sharesBalance > 0 && (
-                                <Button
-                                    variant="outline"
-                                    border="1px"
-                                    rounded="xl"
-                                    onClick={() =>
-                                        router.push(
-                                            "/shares/list?tokenId=" + tokenId
-                                        )
-                                    }
-                                >
-                                    List Shares
-                                </Button>
-                            )}
-
-                            {/*isMajorShareholder && (
-                            <Button
-                                variant="outline"
-                                border="1px"
-                                rounded="xl"
-                                onClick={() =>
-                                    router.push(
-                                        "/shares/create?tokenId=" + tokenId
-                                    )
-                                }
-                            >
-                                Create Shares
-                            </Button>
-                            )*/}
-
-                            {/*sharesBalance > 0 && (
-                            <Button
-                                colorScheme={"red"}
-                                variant="ghost"
-                                rounded="xl"
-                                onClick={() =>
-                                    router.push(
-                                        "/shares/burn?tokenId=" + tokenId
-                                    )
-                                }
-                            >
-                                Burn Shares
-                            </Button>
-                            )*/}
-                        </HStack>
-
-                        {/*isMajorShareholder && (
-                        <Button isDisabled rounded="xl">
-                            Update
-                        </Button>
-                    )*/}
-
-                        {/*isMajorShareholder && (
-                        <DeleteAssetButton tokenId={asset?.tokenId} />
-                    )*/}
-                    </VStack>
-                )}
             </Center>
         </Flex>
     );
