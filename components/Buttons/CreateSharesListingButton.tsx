@@ -35,6 +35,7 @@ export default function CreateSharesListingButton({
     amount,
     price,
 }: any) {
+    console.log("CreateSharesListingButton", tokenId, amount, price);
     const router = useRouter();
     const session = useSession();
 
@@ -148,7 +149,7 @@ export default function CreateSharesListingButton({
             {isSuccess && <Text pt=".5rem">Successfully listed Shares!</Text>}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
-                    Error: {(prepareError || error)?.message}
+                    List Error: {(prepareError || error)?.message}
                 </Text>
             )}
 
@@ -157,7 +158,7 @@ export default function CreateSharesListingButton({
             )}
             {(prepareApprovalForAll.error || prepareApprovalForAll.isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
-                    Error:{" "}
+                    Approval Error:{" "}
                     {
                         (
                             prepareApprovalForAll.error ||

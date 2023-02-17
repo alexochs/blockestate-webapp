@@ -15,12 +15,14 @@ import { useContractRead } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
 import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
+import { abi as marketAbi } from "@/helpers/BlockEstateMarket.json";
 import {
     assetsContractAddress,
+    marketContractAddress,
     sharesContractAddress,
 } from "@/helpers/contractAddresses";
 import { useEffect, useState } from "react";
-import { Asset, AssetCategory } from "@/helpers/types";
+import { Asset, AssetCategory, SharesListing } from "@/helpers/types";
 import AssetPreview from "@/components/AssetPreview";
 import { useRouter } from "next/router";
 import { getSession, useSession } from "next-auth/react";
@@ -80,6 +82,19 @@ export async function getServerSideProps(context: any) {
 
     const isMajorShareholder = isMajorShareholderData === session.user?.address;
 
+    // read listings of asset
+    const listingsData = (await readContract({
+        address: marketContractAddress,
+        abi: marketAbi,
+        functionName: "readListingsByAsset",
+        args: [tokenId],
+    })) as any;
+
+    const listings = listingsData.map((listingData: any) =>
+        SharesListing.fromSingleEntry(listingData)
+    );
+
+    // return props to page
     return {
         props: {
             user: session.user,
@@ -87,6 +102,7 @@ export async function getServerSideProps(context: any) {
             sharesBalance,
             sharesTotalSupply,
             isMajorShareholder,
+            listings: JSON.parse(JSON.stringify(listings)),
         },
     };
 }
@@ -97,6 +113,7 @@ export default function AssetsPage({
     sharesBalance,
     sharesTotalSupply,
     isMajorShareholder,
+    listings,
 }: any) {
     const session = useSession();
     const router = useRouter();
@@ -140,8 +157,10 @@ export default function AssetsPage({
 
             <Center w="35%">
                 <ListingsCard
+                    tokenId={tokenId}
                     sharesBalance={sharesBalance}
                     sharesTotalSupply={sharesTotalSupply}
+                    listings={listings}
                 />
             </Center>
         </Flex>

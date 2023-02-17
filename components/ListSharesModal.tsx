@@ -13,17 +13,17 @@ import {
     useDisclosure,
     VStack,
     Text,
+    Flex,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import ListSharesButton from "@/components/Buttons/CreateSharesListingButton";
 
 export default function ListSharesModal({
     tokenId,
+    sharesBalance,
     isOpen,
-    onOpen,
     onClose,
 }: any) {
-    const [sharesBalance, setSharesBalance] = useState<number>(0);
     const [amount, setAmount] = useState<number>(1);
     const [price, setPrice] = useState<string>("1");
 
@@ -31,16 +31,12 @@ export default function ListSharesModal({
         <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Sell your Shares</ModalHeader>
+                <ModalHeader fontSize="4xl">Sell your Shares</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody pb={6}>
                     <VStack spacing="1rem">
-                        <Text textAlign={"start"} fontSize="4xl">
-                            You hold <b>{sharesBalance}</b> Shares.
-                        </Text>
-
                         <Center>
-                            <Text textAlign={"start"} fontSize="xl" pr="2rem">
+                            <Text textAlign={"start"} fontSize="lg" pr="2rem">
                                 Amount
                             </Text>
 
@@ -56,7 +52,7 @@ export default function ListSharesModal({
                         </Center>
 
                         <Center>
-                            <Text textAlign={"start"} fontSize="xl" pr="2rem">
+                            <Text textAlign={"start"} fontSize="lg" pr="2rem">
                                 Price (MATIC)
                             </Text>
 

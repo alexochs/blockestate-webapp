@@ -18,15 +18,17 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import ListSharesModal from "./ListSharesModal";
+import { ethers } from "ethers";
+import { useSession } from "next-auth/react";
 
 export default function ListingsCard({
+    tokenId,
     sharesBalance,
     sharesTotalSupply,
+    listings,
 }: any) {
+    const session = useSession();
     const { isOpen, onOpen, onClose } = useDisclosure();
-
-    // get listings
-    const [listings, setListings] = useState<SharesListing[]>([]);
 
     return (
         <Box
@@ -70,48 +72,63 @@ export default function ListingsCard({
                     </Flex>
 
                     <VStack align={"start"} spacing="1rem">
-                        <HStack spacing="1rem">
-                            <Box>
-                                <Text fontSize="lg">
-                                    42 Shares @ $13,337.00
-                                </Text>
-                                <Text fontSize="xs">
-                                    ${(42 * 13337).toLocaleString()}
-                                </Text>
-                            </Box>
-
-                            <Button
-                                variant="outline"
-                                colorScheme="blue"
-                                rounded="xl"
+                        {listings.map((listing: SharesListing) => (
+                            <HStack
+                                key={listing.listingId}
+                                spacing="1rem"
+                                w="100%"
+                                align="start"
                             >
-                                Buy
-                            </Button>
-                        </HStack>
+                                <Box>
+                                    <Text fontSize="lg">
+                                        {listing.amount} Share
+                                        {listing.amount > 1 ? "s" : ""} @{" "}
+                                        {(
+                                            listing.price /
+                                            10 ** 18 /
+                                            listing.amount
+                                        )
+                                            .toFixed(2)
+                                            .toString()}{" "}
+                                        MATIC
+                                    </Text>
 
-                        <HStack spacing="1rem">
-                            <Box>
-                                <Text fontSize="lg">
-                                    11 Shares @ $19,420.00
-                                </Text>
-                                <Text fontSize="xs">
-                                    ${(11 * 19420).toLocaleString()}
-                                </Text>
-                            </Box>
+                                    <Text fontSize="xs">
+                                        {(listing.price / 10 ** 18).toFixed(2)}{" "}
+                                        MATIC
+                                    </Text>
+                                </Box>
 
-                            <Button
-                                variant="outline"
-                                colorScheme="blue"
-                                rounded="xl"
-                            >
-                                Buy
-                            </Button>
-                        </HStack>
+                                {listing.seller ===
+                                session?.data.user.address ? (
+                                    <Button
+                                        variant="outline"
+                                        colorScheme="red"
+                                        rounded="xl"
+                                        size="sm"
+                                    >
+                                        Delete
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="outline"
+                                        colorScheme="blue"
+                                        rounded="xl"
+                                    >
+                                        Buy
+                                    </Button>
+                                )}
+                            </HStack>
+                        ))}
                     </VStack>
                 </VStack>
             </Stack>
 
-            <ListSharesModal isOpen={isOpen} onClose={onClose} />
+            <ListSharesModal
+                tokenId={tokenId}
+                isOpen={isOpen}
+                onClose={onClose}
+            />
         </Box>
     );
 }
