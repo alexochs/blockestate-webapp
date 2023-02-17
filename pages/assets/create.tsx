@@ -8,10 +8,14 @@ import {
     Input,
     Radio,
     RadioGroup,
+    Select,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import countryList from "country-list-js";
 
 export default function CreateAssetPage() {
+    const countries = countryList.names().sort();
+
     const [category, setCategory] = useState("0");
     const [street, setStreet] = useState("");
     const [number, setNumber] = useState(0);
@@ -82,17 +86,30 @@ export default function CreateAssetPage() {
                         <Input
                             type={"text"}
                             value={zip}
-                            onChange={(e) => setZip(e.target.value)}
+                            onChange={(e) => {
+                                if (
+                                    e.target.value.match(/^\d+$/) ||
+                                    e.target.value === ""
+                                )
+                                    setZip(e.target.value);
+                            }}
                         />
                     </Box>
 
                     <Box w="30%">
                         <FormLabel pt="2rem">Country</FormLabel>
-                        <Input
-                            type={"text"}
-                            value={country}
-                            onChange={(e) => setCountry(e.target.value)}
-                        />
+                        <Select
+                            onChange={(e) => {
+                                if (!countries.includes(e.target.value)) return;
+                                setCountry(e.target.value);
+                            }}
+                        >
+                            {countries.map((country: string) => (
+                                <option key={country} value={country}>
+                                    {country}
+                                </option>
+                            ))}
+                        </Select>
                     </Box>
                 </HStack>
             </FormControl>
