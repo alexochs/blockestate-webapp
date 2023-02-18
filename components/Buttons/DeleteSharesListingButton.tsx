@@ -49,6 +49,9 @@ export default function DeleteSharesListingButton({ listing }: any) {
 
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: data?.hash,
+        onSuccess: () => {
+            router.reload();
+        },
     });
 
     return (
@@ -68,7 +71,6 @@ export default function DeleteSharesListingButton({ listing }: any) {
                 {session.data ? `Remove` : `Connect to delete Listing`}
             </Button>
 
-            {isSuccess && <Text pt=".5rem">Successfully deleted Listing!</Text>}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
                     Error: {(prepareError || error)?.message}

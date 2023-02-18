@@ -11,6 +11,7 @@ function User({ user }: any) {
             <Button
                 rounded="xl"
                 colorScheme="red"
+                variant="ghost"
                 onClick={() =>
                     signOut({ redirect: true, callbackUrl: "/signin" })
                 }

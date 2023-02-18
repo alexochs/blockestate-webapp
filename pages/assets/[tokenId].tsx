@@ -90,9 +90,9 @@ export async function getServerSideProps(context: any) {
         args: [tokenId],
     })) as any;
 
-    const listings = listingsData.map((listingData: any) =>
-        SharesListing.fromSingleEntry(listingData)
-    );
+    const listings = listingsData
+        .map((listingData: any) => SharesListing.fromSingleEntry(listingData))
+        .filter((listing: SharesListing) => listing.tokenId != 0);
 
     // return props to page
     return {

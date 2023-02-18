@@ -15,10 +15,7 @@ export default function Navbar() {
             <Center flex={1}>
                 <HStack spacing="4rem">
                     <Link href="/assets">
-                        <Text>Assets</Text>
-                    </Link>
-                    <Link href="/market">
-                        <Text>Market</Text>
+                        <Text>Explore</Text>
                     </Link>
                 </HStack>
             </Center>

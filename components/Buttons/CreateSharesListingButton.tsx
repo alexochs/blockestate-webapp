@@ -56,6 +56,9 @@ export default function CreateSharesListingButton({
 
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: data?.hash,
+        onSuccess: () => {
+            router.reload();
+        },
     });
 
     const prepareApprovalForAll = usePrepareContractWrite({
@@ -92,24 +95,6 @@ export default function CreateSharesListingButton({
         },
     });
 
-    /*useContractEvent({
-        address: sharesContractAddress,
-        abi,
-        eventName: "TransferSingle",
-        listener(operator, from, to, id, amount) {
-            console.log("TransferSingle", operator, from, to, id, amount);
-            if (
-                (to == "0x0000000000000000000000000000000000000000" &&
-                    from == session.data?.user?.address &&
-                    id == tokenId,
-                amount == amount)
-            ) {
-                const _id = id as any;
-                router.push(`/assets/${parseInt(_id._hex, 16)}}`);
-            }
-        },
-    });*/
-
     return (
         <Center flexDir={"column"}>
             {isApprovedForAll ? (
@@ -140,9 +125,7 @@ export default function CreateSharesListingButton({
                     }}
                     size="md"
                 >
-                    {session.data
-                        ? `Allow Market to transfer your Shares`
-                        : `Connect to list Shares`}
+                    {session.data ? `Set Approval` : `Connect to list Shares`}
                 </Button>
             )}
 
@@ -154,7 +137,7 @@ export default function CreateSharesListingButton({
             )}
 
             {approvalForAllSuccess && (
-                <Text pt=".5rem">Approval successful!</Text>
+                <Text pt=".5rem">{/*Approval successful!*/}</Text>
             )}
             {(prepareApprovalForAll.error || prepareApprovalForAll.isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>

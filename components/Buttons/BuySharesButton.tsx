@@ -51,25 +51,10 @@ export default function BuySharesButton({ listing }: any) {
 
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: data?.hash,
-    });
-
-    /*useContractEvent({
-        address: sharesContractAddress,
-        abi,
-        eventName: "TransferSingle",
-        listener(operator, from, to, id, amount) {
-            console.log("TransferSingle", operator, from, to, id, amount);
-            if (
-                (to == "0x0000000000000000000000000000000000000000" &&
-                    from == session.data?.user?.address &&
-                    id == tokenId,
-                amount == amount)
-            ) {
-                const _id = id as any;
-                router.push(`/assets/${parseInt(_id._hex, 16)}}`);
-            }
+        onSuccess: () => {
+            router.reload();
         },
-    });*/
+    });
 
     return (
         <Center flexDir={"column"}>
@@ -77,17 +62,20 @@ export default function BuySharesButton({ listing }: any) {
                 isDisabled={!write || !session.data}
                 isLoading={isLoading}
                 colorScheme={"blue"}
-                border="rgb(0, 0, 0, 0.5)"
                 rounded="xl"
                 onClick={() => {
                     write?.();
                 }}
-                size="lg"
+                size="md"
+                variant="outline"
             >
-                {session.data ? `Buy Shares` : `Connect to buy Shares`}
+                {session.data
+                    ? isSuccess
+                        ? `Success`
+                        : `Buy`
+                    : `Connect to buy`}
             </Button>
 
-            {isSuccess && <Text pt=".5rem">Successfully bought Shares!</Text>}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
                     Error: {prepareError?.message}

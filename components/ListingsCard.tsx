@@ -21,6 +21,7 @@ import ListSharesModal from "./ListSharesModal";
 import { ethers } from "ethers";
 import { useSession } from "next-auth/react";
 import DeleteSharesListingButton from "./Buttons/DeleteSharesListingButton";
+import BuySharesButton from "./Buttons/BuySharesButton";
 
 export default function ListingsCard({
     tokenId,
@@ -72,50 +73,55 @@ export default function ListingsCard({
                         </HStack>
                     </Flex>
 
-                    <VStack align={"start"} spacing="1rem">
-                        {listings.map((listing: SharesListing) => (
-                            <HStack
-                                key={listing.listingId}
-                                spacing="1rem"
-                                w="100%"
-                                align="start"
-                            >
-                                <Box>
-                                    <Text fontSize="lg">
-                                        {listing.amount} Share
-                                        {listing.amount > 1 ? "s" : ""} @{" "}
-                                        {(
-                                            listing.price /
-                                            10 ** 18 /
-                                            listing.amount
-                                        )
-                                            .toFixed(2)
-                                            .toString()}{" "}
-                                        MATIC
-                                    </Text>
+                    <VStack spacing="1rem">
+                        {listings.length < 1 ? (
+                            <Text>
+                                There are currently no active listings for this
+                                asset!
+                            </Text>
+                        ) : (
+                            listings.map((listing: SharesListing) => (
+                                <HStack
+                                    key={listing.listingId}
+                                    spacing="1rem"
+                                    w="100%"
+                                    align="start"
+                                >
+                                    <Box>
+                                        <Text fontSize="lg">
+                                            {listing.amount} Share
+                                            {listing.amount > 1
+                                                ? "s"
+                                                : ""} @{" "}
+                                            {(
+                                                listing.price /
+                                                10 ** 18 /
+                                                listing.amount
+                                            )
+                                                .toFixed(2)
+                                                .toString()}{" "}
+                                            MATIC
+                                        </Text>
 
-                                    <Text fontSize="xs">
-                                        {(listing.price / 10 ** 18).toFixed(2)}{" "}
-                                        MATIC
-                                    </Text>
-                                </Box>
+                                        <Text fontSize="xs">
+                                            {(listing.price / 10 ** 18).toFixed(
+                                                2
+                                            )}{" "}
+                                            MATIC
+                                        </Text>
+                                    </Box>
 
-                                {listing.seller ===
-                                session?.data?.user?.address ? (
-                                    <DeleteSharesListingButton
-                                        listing={listing}
-                                    />
-                                ) : (
-                                    <Button
-                                        variant="outline"
-                                        colorScheme="blue"
-                                        rounded="xl"
-                                    >
-                                        Buy
-                                    </Button>
-                                )}
-                            </HStack>
-                        ))}
+                                    {listing.seller ===
+                                    session?.data?.user?.address ? (
+                                        <DeleteSharesListingButton
+                                            listing={listing}
+                                        />
+                                    ) : (
+                                        <BuySharesButton listing={listing} />
+                                    )}
+                                </HStack>
+                            ))
+                        )}
                     </VStack>
                 </VStack>
             </Stack>

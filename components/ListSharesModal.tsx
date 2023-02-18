@@ -53,7 +53,7 @@ export default function ListSharesModal({
 
                         <Center>
                             <Text textAlign={"start"} fontSize="lg" pr="2rem">
-                                Price (MATIC)
+                                USD
                             </Text>
 
                             <Input
