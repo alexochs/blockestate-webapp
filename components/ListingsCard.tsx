@@ -20,6 +20,7 @@ import { useState } from "react";
 import ListSharesModal from "./ListSharesModal";
 import { ethers } from "ethers";
 import { useSession } from "next-auth/react";
+import DeleteSharesListingButton from "./Buttons/DeleteSharesListingButton";
 
 export default function ListingsCard({
     tokenId,
@@ -100,15 +101,10 @@ export default function ListingsCard({
                                 </Box>
 
                                 {listing.seller ===
-                                session?.data.user.address ? (
-                                    <Button
-                                        variant="outline"
-                                        colorScheme="red"
-                                        rounded="xl"
-                                        size="sm"
-                                    >
-                                        Delete
-                                    </Button>
+                                session?.data?.user?.address ? (
+                                    <DeleteSharesListingButton
+                                        listing={listing}
+                                    />
                                 ) : (
                                     <Button
                                         variant="outline"

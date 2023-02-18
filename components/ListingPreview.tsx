@@ -21,9 +21,7 @@ export default function ListingPreview({ listing }: any) {
                 <Text fontSize="2xl">{_listing.amount + " Shares"}</Text>
 
                 <Text fontSize="2xl">
-                    {parseFloat(
-                        ethers.utils.formatEther(_listing.price.toString())
-                    ).toFixed(2) + " MATIC"}
+                    {(_listing.price / 10 ** 18).toFixed(2) + " MATIC"}
                 </Text>
 
                 <Text pt="1rem" fontSize="xs" color="gray.400">

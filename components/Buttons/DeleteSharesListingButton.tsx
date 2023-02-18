@@ -49,9 +49,6 @@ export default function DeleteSharesListingButton({ listing }: any) {
 
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: data?.hash,
-        onSuccess: () => {
-            router.push("/market");
-        },
     });
 
     return (
@@ -59,15 +56,16 @@ export default function DeleteSharesListingButton({ listing }: any) {
             <Button
                 isDisabled={!write || !session.data}
                 isLoading={isLoading}
-                colorScheme={"red"}
                 variant="ghost"
                 border="rgb(0, 0, 0, 0.5)"
+                colorScheme="red"
                 rounded="xl"
+                size="sm"
                 onClick={() => {
                     write?.();
                 }}
             >
-                {session.data ? `Delete Listing` : `Connect to delete Listing`}
+                {session.data ? `Remove` : `Connect to delete Listing`}
             </Button>
 
             {isSuccess && <Text pt=".5rem">Successfully deleted Listing!</Text>}
