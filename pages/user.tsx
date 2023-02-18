@@ -9,7 +9,7 @@ function User({ user }: any) {
             <Heading pb="2rem">{user.address}</Heading>
 
             <Button
-                rounded="xl"
+                rounded="full"
                 colorScheme="red"
                 variant="ghost"
                 onClick={() =>

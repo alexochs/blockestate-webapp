@@ -14,7 +14,7 @@ export default function Auth() {
         <Spinner size="md" />
     ) : session.status == "unauthenticated" ? (
         <Button
-            rounded="xl"
+            rounded="full"
             colorScheme="blue"
             onClick={() => router.push("/signin")}
         >
@@ -23,7 +23,7 @@ export default function Auth() {
     ) : (
         <Button
             onClick={() => router.push("/user")}
-            rounded="xl"
+            rounded="full"
             colorScheme="blue"
             variant="outline"
         >

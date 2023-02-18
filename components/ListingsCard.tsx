@@ -32,6 +32,8 @@ export default function ListingsCard({
     const session = useSession();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
+    const usdDecimal = 10 ** 6;
+
     return (
         <Box
             mx="1rem"
@@ -65,7 +67,7 @@ export default function ListingsCard({
                                 size="sm"
                                 colorScheme={"blue"}
                                 variant="ghost"
-                                rounded="2xl"
+                                rounded="full"
                                 onClick={onOpen}
                             >
                                 Sell your Shares
@@ -95,19 +97,17 @@ export default function ListingsCard({
                                                 : ""} @{" "}
                                             {(
                                                 listing.price /
-                                                10 ** 18 /
+                                                usdDecimal /
                                                 listing.amount
-                                            )
-                                                .toFixed(2)
-                                                .toString()}{" "}
-                                            MATIC
+                                            ).toLocaleString()}{" "}
+                                            USDC
                                         </Text>
 
                                         <Text fontSize="xs">
-                                            {(listing.price / 10 ** 18).toFixed(
-                                                2
-                                            )}{" "}
-                                            MATIC
+                                            {(
+                                                listing.price / usdDecimal
+                                            ).toLocaleString()}{" "}
+                                            USDC
                                         </Text>
                                     </Box>
 

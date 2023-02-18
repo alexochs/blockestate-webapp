@@ -69,7 +69,7 @@ export default function BurnSharesButton({ tokenId, amount }: any) {
                 isLoading={isLoading}
                 colorScheme={"red"}
                 border="rgb(0, 0, 0, 0.5)"
-                rounded="xl"
+                rounded="full"
                 onClick={() => {
                     write?.();
                 }}

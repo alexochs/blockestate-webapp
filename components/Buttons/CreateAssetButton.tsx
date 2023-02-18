@@ -78,8 +78,7 @@ export default function CreateAssetButton({
                 onClick={() => write?.()}
                 size="lg"
                 colorScheme="blue"
-                rounded="xl"
-                border="1px solid black"
+                rounded="full"
             >
                 {session.data ? "Create Asset" : "Connect to create Asset"}
             </Button>

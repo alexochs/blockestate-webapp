@@ -49,7 +49,7 @@ export default function CreateSharesListingButton({
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "createSharesListing",
-        args: [tokenId, ethers.utils.parseEther(price.toString()), amount],
+        args: [tokenId, price * 10 ** 6, amount],
     });
 
     const { data, error, isError, write } = useContractWrite(config);
@@ -103,7 +103,7 @@ export default function CreateSharesListingButton({
                     isLoading={isLoading}
                     colorScheme={"blue"}
                     border="rgb(0, 0, 0, 0.5)"
-                    rounded="xl"
+                    rounded="full"
                     onClick={() => {
                         write?.();
                     }}
@@ -119,7 +119,7 @@ export default function CreateSharesListingButton({
                     isLoading={approvalForAllLoading}
                     colorScheme={"blue"}
                     border="rgb(0, 0, 0, 0.5)"
-                    rounded="xl"
+                    rounded="full"
                     onClick={() => {
                         writeApprovalForAll.write?.();
                     }}

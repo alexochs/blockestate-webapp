@@ -56,7 +56,7 @@ export default function CreateSharesButton({
                 isLoading={isLoading}
                 colorScheme={"blue"}
                 border="rgb(0, 0, 0, 0.5)"
-                rounded="xl"
+                rounded="full"
                 onClick={() => {
                     console.log(recipients);
                     console.log(amounts);

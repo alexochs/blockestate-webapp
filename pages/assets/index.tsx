@@ -111,12 +111,7 @@ export default function AssetsPage({ user, allAssets, shares }: any) {
                             href="/assets/create"
                             style={{ textDecoration: "none" }}
                         >
-                            <Button
-                                rounded="xl"
-                                colorScheme="blue"
-                                size="lg"
-                                border="1px solid black"
-                            >
+                            <Button rounded="full" size="lg" variant="outline">
                                 Tokenize your Asset
                             </Button>
                         </Link>

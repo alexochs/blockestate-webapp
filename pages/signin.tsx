@@ -58,9 +58,10 @@ function SignIn() {
 
                 <Button
                     onClick={() => handleAuth(new MetaMaskConnector())}
-                    rounded="xl"
+                    rounded="full"
                     w="16rem"
                     size="lg"
+                    variant="outline"
                 >
                     Metamask
                 </Button>
@@ -73,9 +74,10 @@ function SignIn() {
                             })
                         )
                     }
-                    rounded="xl"
+                    rounded="full"
                     w="16rem"
                     size="lg"
+                    variant="outline"
                 >
                     WalletConnect
                 </Button>
@@ -92,9 +94,10 @@ function SignIn() {
                             })
                         )
                     }
-                    rounded="xl"
+                    rounded="full"
                     w="16rem"
                     size="lg"
+                    variant="outline"
                 >
                     Coinbase
                 </Button>
@@ -107,9 +110,10 @@ function SignIn() {
                             })
                         )
                     }
-                    rounded="xl"
+                    rounded="full"
                     w="16rem"
                     size="lg"
+                    variant="outline"
                 >
                     Ledger
                 </Button>

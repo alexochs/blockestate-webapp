@@ -57,7 +57,7 @@ export default function CreateAssetButton({ tokenId }: any) {
                 isLoading={isLoading}
                 onClick={() => write?.()}
                 colorScheme="red"
-                rounded="xl"
+                rounded="full"
                 variant="ghost"
             >
                 Delete Asset

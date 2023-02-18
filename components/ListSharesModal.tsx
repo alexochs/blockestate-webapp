@@ -25,7 +25,7 @@ export default function ListSharesModal({
     onClose,
 }: any) {
     const [amount, setAmount] = useState<number>(1);
-    const [price, setPrice] = useState<string>("1");
+    const [price, setPrice] = useState<number>(0);
 
     return (
         <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
@@ -59,7 +59,9 @@ export default function ListSharesModal({
                             <Input
                                 type="number"
                                 value={price}
-                                onChange={(e) => setPrice(e.target.value)}
+                                onChange={(e) =>
+                                    setPrice(e.target.valueAsNumber)
+                                }
                             />
                         </Center>
                     </VStack>

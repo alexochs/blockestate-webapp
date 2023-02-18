@@ -54,7 +54,7 @@ export default function CreateAssetListingButton({ tokenId, price }: any) {
                 onClick={() => write?.()}
                 size="lg"
                 colorScheme="blue"
-                rounded="xl"
+                rounded="full"
                 border="1px solid black"
             >
                 {session.data ? "Create Listing" : "Connect to create Listing"}

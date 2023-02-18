@@ -15,15 +15,18 @@ import Moralis from "moralis";
 import { useSession } from "next-auth/react";
 import {
     useContractEvent,
+    useContractRead,
     useContractWrite,
     usePrepareContractWrite,
     useWaitForTransaction,
 } from "wagmi";
 import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
 import { abi as marketAbi } from "@/helpers/BlockEstateMarket.json";
+import { abi as usdTokenAbi } from "@/helpers/USDToken.json";
 import {
     sharesContractAddress,
     marketContractAddress,
+    usdTokenAddress,
 } from "@/helpers/contractAddresses";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -32,6 +35,8 @@ import { ethers } from "ethers";
 export default function BuySharesButton({ listing }: any) {
     const router = useRouter();
     const session = useSession();
+
+    const [allowance, setAllowance] = useState(0);
 
     const {
         config,
@@ -42,8 +47,8 @@ export default function BuySharesButton({ listing }: any) {
         abi: marketAbi,
         functionName: "purchaseSharesListing",
         args: [listing.listingId],
-        overrides: {
-            value: listing.price.toString(),
+        onError: (error) => {
+            console.log("preparePurchaseShares() => ", error);
         },
     });
 
@@ -56,30 +61,76 @@ export default function BuySharesButton({ listing }: any) {
         },
     });
 
+    const getAllowance = useContractRead({
+        address: usdTokenAddress,
+        abi: usdTokenAbi,
+        functionName: "allowance",
+        args: [session.data?.user?.address, marketContractAddress],
+        onError: (error) => {
+            console.log("allowance() => ", error);
+        },
+        onSuccess: (data: any) => {
+            setAllowance(data);
+        },
+    });
+
+    const prepareApproval = usePrepareContractWrite({
+        address: usdTokenAddress,
+        abi: usdTokenAbi,
+        functionName: "approve",
+        args: [marketContractAddress, listing.price],
+        onError: (error) => {
+            console.log("prepareApproval() => ", error);
+        },
+    });
+
+    const writeApproval = useContractWrite(prepareApproval.config);
+
+    const txApproval = useWaitForTransaction({
+        hash: writeApproval.data?.hash,
+        onSuccess: () => {
+            router.reload();
+        },
+    });
+
     return (
         <Center flexDir={"column"}>
-            <Button
-                isDisabled={!write || !session.data}
-                isLoading={isLoading}
-                colorScheme={"blue"}
-                rounded="xl"
-                onClick={() => {
-                    write?.();
-                }}
-                size="md"
-                variant="outline"
-            >
-                {session.data
-                    ? isSuccess
-                        ? `Success`
-                        : `Buy`
-                    : `Connect to buy`}
-            </Button>
-
-            {(isPrepareError || isError) && (
-                <Text pt=".5rem" maxW={"90vw"}>
-                    Error: {prepareError?.message}
-                </Text>
+            {allowance < listing.price ? (
+                <Button
+                    isDisabled={!writeApproval.write || !session.data}
+                    isLoading={txApproval.isLoading}
+                    colorScheme={"blue"}
+                    rounded="full"
+                    onClick={() => {
+                        writeApproval.write?.();
+                    }}
+                    size="md"
+                    variant="outline"
+                >
+                    {session.data
+                        ? writeApproval.error
+                            ? "Error"
+                            : `Approve`
+                        : `Connect to buy`}
+                </Button>
+            ) : (
+                <Button
+                    isDisabled={!write || !session.data}
+                    isLoading={isLoading}
+                    colorScheme={"blue"}
+                    rounded="full"
+                    onClick={() => {
+                        write?.();
+                    }}
+                    size="md"
+                    variant="outline"
+                >
+                    {session.data
+                        ? isSuccess
+                            ? `Success`
+                            : `Buy`
+                        : `Connect to buy`}
+                </Button>
             )}
         </Center>
     );

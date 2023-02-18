@@ -62,7 +62,7 @@ export default function DeleteSharesListingButton({ listing }: any) {
                 variant="ghost"
                 border="rgb(0, 0, 0, 0.5)"
                 colorScheme="red"
-                rounded="xl"
+                rounded="full"
                 size="sm"
                 onClick={() => {
                     write?.();
