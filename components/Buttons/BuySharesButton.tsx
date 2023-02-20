@@ -105,7 +105,6 @@ export default function BuySharesButton({ listing }: any) {
                         writeApproval.write?.();
                     }}
                     size="md"
-                    variant="outline"
                 >
                     {session.data
                         ? writeApproval.error
@@ -123,7 +122,6 @@ export default function BuySharesButton({ listing }: any) {
                         write?.();
                     }}
                     size="md"
-                    variant="outline"
                 >
                     {session.data
                         ? isSuccess

@@ -119,4 +119,40 @@ class SharesListing {
     }
 }
 
-export { Asset, AssetCategory, AssetListing, SharesListing };
+class GroupInvestment {
+    investmentId: number;
+    listingId: number;
+    investors: string[];
+    sharesAmounts: number[];
+    accepted: string[];
+    isActive: boolean;
+
+    constructor(
+        investmentId: number,
+        listingId: number,
+        investors: string[],
+        sharesAmounts: number[],
+        accepted: string[],
+        isActive: boolean
+    ) {
+        this.investmentId = investmentId;
+        this.listingId = listingId;
+        this.investors = investors;
+        this.sharesAmounts = sharesAmounts;
+        this.accepted = accepted;
+        this.isActive = isActive;
+    }
+
+    static fromSingleEntry(entry: any): GroupInvestment {
+        return new GroupInvestment(
+            parseInt(entry[0]._hex, 16),
+            parseInt(entry[1]._hex, 16),
+            entry[2],
+            entry[3],
+            entry[4],
+            entry[5]
+        );
+    }
+}
+
+export { Asset, AssetCategory, AssetListing, SharesListing, GroupInvestment };

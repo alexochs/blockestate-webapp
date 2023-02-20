@@ -41,6 +41,7 @@ export default function CreateAssetPage() {
                     <Box w="30%">
                         <FormLabel>Street</FormLabel>
                         <Input
+                            rounded="full"
                             type={"text"}
                             value={street}
                             onChange={(e) => setStreet(e.target.value)}
@@ -50,6 +51,7 @@ export default function CreateAssetPage() {
                     <Box w="30%">
                         <FormLabel>Number</FormLabel>
                         <Input
+                            rounded="full"
                             type={"number"}
                             value={number}
                             onChange={(e) => setNumber(e.target.valueAsNumber)}
@@ -60,6 +62,7 @@ export default function CreateAssetPage() {
                         <Box w="30%">
                             <FormLabel>Apartment Number</FormLabel>
                             <Input
+                                rounded="full"
                                 isDisabled={category === "1"}
                                 type={"number"}
                                 value={apNumber}
@@ -75,6 +78,7 @@ export default function CreateAssetPage() {
                     <Box w="30%">
                         <FormLabel pt="2rem">City</FormLabel>
                         <Input
+                            rounded="full"
                             type={"text"}
                             value={city}
                             onChange={(e) => setCity(e.target.value)}
@@ -84,6 +88,7 @@ export default function CreateAssetPage() {
                     <Box w="30%">
                         <FormLabel pt="2rem">ZIP</FormLabel>
                         <Input
+                            rounded="full"
                             type={"text"}
                             value={zip}
                             onChange={(e) => {
@@ -99,6 +104,7 @@ export default function CreateAssetPage() {
                     <Box w="30%">
                         <FormLabel pt="2rem">Country</FormLabel>
                         <Select
+                            rounded="full"
                             onChange={(e) => {
                                 if (!countries.includes(e.target.value)) return;
                                 setCountry(e.target.value);

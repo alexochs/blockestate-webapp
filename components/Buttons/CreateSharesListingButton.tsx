@@ -129,12 +129,12 @@ export default function CreateSharesListingButton({
                 </Button>
             )}
 
-            {isSuccess && <Text pt=".5rem">Successfully listed Shares!</Text>}
+            {/*{isSuccess && <Text pt=".5rem">Successfully listed Shares!</Text>}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
                     List Error: {(prepareError || error)?.message}
                 </Text>
-            )}
+            )}*/}
 
             {approvalForAllSuccess && (
                 <Text pt=".5rem">{/*Approval successful!*/}</Text>

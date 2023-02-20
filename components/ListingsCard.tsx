@@ -1,4 +1,4 @@
-import { SharesListing } from "@/helpers/types";
+import { GroupInvestment, SharesListing } from "@/helpers/types";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import {
     Box,
@@ -17,20 +17,47 @@ import {
     useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import ListSharesModal from "./ListSharesModal";
+import ListSharesModal from "./Modals/ListSharesModal";
 import { ethers } from "ethers";
 import { useSession } from "next-auth/react";
 import DeleteSharesListingButton from "./Buttons/DeleteSharesListingButton";
 import BuySharesButton from "./Buttons/BuySharesButton";
+import CreateGroupInvestmentButton from "./Buttons/CreateGroupInvestmentButton";
+import CreateGroupInvestmentModal from "./Modals/CreateGroupInvestmentModal";
+import ViewGroupInvestmentModal from "./Modals/ViewGroupInvestmentModal";
 
 export default function ListingsCard({
     tokenId,
     sharesBalance,
     sharesTotalSupply,
     listings,
+    userGroupInvestments,
 }: any) {
     const session = useSession();
-    const { isOpen, onOpen, onClose } = useDisclosure();
+
+    const {
+        isOpen: listSharesModalIsOpen,
+        onOpen: listSharesModalOnOpen,
+        onClose: listSharesModalOnClose,
+    } = useDisclosure();
+
+    const {
+        isOpen: createGroupInvestmentModalIsOpen,
+        onOpen: createGroupInvestmentModalOnOpen,
+        onClose: createGroupInvestmentModalOnClose,
+    } = useDisclosure();
+
+    const {
+        isOpen: viewGroupInvestmentModalIsOpen,
+        onOpen: viewGroupInvestmentModalOnOpen,
+        onClose: viewGroupInvestmentModalOnClose,
+    } = useDisclosure();
+
+    const [selectedListing, setSelectedListing] =
+        useState<SharesListing | null>();
+
+    const [selectedGroupInvestment, setSelectedGroupInvestment] =
+        useState<GroupInvestment | null>();
 
     const usdDecimal = 10 ** 6;
 
@@ -55,7 +82,7 @@ export default function ListingsCard({
 
                 <Divider />
 
-                <VStack spacing="1rem">
+                <Stack spacing="1rem">
                     <Flex>
                         <HStack spacing="1rem">
                             <Text fontWeight="bold" fontSize="2xl">
@@ -68,7 +95,7 @@ export default function ListingsCard({
                                 colorScheme={"blue"}
                                 variant="ghost"
                                 rounded="full"
-                                onClick={onOpen}
+                                onClick={listSharesModalOnOpen}
                             >
                                 Sell your Shares
                             </Button>
@@ -83,33 +110,24 @@ export default function ListingsCard({
                             </Text>
                         ) : (
                             listings.map((listing: SharesListing) => (
-                                <HStack
-                                    key={listing.listingId}
-                                    spacing="1rem"
-                                    w="100%"
-                                    align="start"
-                                >
-                                    <Box>
-                                        <Text fontSize="lg">
-                                            {listing.amount} Share
-                                            {listing.amount > 1
-                                                ? "s"
-                                                : ""} @{" "}
-                                            {(
-                                                listing.price /
-                                                usdDecimal /
-                                                listing.amount
-                                            ).toLocaleString()}{" "}
-                                            USDC
-                                        </Text>
+                                <Box key={listing.listingId} w="100%">
+                                    <Text fontSize="lg">
+                                        {listing.amount} Share
+                                        {listing.amount > 1 ? "s" : ""} @{" "}
+                                        {(
+                                            listing.price /
+                                            usdDecimal /
+                                            listing.amount
+                                        ).toLocaleString()}{" "}
+                                        USDC
+                                    </Text>
 
-                                        <Text fontSize="xs">
-                                            {(
-                                                listing.price / usdDecimal
-                                            ).toLocaleString()}{" "}
-                                            USDC
-                                        </Text>
-                                    </Box>
+                                    <Text fontSize="xs">
+                                        {(
+                                            listing.price / usdDecimal
+                                        ).toLocaleString()}{" "}
+                                        USDC
+                                    </Text>
 
                                     {listing.seller ===
                                     session?.data?.user?.address ? (
@@ -117,19 +135,80 @@ export default function ListingsCard({
                                             listing={listing}
                                         />
                                     ) : (
-                                        <BuySharesButton listing={listing} />
+                                        <HStack pt=".5rem">
+                                            <BuySharesButton
+                                                listing={listing}
+                                            />
+
+                                            {userGroupInvestments.filter(
+                                                (gi: any) =>
+                                                    gi.listingId ===
+                                                    listing.listingId
+                                            ).length < 1 ? (
+                                                <Button
+                                                    rounded="full"
+                                                    colorScheme="blue"
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        setSelectedListing(
+                                                            listing
+                                                        );
+                                                        createGroupInvestmentModalOnOpen();
+                                                    }}
+                                                >
+                                                    Create Group Investment
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    rounded="full"
+                                                    colorScheme="blue"
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        setSelectedListing(
+                                                            listing
+                                                        );
+
+                                                        setSelectedGroupInvestment(
+                                                            userGroupInvestments.filter(
+                                                                (gi: any) =>
+                                                                    gi.listingId ===
+                                                                    listing.listingId
+                                                            )[0]
+                                                        );
+
+                                                        viewGroupInvestmentModalOnOpen();
+                                                    }}
+                                                >
+                                                    View Group Investment
+                                                </Button>
+                                            )}
+                                        </HStack>
                                     )}
-                                </HStack>
+                                </Box>
                             ))
                         )}
                     </VStack>
-                </VStack>
+                </Stack>
             </Stack>
 
             <ListSharesModal
                 tokenId={tokenId}
-                isOpen={isOpen}
-                onClose={onClose}
+                isOpen={listSharesModalIsOpen}
+                onClose={listSharesModalOnClose}
+            />
+
+            <CreateGroupInvestmentModal
+                listing={selectedListing}
+                selectedListing={selectedListing}
+                isOpen={createGroupInvestmentModalIsOpen}
+                onClose={createGroupInvestmentModalOnClose}
+            />
+
+            <ViewGroupInvestmentModal
+                listing={selectedListing}
+                groupInvestment={selectedGroupInvestment}
+                isOpen={viewGroupInvestmentModalIsOpen}
+                onClose={viewGroupInvestmentModalOnClose}
             />
         </Box>
     );

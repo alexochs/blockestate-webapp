@@ -22,7 +22,12 @@ import {
     sharesContractAddress,
 } from "@/helpers/contractAddresses";
 import { useEffect, useState } from "react";
-import { Asset, AssetCategory, SharesListing } from "@/helpers/types";
+import {
+    Asset,
+    AssetCategory,
+    GroupInvestment,
+    SharesListing,
+} from "@/helpers/types";
 import AssetPreview from "@/components/AssetPreview";
 import { useRouter } from "next/router";
 import { getSession, useSession } from "next-auth/react";
@@ -94,6 +99,21 @@ export async function getServerSideProps(context: any) {
         .map((listingData: any) => SharesListing.fromSingleEntry(listingData))
         .filter((listing: SharesListing) => listing.tokenId != 0);
 
+    // read all group investments
+    const groupInvestmentsData = (await readContract({
+        address: marketContractAddress,
+        abi: marketAbi,
+        functionName: "readAllGroupInvestments",
+    })) as any;
+
+    const groupInvestments = groupInvestmentsData
+        .map((groupInvestmentData: any) =>
+            GroupInvestment.fromSingleEntry(groupInvestmentData)
+        )
+        .filter((groupInvestment: GroupInvestment) =>
+            groupInvestment.investors.includes(session?.user?.address)
+        );
+
     // return props to page
     return {
         props: {
@@ -103,6 +123,7 @@ export async function getServerSideProps(context: any) {
             sharesTotalSupply,
             isMajorShareholder,
             listings: JSON.parse(JSON.stringify(listings)),
+            userGroupInvestments: JSON.parse(JSON.stringify(groupInvestments)),
         },
     };
 }
@@ -114,6 +135,7 @@ export default function AssetsPage({
     sharesTotalSupply,
     isMajorShareholder,
     listings,
+    userGroupInvestments,
 }: any) {
     const session = useSession();
     const router = useRouter();
@@ -161,6 +183,7 @@ export default function AssetsPage({
                     sharesBalance={sharesBalance}
                     sharesTotalSupply={sharesTotalSupply}
                     listings={listings}
+                    userGroupInvestments={userGroupInvestments}
                 />
             </Center>
         </Flex>
