@@ -111,7 +111,7 @@ export default function ListingsCard({
                         ) : (
                             listings.map((listing: SharesListing) => (
                                 <Box key={listing.listingId} w="100%">
-                                    <Text fontSize="lg">
+                                    <Text fontSize="lg" fontWeight="bold">
                                         {listing.amount} Share
                                         {listing.amount > 1 ? "s" : ""} @{" "}
                                         {(
@@ -122,13 +122,19 @@ export default function ListingsCard({
                                         USDC
                                     </Text>
 
-                                    <Text fontSize="xs">
-                                        {(
-                                            listing.price / usdDecimal
-                                        ).toLocaleString()}{" "}
-                                        USDC
-                                    </Text>
+                                    <Box>
+                                        <Text fontSize="sm">
+                                            {(
+                                                listing.price / usdDecimal
+                                            ).toLocaleString()}{" "}
+                                            USDC
+                                        </Text>
 
+                                        <Text fontSize="xs">
+                                            Sold by {listing.seller.slice(0, 6)}
+                                            ...{listing.seller.slice(-4)}
+                                        </Text>
+                                    </Box>
                                     {listing.seller ===
                                     session?.data?.user?.address ? (
                                         <DeleteSharesListingButton

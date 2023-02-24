@@ -85,6 +85,8 @@ export default function CreateSharesListingButton({
         abi: sharesAbi,
         functionName: "isApprovedForAll",
         args: [session.data?.user?.address, marketContractAddress],
+        watch: true,
+        cacheTime: 2_000,
         onError: (error) => {
             console.log("isApprovedForAll() => ", error);
         },

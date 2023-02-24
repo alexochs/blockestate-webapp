@@ -9,6 +9,12 @@ import {
     Radio,
     RadioGroup,
     Select,
+    Slider,
+    SliderFilledTrack,
+    SliderMark,
+    SliderThumb,
+    SliderTrack,
+    Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import countryList from "country-list-js";
@@ -23,6 +29,7 @@ export default function CreateAssetPage() {
     const [city, setCity] = useState("");
     const [zip, setZip] = useState("");
     const [country, setCountry] = useState("");
+    const [sharesOption, setSharesOption] = useState(0);
 
     return (
         <Box>
@@ -118,6 +125,37 @@ export default function CreateAssetPage() {
                         </Select>
                     </Box>
                 </HStack>
+
+                <Box mb="1rem">
+                    <FormLabel pt="2rem" pb="4rem">
+                        Amount of Shares
+                    </FormLabel>
+                    <Slider
+                        defaultValue={sharesOption}
+                        min={0}
+                        max={5}
+                        step={1}
+                        onChange={(val) => setSharesOption(val)}
+                    >
+                        <SliderMark
+                            value={sharesOption}
+                            textAlign="center"
+                            bg="blue.500"
+                            color="white"
+                            mt="-16"
+                            ml={-2 * sharesOption}
+                            p={2}
+                            rounded="full"
+                        >
+                            {(100 * 10 ** sharesOption).toLocaleString()}
+                        </SliderMark>
+                        <SliderTrack bg="blue.100">
+                            <Box position="relative" right={10} />
+                            <SliderFilledTrack bg="blue.400" />
+                        </SliderTrack>
+                        <SliderThumb boxSize={8} />
+                    </Slider>
+                </Box>
             </FormControl>
 
             <CreateAssetButton
