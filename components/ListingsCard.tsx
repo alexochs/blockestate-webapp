@@ -63,14 +63,12 @@ export default function ListingsCard({
 
     return (
         <Box
-            mx="1rem"
-            p="1.5rem"
             rounded={"3xl"}
             border={"1px solid rgb(100, 100, 100)"}
             bgGradient="linear(to-br, rgb(255, 255, 255, 0.2), rgb(255, 255, 255, 0.1))"
             backdropFilter={"blur(0.25rem)"}
-            position="sticky"
-            top={"20vh"}
+            mx="1rem"
+            p="1.5rem"
         >
             <Stack spacing={"1rem"}>
                 <Text>

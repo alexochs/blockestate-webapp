@@ -14,48 +14,31 @@ import { EvmChain } from "@moralisweb3/common-evm-utils";
 import Moralis from "moralis";
 import { useSession } from "next-auth/react";
 import {
-    useContractEvent,
     useContractWrite,
     usePrepareContractWrite,
     useWaitForTransaction,
 } from "wagmi";
-import { abi } from "@/helpers/BlockEstateAssets.json";
-import { assetsContractAddress } from "@/helpers/contractAddresses";
-import { useState } from "react";
+import { abi as rentalsAbi } from "@/helpers/BlockEstateRentals.json";
+import {
+    assetsContractAddress,
+    rentalsContractAddress,
+} from "@/helpers/contractAddresses";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-export default function CreateAssetButton({
-    category,
-    street,
-    apNumber,
-    number,
-    city,
-    zip,
-    country,
-    sharesOption,
-}: any) {
-    const router = useRouter();
+export default function SetRentableButton({ tokenId }: any) {
     const session = useSession();
-    const functionName = "createAsset";
+    const router = useRouter();
 
     const {
         config,
         error: prepareError,
         isError: isPrepareError,
     } = usePrepareContractWrite({
-        address: assetsContractAddress,
-        abi,
-        functionName,
-        args: [
-            category,
-            street,
-            number,
-            apNumber,
-            city,
-            zip,
-            country,
-            sharesOption,
-        ],
+        address: rentalsContractAddress,
+        abi: rentalsAbi,
+        functionName: "setRentable",
+        args: [tokenId, true, 150 * 10 ** 6],
     });
 
     const { data, error, isError, write } = useContractWrite(config);
@@ -64,33 +47,19 @@ export default function CreateAssetButton({
         hash: data?.hash,
     });
 
-    useContractEvent({
-        address: assetsContractAddress,
-        abi,
-        eventName: "Transfer",
-        listener(from, to, tokenId) {
-            console.log("Transfer", from, to, tokenId);
-            if (from == "0x0000000000000000000000000000000000000000") {
-                const _tokenId = tokenId as any;
-                router.push(`/assets/${parseInt(_tokenId._hex)}`);
-            }
-        },
-    });
-
     return (
         <Center flexDir={"column"}>
             <Button
                 isDisabled={!write || !session.data}
                 isLoading={isLoading}
                 onClick={() => write?.()}
-                size="lg"
                 colorScheme="blue"
                 rounded="full"
+                variant="outline"
             >
-                {session.data ? "Create Asset" : "Connect to create Asset"}
+                Set Rentable
             </Button>
 
-            {isSuccess && <Text pt=".5rem">Successfully created Asset!</Text>}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"90vw"}>
                     Error: {(prepareError || error)?.message}

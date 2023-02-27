@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { useAuthRequestChallengeEvm } from "@moralisweb3/next";
 import { Box, Button, Center, Heading, VStack } from "@chakra-ui/react";
 import { useState } from "react";
-import { polygonMumbai } from "wagmi/chains";
+import { baseGoerli, polygonMumbai } from "wagmi/chains";
 
 function SignIn() {
     const { connectAsync } = useConnect();
@@ -106,7 +106,7 @@ function SignIn() {
                     onClick={() =>
                         handleAuth(
                             new LedgerConnector({
-                                chains: [polygonMumbai],
+                                chains: [baseGoerli],
                             })
                         )
                     }

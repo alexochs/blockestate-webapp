@@ -33,6 +33,7 @@ import { useRouter } from "next/router";
 import { getSession, useSession } from "next-auth/react";
 import DeleteAssetButton from "@/components/Buttons/DeleteAssetButton";
 import ListingsCard from "@/components/ListingsCard";
+import RentalsCard from "@/components/RentalsCard";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -177,7 +178,7 @@ export default function AssetsPage({
                 )}
             </Box>
 
-            <Center w="35%">
+            <Center w="35%" position="sticky" top={"20vh"} flexDir="column">
                 <ListingsCard
                     tokenId={tokenId}
                     sharesBalance={sharesBalance}
@@ -185,6 +186,10 @@ export default function AssetsPage({
                     listings={listings}
                     userGroupInvestments={userGroupInvestments}
                 />
+
+                <Box py="1rem" />
+
+                <RentalsCard tokenId={tokenId} />
             </Center>
         </Flex>
     );

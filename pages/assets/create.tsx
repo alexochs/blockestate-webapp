@@ -166,6 +166,7 @@ export default function CreateAssetPage() {
                 city={city}
                 zip={zip}
                 country={country}
+                sharesOption={sharesOption}
             />
         </Box>
     );
