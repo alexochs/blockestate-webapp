@@ -106,7 +106,7 @@ function SignIn() {
                     onClick={() =>
                         handleAuth(
                             new LedgerConnector({
-                                chains: [baseGoerli],
+                                chains: [polygonMumbai],
                             })
                         )
                     }

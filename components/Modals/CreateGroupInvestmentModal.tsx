@@ -1,21 +1,22 @@
-import {
-    Box,
-    Button,
-    Center,
-    Input,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    useDisclosure,
-    VStack,
-    Text,
-    Flex,
-    HStack,
-} from "@chakra-ui/react";
+import
+    {
+        Box,
+        Button,
+        Center,
+        Input,
+        Modal,
+        ModalBody,
+        ModalCloseButton,
+        ModalContent,
+        ModalFooter,
+        ModalHeader,
+        ModalOverlay,
+        useDisclosure,
+        VStack,
+        Text,
+        Flex,
+        HStack,
+    } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import ListSharesButton from "@/components/Buttons/CreateSharesListingButton";
 import { useSession } from "next-auth/react";
@@ -26,7 +27,8 @@ export default function CreateGroupInvestmentModal({
     listing,
     isOpen,
     onClose,
-}: any) {
+}: any)
+{
     const session = useSession();
 
     const [investors, setInvestors] = useState<string[]>([
@@ -36,8 +38,10 @@ export default function CreateGroupInvestmentModal({
         listing ? listing.amount : 0,
     ]);
 
-    useEffect(() => {
-        if (listing) {
+    useEffect(() =>
+    {
+        if (listing)
+        {
             setInvestors([session.data?.user!.address]);
             setSharesAmounts([listing.amount]);
         }
@@ -53,9 +57,10 @@ export default function CreateGroupInvestmentModal({
                 <ModalCloseButton rounded="full" />
                 <ModalBody pb={6}>
                     <VStack spacing="1rem">
-                        {investors.map((investor, index) => {
+                        {investors.map((investor, index) =>
+                        {
                             return (
-                                <HStack w="90%">
+                                <HStack key={index} w="90%">
                                     <Input
                                         border="1px solid rgb(0, 0, 0, 0.4)"
                                         rounded="full"
@@ -94,7 +99,8 @@ export default function CreateGroupInvestmentModal({
 
                                     {index > 0 && (
                                         <Button
-                                            onClick={() => {
+                                            onClick={() =>
+                                            {
                                                 setInvestors(
                                                     investors.filter(
                                                         (_, i) => i !== index
@@ -124,7 +130,8 @@ export default function CreateGroupInvestmentModal({
                             color="rgb(0, 0, 0, 0.5)"
                             variant="ghost"
                             rounded="full"
-                            onClick={() => {
+                            onClick={() =>
+                            {
                                 setInvestors([...investors, ""]);
                                 setSharesAmounts([...sharesAmounts, 1]);
                             }}

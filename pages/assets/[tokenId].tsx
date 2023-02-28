@@ -1,4 +1,5 @@
-import {
+import
+{
     Box,
     Button,
     Center,
@@ -16,15 +17,20 @@ import { readContract } from "@wagmi/core";
 import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
 import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
 import { abi as marketAbi } from "@/helpers/BlockEstateMarket.json";
-import {
+import { abi as rentalsAbi } from "@/helpers/BlockEstateRentals.json";
+import
+{
     assetsContractAddress,
     marketContractAddress,
     sharesContractAddress,
+    rentalsContractAddress,
 } from "@/helpers/contractAddresses";
 import { useEffect, useState } from "react";
-import {
+import
+{
     Asset,
     AssetCategory,
+    FixedRental,
     GroupInvestment,
     SharesListing,
 } from "@/helpers/types";
@@ -35,12 +41,14 @@ import DeleteAssetButton from "@/components/Buttons/DeleteAssetButton";
 import ListingsCard from "@/components/ListingsCard";
 import RentalsCard from "@/components/RentalsCard";
 
-export async function getServerSideProps(context: any) {
+export async function getServerSideProps(context: any)
+{
     const session = await getSession(context);
     const tokenId = context.params.tokenId;
 
     // redirect if not authenticated
-    if (!session || !tokenId) {
+    if (!session || !tokenId)
+    {
         return {
             redirect: {
                 destination: "/signin",
@@ -115,6 +123,15 @@ export async function getServerSideProps(context: any) {
             groupInvestment.investors.includes(session?.user?.address)
         );
 
+    // read rentals of asset
+    const fixedRentalsData = (await readContract({
+        address: rentalsContractAddress,
+        abi: rentalsAbi,
+        functionName: "readFixedRentalsByToken",
+        args: [tokenId],
+    })) as any;
+    const fixedRentals = fixedRentalsData.map((entry: any) => new FixedRental(entry));
+
     // return props to page
     return {
         props: {
@@ -125,6 +142,7 @@ export async function getServerSideProps(context: any) {
             isMajorShareholder,
             listings: JSON.parse(JSON.stringify(listings)),
             userGroupInvestments: JSON.parse(JSON.stringify(groupInvestments)),
+            fixedRentals: JSON.parse(JSON.stringify(fixedRentals)),
         },
     };
 }
@@ -137,7 +155,9 @@ export default function AssetsPage({
     isMajorShareholder,
     listings,
     userGroupInvestments,
-}: any) {
+    fixedRentals,
+}: any)
+{
     const session = useSession();
     const router = useRouter();
     const tokenId = asset.tokenId;
@@ -162,7 +182,7 @@ export default function AssetsPage({
                             <Heading>
                                 {
                                     AssetCategory[
-                                        asset?.category as AssetCategory
+                                    asset?.category as AssetCategory
                                     ]
                                 }
                             </Heading>
@@ -189,7 +209,7 @@ export default function AssetsPage({
 
                 <Box py="1rem" />
 
-                <RentalsCard tokenId={tokenId} />
+                <RentalsCard tokenId={tokenId} sharesBalance={sharesBalance} fixedRentals={fixedRentals} />
             </Center>
         </Flex>
     );

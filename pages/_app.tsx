@@ -10,7 +10,7 @@ import Moralis from "moralis";
 import Layout from "@/components/Layout/Layout";
 
 const { provider, webSocketProvider, chains } = configureChains(
-    [baseGoerli],
+    [polygonMumbai],
     [publicProvider()]
 );
 
