@@ -29,17 +29,15 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-export default function CreateFixedRentalButton({
+export default function CreateMonthlyRentalButton({
     tokenId,
-    checkinDate,
-    checkoutDate,
 }: any) {
     const session = useSession();
     const router = useRouter();
 
-    const [allowance, setAllowance] = useState(0);
+    const [allowance, setAllowance] = useState(1_000_000 * 10 ** 6);
 
-    // createFixedRental 
+    // createMonthlyRental 
 
     const {
         config,
@@ -48,8 +46,8 @@ export default function CreateFixedRentalButton({
     } = usePrepareContractWrite({
         address: rentalsContractAddress,
         abi: rentalsAbi,
-        functionName: "createFixedRental",
-        args: [tokenId, Math.round(checkinDate.getTime() / 1000), (checkoutDate.getTime() - checkinDate.getTime()) / (1000 * 60 * 60 * 24)],
+        functionName: "createMonthlyRental",
+        args: [tokenId, Math.round((Date.now() + 24 * 360 * 1000) / 1000)],
     });
 
     const { data, error, isError, write } = useContractWrite(config);
@@ -110,7 +108,7 @@ export default function CreateFixedRentalButton({
 
     return (
         <Center flexDir={"column"}>
-            {allowance >= 100_000 * 10 ** 6 ?
+            {allowance >= 0 * 10 ** 6 ?
                 <Button
                     isDisabled={!write || !session.data}
                     isLoading={isLoading}
@@ -119,7 +117,7 @@ export default function CreateFixedRentalButton({
                     rounded="full"
                     variant="solid"
                 >
-                    Rent
+                    Apply for rental
                 </Button> :
                 <Button
                     isDisabled={!writeAllowance || !session.data}
@@ -129,15 +127,15 @@ export default function CreateFixedRentalButton({
                     rounded="full"
                     variant="outline"
                 >
-                    Allowance
+                    Approve USD
                 </Button>}
 
-            {/*{isSuccess && <Text pt=".5rem">Successfully deleted Asset!</Text>}
+            {isSuccess && <Text pt=".5rem">Successfully requested rental!</Text>}
             {(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"32rem"}>
                     Error: {(prepareError || error)?.message}
                 </Text>
-            )}*/}
+            )}
         </Center>
     );
 }

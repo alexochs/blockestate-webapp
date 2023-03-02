@@ -1,7 +1,7 @@
-const assetsContractAddress = "0x1554a720Dc8Bcb4E83f445bC95Fb22BaF239733F";
-const sharesContractAddress = "0x31776991207b8104787fC3391510af1E617E5faB";
-const marketContractAddress = "0x9008b9B45A58fC5a861ecD27E75208d9EF2Cfa12";
-const rentalsContractAddress = "0x1294ca0A8BF1C712aC20C91D797Ca7b65A8D8eE0";
+const assetsContractAddress = "0x9C77e7470dbe29e31f41b718ba317761470C36F3";
+const sharesContractAddress = "0xaA17e5FE4EA03f99C1262639A174A565d1bA3946";
+const marketContractAddress = "0x80AaaD4F25C7E10298Ad9C00653A6C93A497Ae74";
+const rentalsContractAddress = "0xbF69Ebb315fc3dFE3963D0ADf527fdc358989708";
 
 const usdTokenAddress = "0xeA916e1f4D62e7A5e124d6fF5237cB484eC11Bcd";
 

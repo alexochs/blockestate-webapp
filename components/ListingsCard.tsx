@@ -69,6 +69,7 @@ export default function ListingsCard({
             backdropFilter={"blur(0.25rem)"}
             mx="1rem"
             p="1.5rem"
+            w="24rem"
         >
             <Stack spacing={"1rem"}>
                 <Text>
@@ -134,7 +135,7 @@ export default function ListingsCard({
                                         </Text>
                                     </Box>
                                     {listing.seller ===
-                                    session?.data?.user?.address ? (
+                                        session?.data?.user?.address ? (
                                         <DeleteSharesListingButton
                                             listing={listing}
                                         />

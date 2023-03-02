@@ -1,23 +1,13 @@
-import { Button, Center, Heading } from "@chakra-ui/react";
+import { Button, Center, Heading, Text } from "@chakra-ui/react";
 import { getSession, signOut } from "next-auth/react";
 
 // gets a prop from getServerSideProps
 function User({ user }: any) {
     return (
-        <Center h="80vh" flexDir="column">
+        <Center h="70vh" flexDir="column">
             <Heading fontSize="8xl">Hello 👋</Heading>
-            <Heading pb="2rem">{user.address}</Heading>
 
-            <Button
-                rounded="full"
-                colorScheme="red"
-                variant="ghost"
-                onClick={() =>
-                    signOut({ redirect: true, callbackUrl: "/signin" })
-                }
-            >
-                Sign out
-            </Button>
+            <Text pt="2rem" pb="2rem" fontSize="4xl">{user.address.slice(0, 8) + "..."}</Text>
         </Center>
     );
 }

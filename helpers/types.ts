@@ -172,8 +172,8 @@ class FixedRental {
         this.rentalId = parseInt(entry[0]._hex, 16);
         this.tokenId = parseInt(entry[1]._hex, 16);
         this.renter = entry[2];
-        this.start = parseInt(entry[3]._hex, 16);
-        this.end = parseInt(entry[4]._hex, 16);
+        this.start = parseInt(entry[3]._hex, 16) * 1000;
+        this.end = parseInt(entry[4]._hex, 16) * 1000;
         this.price = parseInt(entry[5]._hex, 16);
         this.votes = parseInt(entry[6]._hex, 16);
         this.approved = entry[7];
@@ -181,4 +181,26 @@ class FixedRental {
     }
 }
 
-export { Asset, AssetCategory, AssetListing, SharesListing, GroupInvestment, FixedRental };
+class MonthlyRental {
+    rentalId: number;
+    tokenId: number;
+    renter: string;
+    start: number;
+    votes: number;
+    approved: string[];
+    isApproved: boolean;
+
+    constructor(
+        entry: any
+    ) {
+        this.rentalId = parseInt(entry[0]._hex, 16);
+        this.tokenId = parseInt(entry[1]._hex, 16);
+        this.renter = entry[2];
+        this.start = parseInt(entry[3]._hex, 16) * 1000;
+        this.votes = parseInt(entry[4]._hex, 16);
+        this.approved = entry[5];
+        this.isApproved = entry[6];
+    }
+}
+
+export { Asset, AssetCategory, AssetListing, SharesListing, GroupInvestment, FixedRental, MonthlyRental };
