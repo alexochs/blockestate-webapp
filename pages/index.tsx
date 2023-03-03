@@ -1,7 +1,8 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
-import { Button, Center, Flex, Heading, Link, Text, VStack } from "@chakra-ui/react";
+import { Button, Center, Flex, Heading, HStack, Icon, Link, Text, VStack } from "@chakra-ui/react";
+import { FaHome } from "react-icons/fa";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,10 +23,17 @@ export default function Home() {
             </Head>
             <main>
                 <Center h="80vh" flexDir="column">
-                    <Flex>
-                        <Heading fontSize="8xl">Block</Heading>
-                        <Heading fontSize="8xl" color="blue.500">Estate</Heading>
-                    </Flex>
+                    <HStack spacing="1rem">
+                        <Icon as={FaHome} w="8rem" h="8rem" bg="blue.500" p=".75rem" rounded="full" color="white" />
+                        <Flex>
+                            <Heading fontSize="8xl">
+                                Block
+                            </Heading >
+                            <Heading color="blue.500" fontSize="8xl">
+                                Estate
+                            </Heading >
+                        </Flex>
+                    </HStack>
 
                     <VStack spacing=".5rem" fontSize="3xl" pt="2rem" color="gray.600">
                         <Text>Invest in real estate.</Text>

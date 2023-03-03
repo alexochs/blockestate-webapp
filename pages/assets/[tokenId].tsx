@@ -10,6 +10,8 @@ import {
     Spinner,
     Text,
     VStack,
+    Image,
+    Stack,
 } from "@chakra-ui/react";
 import { useContractRead } from "wagmi";
 import { readContract } from "@wagmi/core";
@@ -32,7 +34,7 @@ import {
     MonthlyRental,
     SharesListing,
 } from "@/helpers/types";
-import AssetPreview from "@/components/AssetPreview";
+import AssetPreview from "@/components/AssetPreviewCard";
 import { useRouter } from "next/router";
 import { getSession, useSession } from "next-auth/react";
 import DeleteAssetButton from "@/components/Buttons/DeleteAssetButton";
@@ -207,63 +209,41 @@ export default function AssetsPage({
     const tokenId = asset.tokenId;
 
     return (
-        <Flex>
-            <Box w="65%">
-                {!asset ? (
-                    <Spinner size="xl" />
-                ) : (
-                    <VStack spacing="12rem" align={"start"}>
-                        <Box>
-                            <Heading fontSize="8xl">
-                                {asset?.street + " " + asset?.number}
-                            </Heading>
-                            <Text fontSize="4xl">
-                                {asset?.city + ", " + asset?.country}
-                            </Text>
-                        </Box>
+        <Box>
+            <Flex>
+                <Image
+                    src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/0cf46569-a5cd-4aa0-bbbd-156162c84e7e.jpeg"
+                    fit="cover"
+                    h="60vh"
+                    w="50%"
+                    roundedLeft="3xl"
+                    pr=".25rem"
+                />
 
-                        <Box>
-                            <Heading>
-                                {
-                                    AssetCategory[
-                                    asset?.category as AssetCategory
-                                    ]
-                                }
-                            </Heading>
-                            {asset?.category == AssetCategory.APARTMENT && (
-                                <Text>Nr. {asset?.apNumber}</Text>
-                            )}
-                        </Box>
+                <Flex flexDir="column" px=".25rem" w="25%">
+                    <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/e5596519-efcf-4a65-bd12-3191ebd33ee6.jpeg" fit="cover" h="30vh" pb=".5rem" />
+                    <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/a4a94c93-df0c-45db-90fe-2ee46654df8d.jpeg" fit="cover" h="30vh" />
+                </Flex>
 
-                        <Text fontSize="sm" color="gray.400">
-                            BlockEstate: #{asset?.tokenId}
-                        </Text>
-                    </VStack>
+                <Flex flexDir="column" pl=".25rem" w="25%">
+                    <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/6c5c0a5e-ea60-417d-8c1c-cdcdaa0d0c21.jpeg?im_w=720" fit="cover" h="30vh" pb=".5rem" roundedRight={"3xl"} />
+                    <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/44777246-61ff-408c-be6d-f1c9262e340e.jpeg?im_w=720" fit="cover" h="30vh" roundedRight={"3xl"} />
+                </Flex>
+            </Flex>
+
+            <Box>
+                <Heading fontSize="8xl">
+                    {asset?.street + " " + asset?.number}
+                </Heading>
+
+                <Text fontSize="5xl" color="gray.600">
+                    {asset?.city + ", " + asset?.country}
+                </Text>
+
+                {asset?.category == AssetCategory.APARTMENT && (
+                    <Text fontSize="2xl" color="gray.500">Apartment {asset?.apNumber}</Text>
                 )}
             </Box>
-
-            <Center w="35%" position="sticky" top={"20vh"} flexDir="column">
-                <ListingsCard
-                    tokenId={tokenId}
-                    sharesBalance={sharesBalance}
-                    sharesTotalSupply={sharesTotalSupply}
-                    listings={listings}
-                    userGroupInvestments={userGroupInvestments}
-                />
-
-                <Box py="1rem" />
-
-                <RentalsCard
-                    tokenId={tokenId}
-                    sharesBalance={sharesBalance}
-                    fixedRentals={fixedRentals}
-                    isRentable={isRentable}
-                    pricePerDay={pricePerDay}
-                    monthlyRentals={monthlyRentals}
-                    isMonthlyRentable={isMonthlyRentable}
-                    pricePerMonth={pricePerMonth}
-                />
-            </Center>
-        </Flex>
+        </Box >
     );
 }

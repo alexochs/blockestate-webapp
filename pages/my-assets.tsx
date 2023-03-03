@@ -5,7 +5,7 @@ import { abi as assetsAbi } from "helpers/BlockEstateAssets.json";
 import { getSession } from "next-auth/react";
 import { Asset } from "@/helpers/types";
 import { readContract } from "@wagmi/core";
-import AssetPreview from "@/components/AssetPreview";
+import AssetPreview from "@/components/AssetPreviewCard";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);

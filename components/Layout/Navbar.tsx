@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
-import { FaHouseUser, FaMoon, FaUser, FaUserCircle, FaLanguage, FaChevronRight, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { FaHouseUser, FaMoon, FaUser, FaUserCircle, FaLanguage, FaChevronRight, FaCog, FaSignOutAlt, FaHome } from "react-icons/fa";
 import Auth from "../Auth";
 
 export default function Navbar() {
@@ -32,10 +32,17 @@ export default function Navbar() {
         >
             <Center flex={1}>
                 <Link href="/" style={{ textDecoration: "none" }}>
-                    <Heading>
-                        Block < span style={{ color: "#3182CE" }
-                        }> Estate</span >
-                    </Heading >
+                    <HStack>
+                        <Icon as={FaHome} w="3rem" h="3rem" bg="blue.500" p=".35rem" rounded="full" color="white" />
+                        <Flex>
+                            <Heading>
+                                Block
+                            </Heading >
+                            <Heading color="blue.500">
+                                Estate
+                            </Heading >
+                        </Flex>
+                    </HStack>
                 </Link >
             </Center >
 

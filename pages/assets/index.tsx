@@ -19,7 +19,7 @@ import {
 } from "@/helpers/contractAddresses";
 import { useEffect, useState } from "react";
 import { Asset } from "@/helpers/types";
-import AssetPreview from "@/components/AssetPreview";
+import AssetPreview from "@/components/AssetPreviewCard";
 import { getSession, useSession } from "next-auth/react";
 
 export async function getServerSideProps(context: any) {
