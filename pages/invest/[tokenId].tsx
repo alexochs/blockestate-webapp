@@ -215,7 +215,7 @@ export async function getServerSideProps(context: any) {
     };
 }
 
-export default function AssetsPage({
+export default function RentAssetsPage({
     user,
     asset,
     sharesBalance,

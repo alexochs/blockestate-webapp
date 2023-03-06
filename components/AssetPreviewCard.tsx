@@ -6,11 +6,11 @@ export default function AssetPreview({ asset }: any) {
 
     return (
         <Link
-            href={"/assets/" + _asset.tokenId}
+            href={"/invest/" + _asset.tokenId}
             style={{ textDecoration: "none" }}
-            _hover={{ transform: "scale(1.05)" }}
+            _hover={{ transform: "scale(1.025)" }}
         >
-            <Card rounded="3xl" w="20vw">
+            <Card rounded="3xl" w="25vw" _hover={{ background: "gray.100" }}>
                 <CardHeader p="0">
                     <Image src="https://cdn.fertighauswelt.de/85c04f5301d5d668cbbfb45e848a68a5ab7bfb6d/villa-bauen.jpg" roundedTop="3xl" h="16rem" fit="cover" />
                 </CardHeader>

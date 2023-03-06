@@ -77,7 +77,7 @@ export async function getServerSideProps(context: any) {
     return {
         props: {
             user: session.user,
-            userAssets,
+            userAssets: JSON.parse(JSON.stringify(userAssets)),
             shares,
         },
     };
@@ -85,15 +85,15 @@ export async function getServerSideProps(context: any) {
 
 export default function MyAssetsPage({ userAssets }: any) {
     return (
-        <Box minH="70vh">
-            <Heading fontSize="8xl" mb="2rem">Your Assets</Heading>
+        <Box>
+            <Heading fontSize="8xl" mb="2rem">My Assets</Heading>
 
             <Link
                 href="/assets/create"
                 style={{ textDecoration: "none" }}
             >
-                <Button rounded="full" size="lg" variant="outline" border="1px">
-                    Tokenize your Asset
+                <Button rounded="full" size="lg" variant="outline" color="gray.600">
+                    Tokenize your asset
                 </Button>
             </Link>
 

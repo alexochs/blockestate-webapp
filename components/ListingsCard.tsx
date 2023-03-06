@@ -73,7 +73,7 @@ export default function ListingsCard({
         >
             <Stack spacing={"1rem"}>
                 <Text>
-                    You own {sharesBalance} out of {sharesTotalSupply} (
+                    You hold {sharesBalance} out of {sharesTotalSupply} (
                     {((sharesBalance / sharesTotalSupply) * 100).toFixed(2)}%)
                     Share
                     {sharesTotalSupply > 1 ? "s" : ""}.

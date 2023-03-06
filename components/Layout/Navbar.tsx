@@ -17,18 +17,21 @@ import {
     PopoverTrigger,
     Switch,
     Text,
+    Image,
     VStack,
 } from "@chakra-ui/react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FaHouseUser, FaMoon, FaUser, FaUserCircle, FaLanguage, FaChevronRight, FaCog, FaSignOutAlt, FaHome } from "react-icons/fa";
+import { useAccount, useEnsAvatar, useEnsName } from "wagmi";
 import Auth from "../Auth";
 
-export default function Navbar() {
+export default function Navbar({ account }: any) {
+    const session = useSession();
     const router = useRouter();
 
     return (
-        <Flex w="100vw" px="10vw" h="10vh" borderBottom="1px solid rgb(0, 0, 0, 0.1)" position="fixed" zIndex={1} backdropFilter={"blur(0.5rem)"} bg="rgb(255, 255, 255, 0.9)"
+        <Flex roundedBottom="full" w="100vw" px="10vw" h="10vh" borderBottom="1px solid rgb(0, 0, 0, 0.1)" position="fixed" zIndex={1} backdropFilter={"blur(0.5rem)"} bg="rgb(255, 255, 255, 0.9)"
         >
             <Center flex={1}>
                 <Link href="/" style={{ textDecoration: "none" }}>
@@ -55,7 +58,7 @@ export default function Navbar() {
                                 : ""}
                             rounded="full"
                             variant={router.asPath.includes("/invest")
-                                ? "solid"
+                                ? "outline"
                                 : "ghost"}
                             fontWeight={
                                 router.asPath.includes("/invest")
@@ -66,6 +69,25 @@ export default function Navbar() {
                             Invest
                         </Button>
                     </Link>
+
+                    <Link href="/rent" style={{ textDecoration: "none" }}>
+                        <Button
+                            color={router.asPath.includes("/rent")
+                                ? "blue.500"
+                                : ""}
+                            rounded="full"
+                            variant={router.asPath.includes("/rent")
+                                ? "outline"
+                                : "ghost"}
+                            fontWeight={
+                                router.asPath.includes("/rent")
+                                    ? "bold"
+                                    : "normal"
+                            }
+                        >
+                            Rent
+                        </Button>
+                    </Link>
                 </HStack>
             </Center>
 
@@ -73,8 +95,17 @@ export default function Navbar() {
                 <Box cursor="pointer">
                     <Popover trigger="hover">
                         <PopoverTrigger>
-                            <Button variant={"unstyled"}>
-                                <Icon as={FaUserCircle} w="2.5rem" h="2.5rem" />
+                            <Button h="3rem" variant="ghost" colorScheme={"blue"} rounded="full">
+                                <HStack spacing=".5rem">
+                                    <Image
+                                        src="https://yt3.ggpht.com/_cHyQKa7gmPyFY61sKrYV50KMvqhrfcYZ9XqahIOXqlLwc2bBv1bUgPUwGaPwYtzheXOP8-j=s600-c-k-c0x00ffffff-no-rj-rp-mo"
+                                        w="3rem"
+                                        h="3rem"
+                                        rounded="full"
+                                        ml={"-1rem"}
+                                    />
+                                    <Text>{session?.data?.user?.address ? session?.data?.user?.address?.slice(2, 8) : "..."}</Text>
+                                </HStack>
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent w="16rem" rounded="3xl">

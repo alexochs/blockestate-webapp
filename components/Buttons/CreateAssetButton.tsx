@@ -80,7 +80,7 @@ export default function CreateAssetButton({
     return (
         <Center flexDir={"column"}>
             <Button
-                isDisabled={!write || !session.data}
+                isDisabled={!session.data}
                 isLoading={isLoading}
                 onClick={() => write?.()}
                 size="lg"

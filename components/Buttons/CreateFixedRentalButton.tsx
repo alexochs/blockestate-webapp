@@ -49,7 +49,7 @@ export default function CreateFixedRentalButton({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "createFixedRental",
-        args: [tokenId, Math.round(checkinDate.getTime() / 1000), (checkoutDate.getTime() - checkinDate.getTime()) / (1000 * 60 * 60 * 24)],
+        args: [tokenId, Math.round(checkinDate / 1000), (checkoutDate - checkinDate) / (1000 * 60 * 60 * 24)],
     });
 
     const { data, error, isError, write } = useContractWrite(config);

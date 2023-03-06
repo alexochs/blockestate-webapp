@@ -31,6 +31,7 @@ import {
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
+import DeleteSharesListingButton from "./DeleteSharesListingButton";
 
 export default function BuySharesButton({ listing }: any) {
     const router = useRouter();
@@ -94,42 +95,47 @@ export default function BuySharesButton({ listing }: any) {
     });
 
     return (
-        <Center flexDir={"column"}>
-            {allowance < listing.price ? (
-                <Button
-                    isDisabled={!writeApproval.write || !session.data}
-                    isLoading={txApproval.isLoading}
-                    colorScheme={"blue"}
-                    rounded="full"
-                    onClick={() => {
-                        writeApproval.write?.();
-                    }}
-                    size="md"
-                >
-                    {session.data
-                        ? writeApproval.error
-                            ? "Error"
-                            : `Approve`
-                        : `Connect to buy`}
-                </Button>
-            ) : (
-                <Button
-                    isDisabled={!write || !session.data}
-                    isLoading={isLoading}
-                    colorScheme={"blue"}
-                    rounded="full"
-                    onClick={() => {
-                        write?.();
-                    }}
-                    size="md"
-                >
-                    {session.data
-                        ? isSuccess
-                            ? `Success`
-                            : `Buy`
-                        : `Connect to buy`}
-                </Button>
-            )}
-        </Center>
+        <Box>
+            {session.data?.user?.address == listing.seller ?
+                <DeleteSharesListingButton listing={listing} /> : allowance < listing.price ? (
+                    <Button
+                        isDisabled={!writeApproval.write || !session.data}
+                        isLoading={txApproval.isLoading}
+                        colorScheme={"blue"}
+                        rounded="full"
+                        variant={writeApproval.error ? "outline" : "solid"}
+                        onClick={() => {
+                            writeApproval.write?.();
+                        }}
+                        size="lg"
+                        w="8rem"
+                    >
+                        {session.data
+                            ? writeApproval.error
+                                ? "Retry"
+                                : `Approve`
+                            : `Connect to buy`}
+                    </Button>
+                ) : (
+                    <Button
+                        isDisabled={!write || !session.data}
+                        isLoading={isLoading}
+                        colorScheme={"blue"}
+                        rounded="full"
+                        variant={isSuccess ? "outline" : "solid"}
+                        onClick={() => {
+                            write?.();
+                        }}
+                        size="lg"
+                        w="8rem"
+                    >
+                        {session.data
+                            ? isSuccess
+                                ? `Success`
+                                : `Buy`
+                            : `Connect to buy`}
+                    </Button>
+                )}
+        </Box>
     );
 }

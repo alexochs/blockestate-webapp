@@ -55,27 +55,24 @@ export default function DeleteSharesListingButton({ listing }: any) {
     });
 
     return (
-        <Center flexDir={"column"}>
-            <Button
-                isDisabled={!write || !session.data}
-                isLoading={isLoading}
-                variant="ghost"
-                border="rgb(0, 0, 0, 0.5)"
-                colorScheme="red"
-                rounded="full"
-                size="sm"
-                onClick={() => {
-                    write?.();
-                }}
-            >
-                {session.data ? `Remove` : `Connect to delete Listing`}
-            </Button>
+        <Button
+            isDisabled={!write || !session.data}
+            isLoading={isLoading}
+            variant="ghost"
+            border="rgb(0, 0, 0, 0.5)"
+            colorScheme="red"
+            rounded="full"
+            size="lg"
+            w="8rem"
+            onClick={() => {
+                write?.();
+            }}
+        >
+            {session.data ? `Remove` : `Connect to delete Listing`}
 
             {(isPrepareError || isError) && (
-                <Text pt=".5rem" maxW={"90vw"}>
-                    Error: {(prepareError || error)?.message}
-                </Text>
+                `Error: ${(prepareError || error)?.message}`
             )}
-        </Center>
+        </Button>
     );
 }

@@ -17,6 +17,7 @@ import {
     Tab,
     TabPanels,
     TabPanel,
+    Icon,
 } from "@chakra-ui/react";
 import { useContractRead } from "wagmi";
 import { readContract } from "@wagmi/core";
@@ -48,6 +49,10 @@ import RentalsCard from "@/components/RentalsCard";
 import AssetHeader from "@/components/AssetHeader";
 import AssetDescription from "@/components/AssetDescription";
 import AssetInvestTabs from "@/components/AssetInvestTabs";
+import AssetHeaderImages from "@/components/AssetHeaderImages";
+import { BiArea } from "react-icons/bi";
+import { FaBed, FaDoorOpen } from "react-icons/fa";
+import RentalsFloatingActionCard from "@/components/RentalsFloatingActionCard";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -215,7 +220,7 @@ export async function getServerSideProps(context: any) {
     };
 }
 
-export default function AssetsPage({
+export default function RentAssetPage({
     user,
     asset,
     sharesBalance,
@@ -230,32 +235,78 @@ export default function AssetsPage({
     isMonthlyRentable,
     pricePerMonth,
     shareholderInfos
-}: any) {
+}: {
+    user: any;
+    asset: Asset;
+    sharesBalance: number;
+    sharesTotalSupply: number;
+    shareholders: string[];
+    listings: SharesListing[];
+    userGroupInvestments: GroupInvestment[];
+    fixedRentals: FixedRental[];
+    isRentable: boolean;
+    pricePerDay: number;
+    monthlyRentals: MonthlyRental[];
+    isMonthlyRentable: boolean;
+    pricePerMonth: number;
+    shareholderInfos: any[]
+}) {
     const session = useSession();
     const router = useRouter();
     const tokenId = asset.tokenId;
 
     return (
         <Box>
-            <AssetHeader
-                asset={asset}
-            />
+            <AssetHeaderImages />
 
-            <AssetDescription
-                tokenId={tokenId}
-                sharesBalance={sharesBalance}
-                sharesTotalSupply={sharesTotalSupply}
-                shareholders={shareholders}
-                listings={listings}
-            />
+            <Flex>
+                <Box w="70%" pr="1rem">
+                    <Box pt="1rem">
+                        <Heading fontSize="6xl">{asset.city}, {asset.country}</Heading>
+                        <Text fontSize="4xl" color="gray.600">{asset.street} {asset.number}, {asset.zip}</Text>
+                        {asset.category == 0 && <Text fontSize="4xl" color="gray.600">Apartment {asset.apNumber}</Text>}
+                    </Box>
 
-            <AssetInvestTabs
-                sharesBalance={sharesBalance}
-                listings={listings}
-                tokenId={tokenId}
-                shareholderInfos={shareholderInfos}
-                sharesTotalSupply={sharesTotalSupply}
-            />
+                    <Box pt="2rem">
+                        <HStack spacing="2rem">
+                            <Center border="1px solid rgb(0,0,0,0.2)" rounded="3xl" px="1rem" py=".5rem">
+                                <Icon as={BiArea} w={"4rem"} h={"4rem"} />
+                                <Box pl="1rem">
+                                    <Text fontWeight={"bold"} fontSize="3xl">{(187).toLocaleString()}</Text>
+                                    <Text mt="-.5rem" color="gray.600">m<sup>2</sup></Text>
+                                </Box>
+                            </Center>
+
+                            <Center border="1px solid rgb(0,0,0,0.2)" rounded="3xl" px="1rem" py=".5rem">
+                                <Icon as={FaDoorOpen} w={"4rem"} h={"4rem"} />
+                                <Box pl="1rem">
+                                    <Text fontWeight={"bold"} fontSize="3xl">{(7).toLocaleString()}</Text>
+                                    <Text mt="-.5rem" color="gray.600">Rooms</Text>
+                                </Box>
+                            </Center>
+
+                            <Center border="1px solid rgb(0,0,0,0.2)" rounded="3xl" px="1rem" py=".5rem">
+                                <Icon as={FaBed} w={"4rem"} h={"4rem"} />
+                                <Box pl="1rem">
+                                    <Text fontWeight={"bold"} fontSize="3xl">{(3).toLocaleString()}</Text>
+                                    <Text mt="-.5rem" color="gray.600">Bedrooms</Text>
+                                </Box>
+                            </Center>
+                        </HStack>
+                    </Box>
+
+                    <Box mt="2rem">
+                        <iframe
+                            style={{ overflow: "hidden", borderRadius: "24px" }}
+                            width="100%"
+                            height="500"
+                            loading="lazy"
+                            src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyDTE6cLA6Bbd0Z4kGVKUTXwke90lYHCIgo&q=${asset.street + " " + asset.number + ", " + asset.zip + " " + asset.city + " " + asset.country}`} /> {/* Hide API Key in .env file and use getStaticProps*/}
+                    </Box>
+                </Box>
+
+                <RentalsFloatingActionCard tokenId={tokenId} pricePerDay={pricePerDay} />
+            </Flex>
         </Box >
     );
 }
