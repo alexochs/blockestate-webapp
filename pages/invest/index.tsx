@@ -43,10 +43,6 @@ export default function InvestPage({ allAssets }: any) {
             <AssetTrendingHero />
 
             <Box pt="4rem">
-                <Heading fontSize="8xl" pb="2rem">
-                    Explore Investments
-                </Heading>
-
                 {!allAssets ? (
                     <Center>
                         <Spinner size="xl" />

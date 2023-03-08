@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { FaHouseUser, FaMoon, FaUser, FaUserCircle, FaLanguage, FaChevronRight, FaCog, FaSignOutAlt, FaHome } from "react-icons/fa";
+import { FaHouseUser, FaMoon, FaUser, FaUserCircle, FaLanguage, FaChevronRight, FaCog, FaSignOutAlt, FaHome, FaSign, FaSignInAlt } from "react-icons/fa";
 import { useAccount, useEnsAvatar, useEnsName } from "wagmi";
 import Auth from "../Auth";
 
@@ -95,40 +95,51 @@ export default function Navbar({ account }: any) {
                 <Box cursor="pointer">
                     <Popover trigger="hover">
                         <PopoverTrigger>
-                            <Button h="3rem" variant="ghost" colorScheme={"blue"} rounded="full">
-                                <HStack spacing=".5rem">
-                                    <Image
-                                        src="https://yt3.ggpht.com/_cHyQKa7gmPyFY61sKrYV50KMvqhrfcYZ9XqahIOXqlLwc2bBv1bUgPUwGaPwYtzheXOP8-j=s600-c-k-c0x00ffffff-no-rj-rp-mo"
-                                        w="3rem"
-                                        h="3rem"
-                                        rounded="full"
-                                        ml={"-1rem"}
-                                    />
-                                    <Text>{session?.data?.user?.address ? session?.data?.user?.address?.slice(2, 8) : "..."}</Text>
-                                </HStack>
-                            </Button>
+                            {session?.data?.user?.address ?
+                                <Button h="3rem" variant="ghost" colorScheme={"blue"} rounded="full">
+                                    <HStack spacing=".5rem">
+                                        <Image
+                                            src="https://yt3.ggpht.com/_cHyQKa7gmPyFY61sKrYV50KMvqhrfcYZ9XqahIOXqlLwc2bBv1bUgPUwGaPwYtzheXOP8-j=s600-c-k-c0x00ffffff-no-rj-rp-mo"
+                                            w="3rem"
+                                            h="3rem"
+                                            rounded="full"
+                                            ml="-2rem"
+                                        />
+                                        <Text>{session?.data?.user?.address ? session?.data?.user?.address?.slice(2, 8) : "..."}</Text>
+                                    </HStack>
+                                </Button> :
+                                <Icon as={FaUserCircle} w="3rem" h="3rem" rounded="full" color="gray.600" />}
                         </PopoverTrigger>
                         <PopoverContent w="16rem" rounded="3xl">
                             <PopoverBody p="0">
                                 <VStack spacing="0" align="start">
-                                    <Link href="/user" w="100%" pl="1rem" py="1rem" roundedTop="3xl" _hover={{ bg: "gray.100" }}>
-                                        <HStack spacing="1rem" >
-                                            <Icon as={FaUser} w="1.5rem" h="1.5rem" />
-                                            <Text fontWeight={"bold"} fontSize={["lg"]}>Profile</Text>
-                                        </HStack>
-                                    </Link>
+                                    {session?.data?.user?.address ?
+                                        <Link href="/user" w="100%" pl="1rem" py="1rem" roundedTop="3xl" _hover={{ bg: "gray.100" }}>
+                                            <HStack spacing="1rem" >
+                                                <Icon as={FaUser} w="1.5rem" h="1.5rem" />
+                                                <Text fontWeight={"bold"} fontSize={["lg"]}>Profile</Text>
+                                            </HStack>
+                                        </Link> :
+                                        <Link href="/user" w="100%" pl="1rem" py="1rem" roundedTop="3xl" _hover={{ bg: "gray.100" }}>
+                                            <HStack spacing="1rem" >
+                                                <Icon as={FaSignInAlt} w="1.5rem" h="1.5rem" />
+                                                <Text fontWeight={"bold"} fontSize={["lg"]}>Sign in</Text>
+                                            </HStack>
+                                        </Link>}
 
-                                    <Link href="/my-assets" w="100%" pl="1rem" py="1rem" _hover={{ bg: "gray.100" }}>
-                                        <HStack spacing="1rem">
-                                            <Icon as={FaHouseUser} w="1.5rem" h="1.5rem" />
-                                            <Text fontWeight={"bold"} fontSize={["lg"]}>My Assets</Text>
-                                        </HStack>
-                                    </Link>
+                                    {session?.data?.user?.address &&
+                                        <Link href="/my-assets" w="100%" pl="1rem" py="1rem" _hover={{ bg: "gray.100" }}>
+                                            <HStack spacing="1rem">
+                                                <Icon as={FaHouseUser} w="1.5rem" h="1.5rem" />
+                                                <Text fontWeight={"bold"} fontSize={["lg"]}>My Assets</Text>
+                                            </HStack>
+                                        </Link>}
 
-                                    <HStack w="100%" spacing="1rem" pl="1rem" py="1rem" _hover={{ bg: "gray.100" }}>
-                                        <Icon as={FaCog} w="1.5rem" h="1.5rem" />
-                                        <Text fontWeight={"bold"} fontSize={["lg"]}>Settings</Text>
-                                    </HStack>
+                                    {session?.data?.user?.address &&
+                                        <HStack w="100%" spacing="1rem" pl="1rem" py="1rem" _hover={{ bg: "gray.100" }}>
+                                            <Icon as={FaCog} w="1.5rem" h="1.5rem" />
+                                            <Text fontWeight={"bold"} fontSize={["lg"]}>Settings</Text>
+                                        </HStack>}
 
                                     <HStack w="100%" spacing="1rem" pl="1rem" py="1rem" _hover={{ bg: "gray.100" }}>
                                         <Icon as={FaLanguage} w="1.5rem" h="1.5rem" />
@@ -139,12 +150,12 @@ export default function Navbar({ account }: any) {
                                         </Center>
                                     </HStack>
 
-                                    <HStack w="100%" spacing="1rem" pl="1rem" py="1rem" _hover={{ bg: "gray.100" }} onClick={() =>
+                                    {session?.data?.user?.address && <HStack w="100%" spacing="1rem" pl="1rem" py="1rem" _hover={{ bg: "gray.100" }} onClick={() =>
                                         signOut({ redirect: true, callbackUrl: "/signin" })
                                     }>
                                         <Icon as={FaSignOutAlt} w="1.5rem" h="1.5rem" />
                                         <Text fontWeight={"bold"} fontSize={["lg"]}>Sign Out</Text>
-                                    </HStack>
+                                    </HStack>}
 
                                     <HStack w="100%" spacing="1rem" pl="1rem" py="1rem" roundedBottom={"3xl"} _hover={{ bg: "gray.100" }}>
                                         <Icon as={FaMoon} w="1.5rem" h="1.5rem" />

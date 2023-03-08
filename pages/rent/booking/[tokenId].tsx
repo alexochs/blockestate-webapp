@@ -206,6 +206,15 @@ export async function getServerSideProps(context: any) {
     })) as any;
     const monthlyRentals = monthlyRentalsData.map((entry: any) => new MonthlyRental(entry));
 
+    if (!isRentable && !isMonthlyRentable) {
+        return {
+            redirect: {
+                destination: "/rent",
+                permanent: false,
+            },
+        };
+    }
+
     // return props to page
     return {
         props: {
@@ -320,7 +329,7 @@ export default function BookingAssetPage({
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: data?.hash,
         onSuccess: () => {
-            router.reload();
+            router.push("/my-rentals");
         }
     });
 
@@ -332,7 +341,7 @@ export default function BookingAssetPage({
             </HStack>
 
             <Flex mt="2rem">
-                <Box w="60%" pr="1rem">
+                <Box w="60%" mr="2rem">
                     <Box>
                         <Heading size="2xl">Your stay</Heading>
 
@@ -350,11 +359,11 @@ export default function BookingAssetPage({
                     <Box pt="4rem">
                         <Heading size="2xl">1. Approve funds for transfer</Heading>
 
-                        <Text mt="2rem">Allow the BlockEstate Rentals contract to transfer your funds for your reservation.<br />This is necessary and will not transfer any funds.</Text>
+                        <Text mt="2rem">Allow the BlockEstate Rentals contract to transfer your funds on your behalf.<br />This is necessary for your reservation and will not transfer any funds immediately.</Text>
                         <Text mt="1rem">Current allowance: {(allowance / 1e6).toLocaleString()}$</Text>
 
                         <Button
-                            isDisabled={!writeAllowance || !session.data || allowance >= 100_000 * 1e6}
+                            isDisabled={!writeAllowance || !session.data || allowance >= totalPrice}
                             isLoading={txAllowanceLoading}
                             onClick={() => writeAllowance?.()}
                             h="4rem"
@@ -367,17 +376,17 @@ export default function BookingAssetPage({
                         >
                             <Center>
                                 <Icon as={FaCheckCircle} w={"1.75rem"} h={"1.75rem"} mr=".5rem" />
-                                <Text fontSize="xl">{allowance >= 100_000 * 1e6 ? "Approved " + (allowance / 1e6).toLocaleString() + "$" : "Approve"}</Text>
+                                <Text fontSize="xl">{allowance >= totalPrice ? "Approved " + (allowance / 1e6).toLocaleString() + "$" : "Approve"}</Text>
                             </Center>
                         </Button>
 
-                        {prepareAllowanceError && <Text pt="1rem" color="red">{Number(checkinDate) / 1000} Error: {prepareAllowanceError?.message}</Text>}
+                        {prepareAllowanceError && <Text pt="1rem" color="red">Error: {prepareAllowanceError?.message}</Text>}
                     </Box>
 
                     <Box pt="4rem">
                         <Heading size="2xl">2. Deposit your reservation</Heading>
 
-                        <Text mt="2rem">Transfer the total price of your reservation into the BlockEstate Rentals contract.<br />You will be immediately refunded upon cancelation.</Text>
+                        <Text mt="2rem">Transfer the total price of your reservation into the BlockEstate Rentals contract.<br />Your deposit will be immediately refunded back to you in the case of cancelation of your reservation.</Text>
 
                         <Button
                             h="4rem"
@@ -387,7 +396,7 @@ export default function BookingAssetPage({
                             rounded="full"
                             colorScheme={"blue"}
                             variant="solid"
-                            isDisabled={!write || prepareError != null || !session.data}
+                            isDisabled={!write || prepareError != null || !session.data || allowance < totalPrice}
                             isLoading={isLoading}
                             onClick={() => write?.()}>
                             <Center>
@@ -398,7 +407,7 @@ export default function BookingAssetPage({
                             </Center>
                         </Button>
 
-                        {prepareError && <Text pt="1rem" color="red">Error: {prepareError?.message}</Text>}
+                        {prepareError && <Text pt="1rem" color="red">{prepareError.message}</Text>}
                     </Box>
                 </Box>
 

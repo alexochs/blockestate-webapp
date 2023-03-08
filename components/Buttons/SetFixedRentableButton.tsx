@@ -1,5 +1,4 @@
-import
-{
+import {
     Box,
     Button,
     Center,
@@ -14,28 +13,28 @@ import
 import { EvmChain } from "@moralisweb3/common-evm-utils";
 import Moralis from "moralis";
 import { useSession } from "next-auth/react";
-import
-{
+import {
     useContractWrite,
     usePrepareContractWrite,
     useWaitForTransaction,
 } from "wagmi";
 import { abi as rentalsAbi } from "@/helpers/BlockEstateRentals.json";
-import
-{
+import {
     assetsContractAddress,
     rentalsContractAddress,
 } from "@/helpers/contractAddresses";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-export default function SetRentableButton({ tokenId }: any)
-{
+export default function SetFixedRentableButton({ tokenId, isRentable, pricePerDay }: any) {
     const session = useSession();
     const router = useRouter();
 
-    const [rentable, setRentable] = useState(false);
-    const [price, setPrice] = useState(0);
+    const [initialRentable, setInitialRentable] = useState(isRentable);
+    const [rentable, setRentable] = useState(isRentable);
+
+    const [initialPrice, setInitialPrice] = useState(pricePerDay / 1e6);
+    const [price, setPrice] = useState(pricePerDay / 1e6);
 
     const {
         config,
@@ -45,13 +44,17 @@ export default function SetRentableButton({ tokenId }: any)
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "setRentable",
-        args: [tokenId, rentable, price * 10 ** 6],
+        args: [tokenId, rentable, price * 1e6],
     });
 
     const { data, error, isError, write } = useContractWrite(config);
 
     const { isLoading, isSuccess } = useWaitForTransaction({
         hash: data?.hash,
+        onSuccess: () => {
+            setInitialRentable(rentable);
+            setInitialPrice(price);
+        },
     });
 
     return (
@@ -61,6 +64,7 @@ export default function SetRentableButton({ tokenId }: any)
                 <RadioGroup
                     onChange={(value) => setRentable(value === "true")}
                     value={rentable.toString()}
+                    size="lg"
                 >
                     <HStack spacing="24px">
                         <Radio value="true">Yes</Radio>
@@ -69,32 +73,35 @@ export default function SetRentableButton({ tokenId }: any)
                 </RadioGroup>
             </FormControl>
 
-            {rentable && <FormControl id="price" pt="1rem">
+            <FormControl id="price" pt="2rem">
                 <FormLabel>Price per day (USD)</FormLabel>
                 <Input
                     type="number"
                     value={price}
                     onChange={(e) => setPrice(parseInt(e.target.value))}
+                    rounded="full"
+                    size="lg"
+                    isDisabled={!rentable}
                 />
-            </FormControl>}
+            </FormControl>
 
             <Button
-                isDisabled={!write || !session.data}
+                isDisabled={!write || !session.data || (rentable == false && initialRentable == false) || (rentable == initialRentable && price == initialPrice)}
                 isLoading={isLoading}
                 onClick={() => write?.()}
                 colorScheme="blue"
                 rounded="full"
                 variant="outline"
-                mt="1rem"
+                mt="2rem"
             >
                 Update
             </Button>
 
-            {(isPrepareError || isError) && (
-                <Text pt=".5rem" maxW={"8rem"}>
-                    Error: {(prepareError || error)?.message}
+            {/*(isPrepareError || isError) && (
+                <Text pt=".5rem" color="red" w="8rem">
+                    {(prepareError || error)?.message}
                 </Text>
-            )}
+            )*/}
         </Center>
     );
 }

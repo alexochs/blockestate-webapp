@@ -199,6 +199,15 @@ export async function getServerSideProps(context: any) {
     })) as any;
     const monthlyRentals = monthlyRentalsData.map((entry: any) => new MonthlyRental(entry));
 
+    if (!isRentable && !isMonthlyRentable) {
+        return {
+            redirect: {
+                destination: "/rent",
+                permanent: false,
+            },
+        };
+    }
+
     // return props to page
     return {
         props: {

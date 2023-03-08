@@ -17,6 +17,8 @@ import {
     Tab,
     TabPanels,
     TabPanel,
+    Link,
+    Icon,
 } from "@chakra-ui/react";
 import { useContractRead } from "wagmi";
 import { readContract } from "@wagmi/core";
@@ -48,6 +50,7 @@ import RentalsCard from "@/components/RentalsCard";
 import AssetHeader from "@/components/AssetHeader";
 import AssetDescription from "@/components/AssetDescription";
 import AssetInvestTabs from "@/components/AssetInvestTabs";
+import { SiOpensea } from "react-icons/si";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -248,6 +251,21 @@ export default function RentAssetsPage({
                 shareholders={shareholders}
                 listings={listings}
             />
+
+            <HStack pt="1rem" spacing="1rem">
+                <Link href={"/rent/" + tokenId} style={{ textDecoration: "none" }}>
+                    <Button rounded="full" variant="outline" size="lg" colorScheme="blue">
+                        Rent this asset
+                    </Button>
+                </Link>
+
+                {sharesBalance > 0 &&
+                    <Link href={"/shareholders/" + tokenId} style={{ textDecoration: "none" }}>
+                        <Button rounded="full" variant="outline" size="lg" color="gray.600">
+                            Shareholders Area
+                        </Button>
+                    </Link>}
+            </HStack>
 
             <AssetInvestTabs
                 sharesBalance={sharesBalance}

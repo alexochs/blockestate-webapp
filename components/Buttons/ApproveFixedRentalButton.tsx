@@ -66,16 +66,17 @@ export default function ApproveFixedRentalButton({
                 colorScheme="blue"
                 rounded="full"
                 variant="solid"
+                size="lg"
             >
-                {alreadyVoted ? "Voted" : "Vote Approval"}
+                {alreadyVoted ? "Voted" : "Vote for approval"}
             </Button>
 
-            {isSuccess && <Text pt=".5rem">Successfully voted your approve!</Text>}
-            {(isPrepareError || isError) && (
+            {/*isSuccess && <Text pt=".5rem">Successfully voted your approve!</Text>*/}
+            {/*(isPrepareError || isError) && (
                 <Text pt=".5rem" maxW={"32rem"}>
                     Error: {(prepareError || error)?.message}
                 </Text>
-            )}
+            )*/}
         </Center>
     );
 }

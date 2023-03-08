@@ -4,7 +4,9 @@ import { abi as rentalsAbi } from "@/helpers/BlockEstateRentals.json";
 import { Asset, FixedRental, MonthlyRental } from "@/helpers/types";
 import { readContract } from "@wagmi/core";
 import { getSession } from "next-auth/react";
-import { Box, Center, Flex, Image, Heading, HStack, Link, Stack, Stat, StatArrow, StatHelpText, Text } from "@chakra-ui/react";
+import { Box, Center, Flex, Image, Heading, HStack, Link, Stack, Stat, StatArrow, StatHelpText, Text, Spacer, Button, Divider } from "@chakra-ui/react";
+import SetFixedRentableButton from "@/components/Buttons/SetFixedRentableButton";
+import ApproveFixedRentalButton from "@/components/Buttons/ApproveFixedRentalButton";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -95,11 +97,14 @@ export async function getServerSideProps(context: any) {
 
 export default function ShareholdersPage({ user, asset, fixedRentals, isRentable, pricePerDay, monthlyRentals, isMonthlyRentable, pricePerMonth }:
     { user: any, asset: Asset, fixedRentals: FixedRental[], isRentable: boolean, pricePerDay: number, monthlyRentals: MonthlyRental[], isMonthlyRentable: boolean, pricePerMonth: number }) {
+    const upcomingRentals = fixedRentals.filter((rental) => rental.start > Date.now() / 1000).sort((a, b) => a.start - b.start);
+    const currentRental = fixedRentals.find((rental) => rental.start < Date.now() / 1000 && rental.end > Date.now() / 1000);
+
     return (
         <Box>
             <Heading fontSize="8xl">Shareholders Area</Heading>
 
-            <Link href={"/assets/" + asset.tokenId} style={{ textDecoration: "none" }}>
+            <Link href={"/invest/" + asset.tokenId} style={{ textDecoration: "none" }}>
                 <Box pt="1rem">
                     <Flex p="1rem" border="1px solid rgb(0, 0, 0, 0.2)" rounded="3xl" _hover={{ background: "gray.100" }}>
                         <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/e5596519-efcf-4a65-bd12-3191ebd33ee6.jpeg" fit="cover" h="8rem" w="8rem" rounded="2xl" />
@@ -150,19 +155,33 @@ export default function ShareholdersPage({ user, asset, fixedRentals, isRentable
 
             <Box pt="4rem">
                 <Heading fontSize="6xl">Proposals</Heading>
-                <Box mt="1rem" h="24rem" rounded="3xl" border="1px solid rgb(0,0,0, 0.2)" bg="gray.100">
-                    <Center h="100%">
-                        <Text>Preview list of proposals the shareholder can vote on</Text>
-                    </Center>
+                <Box mt="1rem" h="24rem" rounded="3xl" border="1px solid rgb(0,0,0, 0.2)" p="1rem" bg="gray.100">
+
                 </Box>
             </Box>
 
             <Box pt="4rem">
                 <Heading fontSize="6xl">Rentals</Heading>
-                <Box mt="1rem" h="16rem" rounded="3xl" border="1px solid rgb(0,0,0, 0.2)" bg="gray.100">
-                    <Center h="100%">
-                        <Text>Preview current rental</Text>
-                    </Center>
+                <Box mt="1rem" h="16rem" rounded="3xl" border="1px solid rgb(0,0,0, 0.2)" p="1rem">
+                    <Heading fontSize="2xl" mb="1rem">{currentRental ? "Current rental" : "Upcoming rental"}</Heading>
+
+                    {currentRental ?
+                        <Flex border="1px solid rgb(0,0,0,0.2)" p="1rem" rounded="xl" bg="gray.100" _hover={{ background: "gray.200" }} cursor="pointer">
+                            <Box>
+                                <Text>Token ID: {currentRental.tokenId}</Text>
+                                <Text>Renter: {currentRental.renter.slice(2, 8)}</Text>
+                                <Text>Check-in: {new Date(currentRental.start).toUTCString()}</Text>
+                                <Text>Check-out: {new Date(currentRental.end).toUTCString()}</Text>
+                                <Text>Price: {(currentRental.price / 1e6).toLocaleString()}$</Text>
+                            </Box>
+                        </Flex> :
+                        <Center fontSize="xl" textAlign={"center"} flexDir="column" h="75%" p="1rem">
+                            <Text>Token ID: {upcomingRentals[0].tokenId}</Text>
+                            <Text>Renter: {upcomingRentals[0].renter.slice(2, 8)}</Text>
+                            <Text>Check-in: {new Date(upcomingRentals[0].start).toUTCString()}</Text>
+                            <Text>Check-out: {new Date(upcomingRentals[0].end).toUTCString()}</Text>
+                            <Text>Price: {(upcomingRentals[0].price / 1e6).toLocaleString()}$</Text>
+                        </Center>}
                 </Box>
 
                 <Flex>
@@ -179,14 +198,46 @@ export default function ShareholdersPage({ user, asset, fixedRentals, isRentable
                 </Flex>
 
                 <Flex>
-                    <Box mt="1rem" mr="1rem" w="75%" h="24rem" rounded="3xl" border="1px solid rgb(0,0,0, 0.2)" bg="gray.100">
-                        <Center h="100%">
-                            <Text>Preview list of upcoming fixed rentals and requests</Text>
-                        </Center>
+                    <Box mt="1rem" mr="1rem" w="75%" h="24rem" rounded="3xl" border="1px solid rgb(0,0,0, 0.2)" p="1rem">
+                        <Heading fontSize="2xl">Fixed rentals</Heading>
+
+                        {fixedRentals.length > 0 ? (
+                            <Stack overflow={"scroll"} spacing="1rem" my="1rem" h="85%" rounded="xl">
+                                {fixedRentals.sort((a, b) => a.start - b.start).map((rental) => (
+                                    <Flex key={rental.rentalId} border="1px solid rgb(0,0,0,0.2)" p="1rem" rounded="xl" bg="gray.100" _hover={{ background: "gray.200" }} cursor="pointer">
+                                        <Box>
+                                            <Text>Token ID: {rental.tokenId}</Text>
+                                            <Text>Renter: {rental.renter.slice(2, 8)}</Text>
+                                            <Text>Check-in: {new Date(rental.start).toUTCString()}</Text>
+                                            <Text>Check-out: {new Date(rental.end).toUTCString()}</Text>
+                                            <Text>Price: {(rental.price / 1e6).toLocaleString()}$</Text>
+                                        </Box>
+
+                                        <Spacer />
+                                        <Divider orientation="vertical" />
+                                        <Spacer />
+
+                                        <Center flexDir="column">
+                                            <Text>Approval: {rental.isApproved ? "Confirmed" : "Pending"}</Text>
+                                            <Text>Votes: {rental.votes}</Text>
+                                        </Center>
+
+                                        <Spacer />
+                                        <Divider orientation="vertical" />
+                                        <Spacer />
+
+                                        <Center>
+                                            <ApproveFixedRentalButton rental={rental} />
+                                        </Center>
+                                    </Flex>
+                                ))}
+                            </Stack>) : (
+                            <Text fontSize="lg">You do not have any upcoming trips!</Text>
+                        )}
                     </Box>
-                    <Box mt="1rem" w="25%" h="24rem" rounded="3xl" border="1px solid rgb(0,0,0, 0.2)" bg="gray.100">
+                    <Box mt="1rem" w="25%" h="24rem" rounded="3xl" border="1px solid rgb(0,0,0,0.2)">
                         <Center h="100%" p="1rem">
-                            <Text textAlign="center">Manage fixed rental settings<br />(create proposal to change settings)</Text>
+                            <SetFixedRentableButton tokenId={asset.tokenId} isRentable={isRentable} pricePerDay={pricePerDay} />
                         </Center>
                     </Box>
                 </Flex>

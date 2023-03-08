@@ -11,7 +11,7 @@ import CancelMonthlyRentalButton from "./Buttons/CancelMonthlyRentalButton";
 import CreateFixedRentalButton from "./Buttons/CreateFixedRentalButton";
 import CreateMonthlyRentalButton from "./Buttons/CreateMonthlyRentalButton";
 import SetMonthlyRentableButton from "./Buttons/SetMonthlyRentableButton";
-import SetRentableButton from "./Buttons/SetRentableButton";
+import SetRentableButton from "./Buttons/SetFixedRentableButton";
 
 export default function RentalsFloatingActionCard({ tokenId, sharesBalance, fixedRentals, isRentable, pricePerDay, monthlyRentals, isMonthlyRentable, pricePerMonth }: any) {
     const router = useRouter();

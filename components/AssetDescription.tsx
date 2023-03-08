@@ -1,6 +1,8 @@
+import { assetsContractAddress } from "@/helpers/contractAddresses";
 import { SharesListing } from "@/helpers/types";
-import { Box, Button, Center, Flex, HStack, Link, Spacer, Text } from "@chakra-ui/react";
+import { Box, Button, Center, Flex, HStack, Icon, Link, Spacer, Text } from "@chakra-ui/react";
 import PulseDot from 'react-pulse-dot';
+import { SiOpensea, SiRarible } from "react-icons/si";
 
 export default function AssetDescription({ tokenId, sharesBalance, sharesTotalSupply, shareholders, listings }: any) {
     const floorListing = listings.sort((a: SharesListing, b: SharesListing) => (a.price / a.amount) - (b.price / b.amount))[0];
@@ -32,17 +34,12 @@ export default function AssetDescription({ tokenId, sharesBalance, sharesTotalSu
 
                 <Spacer />
 
-                {sharesBalance > 0 &&
-                    <Link href={"/rent/" + tokenId} style={{ textDecoration: "none" }}>
-                        <Button rounded="full" variant="outline" size="lg" color="gray.600">
-                            Shareholders Area
-                        </Button>
-                    </Link>}
+                <Link href={`https://testnets.opensea.io/assets/mumbai/${assetsContractAddress}/${tokenId}`} target="_blank">
+                    <Icon as={SiOpensea} w={"3rem"} h={"3rem"} p=".25rem" rounded="full" border="1px solid black" _hover={{ background: "gray.200" }} />
+                </Link>
 
-                <Link href={"/rent/" + tokenId} style={{ textDecoration: "none" }}>
-                    <Button rounded="full" variant="outline" size="lg" colorScheme="blue">
-                        Rent this asset
-                    </Button>
+                <Link href={`https://testnet.rarible.com/collection/polygon/${assetsContractAddress}/${tokenId}`} target="_blank">
+                    <Icon as={SiRarible} w={"3rem"} h={"3rem"} p=".25rem" rounded="full" border="1px solid black" _hover={{ background: "gray.200" }} />
                 </Link>
             </HStack>
         </Box>

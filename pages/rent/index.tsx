@@ -83,9 +83,9 @@ export default function InvestPage({ allAssets }: any) {
                     ))}
                 </SimpleGrid>
             ) : (
-                <Center flexDir={"column"}>
+                <Center flexDir={"column"} pt="4rem" fontSize="xl">
                     <Text>No assets have been tokenized yet.</Text>
-                    <Text fontWeight={"bold"}>Be the first one!</Text>
+                    <Link href="/assets/create"><Text fontWeight={"bold"}>Be the first one!</Text></Link>
                 </Center>
             )}
         </Box>
