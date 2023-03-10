@@ -39,11 +39,11 @@ function SignIn() {
             message,
             signature,
             redirect: false,
-            callbackUrl: "/user",
+            callbackUrl: "/profiles/" + account,
         });
 
         /*
-         * instead of using signIn(..., redirect: "/user")
+         * instead of using signIn(..., redirect: "/profiles/account")
          * we get the url from callback and push it to the router to avoid page refreshing
          */
         push(url);

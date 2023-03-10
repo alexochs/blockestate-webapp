@@ -1,11 +1,11 @@
 import { assetsContractAddress } from "@/helpers/contractAddresses";
-import { SharesListing } from "@/helpers/types";
+import { SharesListing, SharesListingPool } from "@/helpers/types";
 import { Box, Button, Center, Flex, HStack, Icon, Link, Spacer, Text } from "@chakra-ui/react";
 import PulseDot from 'react-pulse-dot';
 import { SiOpensea, SiRarible } from "react-icons/si";
 
-export default function AssetDescription({ tokenId, sharesBalance, sharesTotalSupply, shareholders, listings }: any) {
-    const floorListing = listings.sort((a: SharesListing, b: SharesListing) => (a.price / a.amount) - (b.price / b.amount))[0];
+export default function AssetDescription({ tokenId, sharesBalance, sharesTotalSupply, shareholders, listingPools }: any) {
+    const floorListingPool = listingPools.sort((a: SharesListingPool, b: SharesListingPool) => a.price - b.price)[0];
 
     return (
         <Box pt="2rem">
@@ -21,7 +21,7 @@ export default function AssetDescription({ tokenId, sharesBalance, sharesTotalSu
                 </Box>
 
                 <Box>
-                    <Text fontWeight={"bold"} fontSize="3xl">{floorListing ? (floorListing.price / floorListing.amount / 10 ** 6).toLocaleString() + "$" : "N/A"}</Text>
+                    <Text fontWeight={"bold"} fontSize="3xl">{floorListingPool ? (floorListingPool.price / 10 ** 6).toLocaleString() + "$" : "N/A"}</Text>
                     <Text mt="-.5rem" color="gray.600">Floor Price</Text>
                 </Box>
 

@@ -2,7 +2,7 @@ import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import AssetInvestListingsTab from "./AssetInvestListingsTab";
 import AssetInvestShareholdersTab from "./AssetInvestShareholdersTab";
 
-export default function AssetInvestTabs({ tokenId, sharesBalance, listings, shareholderInfos, sharesTotalSupply }: any) {
+export default function AssetInvestTabs({ tokenId, sharesBalance, listingPools, shareholderInfos, sharesTotalSupply }: any) {
     return (
         <Tabs pt="2rem" colorScheme="blue">
             <TabList>
@@ -15,7 +15,7 @@ export default function AssetInvestTabs({ tokenId, sharesBalance, listings, shar
             <TabPanels>
                 <TabPanel>
                     <Box pt="1rem">
-                        <AssetInvestListingsTab sharesBalance={sharesBalance} listings={listings} tokenId={tokenId} />
+                        <AssetInvestListingsTab sharesBalance={sharesBalance} listingPools={listingPools} tokenId={tokenId} />
                     </Box>
                 </TabPanel>
                 <TabPanel>

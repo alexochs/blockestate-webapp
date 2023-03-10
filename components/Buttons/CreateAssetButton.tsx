@@ -72,7 +72,7 @@ export default function CreateAssetButton({
             console.log("Transfer", from, to, tokenId);
             if (from == "0x0000000000000000000000000000000000000000") {
                 const _tokenId = tokenId as any;
-                router.push(`/assets/${parseInt(_tokenId._hex)}`);
+                router.push(`/invest/${parseInt(_tokenId._hex)}`);
             }
         },
     });

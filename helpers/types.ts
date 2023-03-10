@@ -119,6 +119,38 @@ class SharesListing {
     }
 }
 
+class SharesListingPool {
+    sharesListingPoolId: number;
+    tokenId: number;
+    seller: string;
+    price: number;
+    amount: number;
+
+    constructor(
+        sharesListingPoolId: number,
+        tokenId: number,
+        seller: string,
+        price: number,
+        amount: number,
+    ) {
+        this.sharesListingPoolId = sharesListingPoolId;
+        this.tokenId = tokenId;
+        this.seller = seller;
+        this.price = price;
+        this.amount = amount;
+    }
+
+    static fromSingleEntry(entry: any): SharesListingPool {
+        return new SharesListingPool(
+            parseInt(entry[0]._hex, 16),
+            parseInt(entry[1]._hex, 16),
+            entry[2],
+            parseInt(entry[3]._hex, 16),
+            parseInt(entry[4]._hex, 16)
+        );
+    }
+}
+
 class GroupInvestment {
     investmentId: number;
     listingId: number;
@@ -203,4 +235,4 @@ class MonthlyRental {
     }
 }
 
-export { Asset, AssetCategory, AssetListing, SharesListing, GroupInvestment, FixedRental, MonthlyRental };
+export { Asset, AssetCategory, AssetListing, SharesListing, SharesListingPool, GroupInvestment, FixedRental, MonthlyRental };

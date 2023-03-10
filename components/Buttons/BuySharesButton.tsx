@@ -39,6 +39,9 @@ export default function BuySharesButton({ listing }: any) {
 
     const [allowance, setAllowance] = useState(0);
 
+    console.log(listing.price);
+    console.log("Allowance: ", allowance);
+
     const {
         config,
         error: prepareError,
@@ -71,7 +74,7 @@ export default function BuySharesButton({ listing }: any) {
             console.log("allowance() => ", error);
         },
         onSuccess: (data: any) => {
-            setAllowance(data);
+            setAllowance(parseInt(data._hex, 16));
         },
     });
 
@@ -114,7 +117,7 @@ export default function BuySharesButton({ listing }: any) {
                             ? writeApproval.error
                                 ? "Retry"
                                 : `Approve`
-                            : `Connect to buy`}
+                            : `Sign in`}
                     </Button>
                 ) : (
                     <Button
@@ -133,7 +136,7 @@ export default function BuySharesButton({ listing }: any) {
                             ? isSuccess
                                 ? `Success`
                                 : `Buy`
-                            : `Connect to buy`}
+                            : `Sign in`}
                     </Button>
                 )}
         </Box>

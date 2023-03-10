@@ -19,7 +19,7 @@ import {
     TabPanel,
     Icon,
 } from "@chakra-ui/react";
-import { useContractRead } from "wagmi";
+import { useContractRead, useNetwork, useSwitchNetwork } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
 import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
@@ -58,8 +58,7 @@ export async function getServerSideProps(context: any) {
     const session = await getSession(context);
     const tokenId = context.params.tokenId;
 
-    // redirect if not authenticated
-    if (!session || !tokenId) {
+    if (!tokenId) {
         return {
             redirect: {
                 destination: "/signin",
@@ -79,12 +78,12 @@ export async function getServerSideProps(context: any) {
     const asset = Asset.fromSingleEntry(assetData);
 
     // read balance and total supply of shares
-    const sharesBalanceData = (await readContract({
+    const sharesBalanceData = session ? (await readContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "balanceOf",
-        args: [session.user?.address, tokenId],
-    })) as any;
+        args: [session?.user?.address, tokenId],
+    })) as any : null;
 
     const sharesTotalSupplyData = (await readContract({
         address: sharesContractAddress,
@@ -93,7 +92,7 @@ export async function getServerSideProps(context: any) {
         args: [tokenId],
     })) as any;
 
-    const sharesBalance = parseInt(sharesBalanceData._hex, 16);
+    const sharesBalance = sharesBalanceData ? parseInt(sharesBalanceData._hex, 16) : 0;
     const sharesTotalSupply = parseInt(sharesTotalSupplyData._hex, 16);
 
     // read if user is major shareholder
@@ -211,7 +210,6 @@ export async function getServerSideProps(context: any) {
     // return props to page
     return {
         props: {
-            user: session.user,
             asset: JSON.parse(JSON.stringify(asset)),
             sharesBalance,
             sharesTotalSupply,
@@ -230,7 +228,6 @@ export async function getServerSideProps(context: any) {
 }
 
 export default function RentAssetPage({
-    user,
     asset,
     sharesBalance,
     sharesTotalSupply,
@@ -245,7 +242,6 @@ export default function RentAssetPage({
     pricePerMonth,
     shareholderInfos
 }: {
-    user: any;
     asset: Asset;
     sharesBalance: number;
     sharesTotalSupply: number;

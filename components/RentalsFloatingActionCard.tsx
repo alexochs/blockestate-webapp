@@ -144,7 +144,9 @@ export default function RentalsFloatingActionCard({ tokenId, sharesBalance, fixe
             </VStack>
 
             <VStack spacing="1rem" w="100%">
-                <Button fontSize="lg" size="lg" w="100%" rounded="full" colorScheme={"blue"} onClick={() => router.push({ pathname: `/rent/booking/${tokenId}`, query: { checkinDate: checkinDate.getTime(), checkoutDate: checkoutDate.getTime() } })}>Reserve</Button>
+                <Button fontSize="lg" size="lg" w="100%" rounded="full" colorScheme={"blue"} onClick={() => router.push({ pathname: `/rent/booking/${tokenId}`, query: { checkinDate: checkinDate.getTime(), checkoutDate: checkoutDate.getTime() } })}>
+                    {session.data ? "Reserve" : "Sign in to reserve"}
+                </Button>
                 <Text fontSize="sm">You won&apos;t be charged yet.</Text>
             </VStack>
 

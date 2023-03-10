@@ -22,7 +22,7 @@ export default function Auth() {
         </Button>
     ) : (
         <Button
-            onClick={() => router.push("/user")}
+            onClick={() => router.push("/profiles/" + session.data?.user!.address)}
             rounded="full"
             colorScheme="blue"
             variant="outline"

@@ -21,18 +21,6 @@ export async function getServerSideProps(context: any) {
         };
     }
 
-    // read all assets
-    const allAssetsData = (await readContract({
-        address: assetsContractAddress,
-        abi: assetsAbi,
-        functionName: "readAllAssets",
-        args: []
-    })) as any;
-
-    const allAssets = allAssetsData.map((asset: any) =>
-        Asset.fromSingleEntry(asset)
-    );
-
     // read fixed rentals
     const readFixedRentalsByAccountData = (await readContract({
         address: rentalsContractAddress,
@@ -47,21 +35,39 @@ export async function getServerSideProps(context: any) {
     return {
         props: {
             user: session.user,
-            allAssets: JSON.parse(JSON.stringify(allAssets)),
             fixedRentals: JSON.parse(JSON.stringify(fixedRentals)),
         },
     };
 }
 
-export default function MyRentalsPage({ user, allAssets, fixedRentals }: { user: any, allAssets: Asset[], fixedRentals: FixedRental[] }) {
+export default function MyRentalsPage({ user, fixedRentals }: { user: any, fixedRentals: FixedRental[] }) {
+    const upcomingFixedRentals = fixedRentals.filter((rental) => rental.start > Date.now()).sort((a, b) => a.start - b.start);
+    const currentFixedRental = fixedRentals.find((rental) => rental.start < Date.now() && rental.end > Date.now());
+
     return (
         <Box>
             <Heading fontSize="8xl" mb="2rem">My Rentals</Heading>
 
             <Box mt="1rem" h="16rem" rounded="3xl" border="1px solid rgb(0,0,0, 0.2)" p="1rem">
-                <Heading fontSize="2xl">Your upcoming trip</Heading>
-                <Center h="100%">
-                    <Text>Preview current running rental</Text>
+                <Heading fontSize="2xl">{currentFixedRental ? "Your current trip" : "Upcoming trip"}</Heading>
+                <Center h="95%">
+                    {currentFixedRental ? (
+                        <Box border="1px solid rgb(0,0,0,0.2)" p="1rem" rounded="xl" bg="gray.100" _hover={{ background: "gray.200" }} cursor="pointer">
+                            <Text>Token ID: {currentFixedRental.tokenId}</Text>
+                            <Text>Check-in: {new Date(currentFixedRental.start).toUTCString()}</Text>
+                            <Text>Check-out: {new Date(currentFixedRental.end).toUTCString()}</Text>
+                            <Text>Price: {currentFixedRental.price / 1e6}</Text>
+                            <Text>Approval: {currentFixedRental.isApproved ? "Confirmed" : "Pending"}</Text>
+                        </Box>
+                    ) : upcomingFixedRentals.length > 0 ? (
+                        <Box border="1px solid rgb(0,0,0,0.2)" p="1rem" rounded="xl" bg="gray.100" _hover={{ background: "gray.200" }} cursor="pointer">
+                            <Text>Token ID: {upcomingFixedRentals[0].tokenId}</Text>
+                            <Text>Check-in: {new Date(upcomingFixedRentals[0].start).toUTCString()}</Text>
+                            <Text>Check-out: {new Date(upcomingFixedRentals[0].end).toUTCString()}</Text>
+                            <Text>Price: {upcomingFixedRentals[0].price / 1e6}</Text>
+                            <Text>Approval: {upcomingFixedRentals[0].isApproved ? "Confirmed" : "Pending"}</Text>
+                        </Box>
+                    ) : null}
                 </Center>
             </Box>
 

@@ -15,7 +15,11 @@ export default function AssetInvestShareholdersTab({ shareholderInfos, sharesTot
 
     const [filter, setFilter] = useState(1);
     const [search, setSearch] = useState('')
-    const handleSearchChange = (event) => setSearch(event.target.value)
+    const handleSearchChange = (event: any) => {
+        const _search = event.target.value;
+
+        setSearch(_search);
+    }
 
     return (
         <Flex minH="25vh">
@@ -54,7 +58,7 @@ export default function AssetInvestShareholdersTab({ shareholderInfos, sharesTot
                             </Tr >
                         </Thead >
                         <Tbody fontSize="xl">
-                            {shareholderInfos.sort((a: any, b: any) => b.balance - a.balance).map((shareholderInfo: any) =>
+                            {shareholderInfos.filter((info: any) => info.address.includes(search)).sort((a: any, b: any) => b.balance - a.balance).map((shareholderInfo: any) =>
                                 <Tr key={shareholderInfo.address}>
                                     <Td><Link href={`/profiles/${shareholderInfo.address}`}>{shareholderInfo.address === session?.data?.user?.address ? `You (${shareholderInfo.address.slice(2, 9)})` : shareholderInfo.address.slice(2, 9)}</Link></Td>
                                     <Td>{shareholderInfo.balance.toLocaleString()} ({(shareholderInfo.balance / sharesTotalSupply) * 100}%)</Td>

@@ -10,14 +10,6 @@ import AssetTrendingHero from "@/components/AssetTrendingHero";
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
 
-    if (!session) {
-        return {
-            redirect: {
-                destination: "/signin",
-                permanent: false,
-            },
-        };
-    }
     const allAssetsData = (await readContract({
         address: assetsContractAddress,
         abi: assetsAbi,
@@ -31,7 +23,6 @@ export async function getServerSideProps(context: any) {
 
     return {
         props: {
-            user: session.user,
             allAssets: JSON.parse(JSON.stringify(allAssets)),
         },
     };

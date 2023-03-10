@@ -20,7 +20,7 @@ import {
     Link,
     Icon,
 } from "@chakra-ui/react";
-import { useContractRead } from "wagmi";
+import { useContractRead, useNetwork, useSwitchNetwork } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
 import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
@@ -40,6 +40,7 @@ import {
     GroupInvestment,
     MonthlyRental,
     SharesListing,
+    SharesListingPool,
 } from "@/helpers/types";
 import AssetPreview from "@/components/AssetPreviewCard";
 import { useRouter } from "next/router";
@@ -56,16 +57,6 @@ export async function getServerSideProps(context: any) {
     const session = await getSession(context);
     const tokenId = context.params.tokenId;
 
-    // redirect if not authenticated
-    if (!session || !tokenId) {
-        return {
-            redirect: {
-                destination: "/signin",
-                permanent: false,
-            },
-        };
-    }
-
     // read asset
     const assetData = (await readContract({
         address: assetsContractAddress,
@@ -77,12 +68,12 @@ export async function getServerSideProps(context: any) {
     const asset = Asset.fromSingleEntry(assetData);
 
     // read balance and total supply of shares
-    const sharesBalanceData = (await readContract({
+    const sharesBalanceData = session ? (await readContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "balanceOf",
         args: [session.user?.address, tokenId],
-    })) as any;
+    })) as any : null;
 
     const sharesTotalSupplyData = (await readContract({
         address: sharesContractAddress,
@@ -91,7 +82,7 @@ export async function getServerSideProps(context: any) {
         args: [tokenId],
     })) as any;
 
-    const sharesBalance = parseInt(sharesBalanceData._hex, 16);
+    const sharesBalance = sharesBalanceData ? parseInt(sharesBalanceData._hex, 16) : 0;
     const sharesTotalSupply = parseInt(sharesTotalSupplyData._hex, 16);
 
     // read if user is major shareholder
@@ -123,16 +114,16 @@ export async function getServerSideProps(context: any) {
     console.log(shareholderInfos);
 
     // read listings of asset
-    const listingsData = (await readContract({
+    const listingPoolsData = (await readContract({
         address: marketContractAddress,
         abi: marketAbi,
-        functionName: "readListingsByAsset",
+        functionName: "readSharesListingPoolsByAsset",
         args: [tokenId],
     })) as any;
 
-    const listings = listingsData
-        .map((listingData: any) => SharesListing.fromSingleEntry(listingData))
-        .filter((listing: SharesListing) => listing.tokenId != 0);
+    const listingPools = listingPoolsData
+        .map((listingPoolData: any) => SharesListingPool.fromSingleEntry(listingPoolData))
+        .filter((listingPool: SharesListingPool) => listingPool.tokenId != 0);
 
     // read all group investments
     const groupInvestmentsData = (await readContract({
@@ -197,15 +188,16 @@ export async function getServerSideProps(context: any) {
     })) as any;
     const monthlyRentals = monthlyRentalsData.map((entry: any) => new MonthlyRental(entry));
 
+    console.log(listingPools);
+
     // return props to page
     return {
         props: {
-            user: session.user,
             asset: JSON.parse(JSON.stringify(asset)),
             sharesBalance,
             sharesTotalSupply,
             shareholders,
-            listings: JSON.parse(JSON.stringify(listings)),
+            listingPools: JSON.parse(JSON.stringify(listingPools)),
             userGroupInvestments: JSON.parse(JSON.stringify(groupInvestments)),
             fixedRentals: JSON.parse(JSON.stringify(fixedRentals)),
             isRentable,
@@ -219,12 +211,11 @@ export async function getServerSideProps(context: any) {
 }
 
 export default function RentAssetsPage({
-    user,
     asset,
     sharesBalance,
     sharesTotalSupply,
     shareholders,
-    listings,
+    listingPools,
     userGroupInvestments,
     fixedRentals,
     isRentable,
@@ -238,6 +229,15 @@ export default function RentAssetsPage({
     const router = useRouter();
     const tokenId = asset.tokenId;
 
+    const { chain } = useNetwork();
+    const { chains, error: switchNetworkError, isLoading: switchNetworkIsLoading, pendingChainId, switchNetwork } = useSwitchNetwork();
+
+    useEffect(() => {
+        if (chain && chain.id !== 80001) {
+            switchNetwork?.(80001);
+        }
+    });
+
     return (
         <Box>
             <AssetHeader
@@ -249,7 +249,7 @@ export default function RentAssetsPage({
                 sharesBalance={sharesBalance}
                 sharesTotalSupply={sharesTotalSupply}
                 shareholders={shareholders}
-                listings={listings}
+                listingPools={listingPools}
             />
 
             <HStack pt="1rem" spacing="1rem">
@@ -269,7 +269,7 @@ export default function RentAssetsPage({
 
             <AssetInvestTabs
                 sharesBalance={sharesBalance}
-                listings={listings}
+                listingPools={listingPools}
                 tokenId={tokenId}
                 shareholderInfos={shareholderInfos}
                 sharesTotalSupply={sharesTotalSupply}

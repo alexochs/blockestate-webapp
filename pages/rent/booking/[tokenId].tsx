@@ -21,7 +21,7 @@ import {
     IconButton,
 } from "@chakra-ui/react";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
-import { useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useContractRead, useContractWrite, useNetwork, usePrepareContractWrite, useSwitchNetwork, useWaitForTransaction } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
 import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
@@ -271,6 +271,9 @@ export default function BookingAssetPage({
     const router = useRouter();
     const tokenId = asset.tokenId;
 
+    const { chain } = useNetwork();
+    const { chains, error: switchNetworkError, isLoading: switchNetworkIsLoading, pendingChainId, switchNetwork } = useSwitchNetwork();
+
     const { checkinDate, checkoutDate } = router.query;
     const days = Math.round((Number(checkoutDate) - Number(checkinDate)) / (1000 * 60 * 60 * 24));
 
@@ -332,6 +335,12 @@ export default function BookingAssetPage({
             router.push("/my-rentals");
         }
     });
+
+    useEffect(() => {
+        if (chain && chain.id != 80001) {
+            switchNetwork?.(80001);
+        }
+    }, []);
 
     return (
         <Box>

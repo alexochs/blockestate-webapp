@@ -1,19 +1,19 @@
-import { SharesListing } from "@/helpers/types";
+import { SharesListing, SharesListingPool } from "@/helpers/types";
 import { Box, Button, Center, Flex, HStack, Link, Select, Spacer, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import PulseDot from 'react-pulse-dot';
 import 'react-pulse-dot/dist/index.css';
-import BuySharesButton from "./Buttons/BuySharesButton";
-import CreateSharesListingButton from "./Buttons/CreateSharesListingButton";
-import ListSharesModal from "./Modals/ListSharesModal";
+import CreateSharesListingPoolModal from "./Modals/CreateSharesListingPoolModal";
 
-export default function AssetInvestListingsTab({ tokenId, sharesBalance, listings }: any) {
+export default function AssetInvestListingsTab({ tokenId, sharesBalance, listingPools }: any) {
     const session = useSession();
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const [filter, setFilter] = useState(3);
+
+    console.log(listingPools);
 
     return (
         <Flex minH="25vh">
@@ -38,18 +38,18 @@ export default function AssetInvestListingsTab({ tokenId, sharesBalance, listing
                             mt="1rem"
                             colorScheme={"blue"}
                             rounded="full"
-                            variant={"outline"}
+                            variant={"solid"}
                             onClick={onOpen}
                             fontSize="lg"
                         >
                             List your shares
                         </Button>
-                        <ListSharesModal tokenId={tokenId} sharesBalance={sharesBalance} isOpen={isOpen} onClose={onClose} />
+                        <CreateSharesListingPoolModal tokenId={tokenId} sharesBalance={sharesBalance} isOpen={isOpen} onClose={onClose} />
                     </Box>}
             </Box>
 
             <Box w="100%" border="1px solid rgb(0,0,0,0.0)" rounded="3xl">
-                {listings.length > 0 ? <TableContainer>
+                {listingPools.length > 0 ? <TableContainer>
                     <Table variant='simple'>
                         <Thead>
                             <Tr>
@@ -60,15 +60,15 @@ export default function AssetInvestListingsTab({ tokenId, sharesBalance, listing
                             </Tr >
                         </Thead >
                         <Tbody fontSize="xl">
-                            {listings.sort((a: SharesListing, b: SharesListing) => (a.price / a.amount) - (b.price / b.amount)).map((listing: SharesListing) =>
-                                <Tr key={listing.listingId}>
-                                    <Td>{(listing.price / listing.amount / 10 ** 6).toLocaleString()}$</Td>
-                                    <Td>{listing.amount.toLocaleString()}</Td>
+                            {listingPools.sort((a: SharesListingPool, b: SharesListingPool) => a.price - b.price).map((listingPool: SharesListingPool) =>
+                                <Tr key={listingPool.sharesListingPoolId}>
+                                    <Td>{(listingPool.price / 1e6).toLocaleString()}$</Td>
+                                    <Td>{listingPool.amount.toLocaleString()}</Td>
                                     <Td>
-                                        <Link href={`/profiles/${listing.seller}`}>{listing.seller == session?.data?.user?.address ? `You (${listing.seller.slice(2, 9)})` : listing.seller.slice(2, 9)}</Link>
+                                        <Link href={`/profiles/${listingPool.seller}`}>{listingPool.seller == session?.data?.user?.address ? `You (${listingPool.seller.slice(2, 9)})` : listingPool.seller.slice(2, 9)}</Link>
                                     </Td>
                                     <Td>
-                                        <BuySharesButton listing={listing} />
+                                        <Button>Buy</Button>
                                     </Td>
                                 </Tr>)}
                         </Tbody>

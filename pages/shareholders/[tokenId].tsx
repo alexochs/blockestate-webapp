@@ -174,14 +174,14 @@ export default function ShareholdersPage({ user, asset, fixedRentals, isRentable
                                 <Text>Check-out: {new Date(currentRental.end).toUTCString()}</Text>
                                 <Text>Price: {(currentRental.price / 1e6).toLocaleString()}$</Text>
                             </Box>
-                        </Flex> :
-                        <Center fontSize="xl" textAlign={"center"} flexDir="column" h="75%" p="1rem">
-                            <Text>Token ID: {upcomingRentals[0].tokenId}</Text>
-                            <Text>Renter: {upcomingRentals[0].renter.slice(2, 8)}</Text>
-                            <Text>Check-in: {new Date(upcomingRentals[0].start).toUTCString()}</Text>
-                            <Text>Check-out: {new Date(upcomingRentals[0].end).toUTCString()}</Text>
-                            <Text>Price: {(upcomingRentals[0].price / 1e6).toLocaleString()}$</Text>
-                        </Center>}
+                        </Flex> : upcomingRentals.length > 0 ?
+                            <Center fontSize="xl" textAlign={"center"} flexDir="column" h="75%" p="1rem">
+                                <Text>Token ID: {upcomingRentals[0].tokenId}</Text>
+                                <Text>Renter: {upcomingRentals[0].renter.slice(2, 8)}</Text>
+                                <Text>Check-in: {new Date(upcomingRentals[0].start).toUTCString()}</Text>
+                                <Text>Check-out: {new Date(upcomingRentals[0].end).toUTCString()}</Text>
+                                <Text>Price: {(upcomingRentals[0].price / 1e6).toLocaleString()}$</Text>
+                            </Center> : null}
                 </Box>
 
                 <Flex>
