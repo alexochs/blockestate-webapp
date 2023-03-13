@@ -52,6 +52,7 @@ import AssetHeader from "@/components/AssetHeader";
 import AssetDescription from "@/components/AssetDescription";
 import AssetInvestTabs from "@/components/AssetInvestTabs";
 import { SiOpensea } from "react-icons/si";
+import { ethers } from "ethers";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -91,7 +92,7 @@ export async function getServerSideProps(context: any) {
         abi: sharesAbi,
         functionName: "readShareholdersByToken",
         args: [tokenId],
-    })) as any;
+    }) as string[]).filter((shareholder) => shareholder != ethers.constants.AddressZero && shareholder != marketContractAddress);
 
     const shareholderInfos = [];
     for (let i = 0; i < shareholders.length; i++) {
@@ -111,7 +112,7 @@ export async function getServerSideProps(context: any) {
             balance: sharesBalance,
         });
     }
-    console.log(shareholderInfos);
+    //shareholderInfos.filter((shareholderInfo) => shareholderInfo.address != marketContractAddress);
 
     // read listings of asset
     const listingPoolsData = (await readContract({
@@ -123,7 +124,7 @@ export async function getServerSideProps(context: any) {
 
     const listingPools = listingPoolsData
         .map((listingPoolData: any) => SharesListingPool.fromSingleEntry(listingPoolData))
-        .filter((listingPool: SharesListingPool) => listingPool.tokenId != 0);
+        .filter((listingPool: SharesListingPool) => listingPool.tokenId != 0 && listingPool.amount > 0);
 
     // read all group investments
     const groupInvestmentsData = (await readContract({

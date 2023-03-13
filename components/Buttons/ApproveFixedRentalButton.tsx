@@ -28,10 +28,13 @@ import {
 } from "@/helpers/contractAddresses";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { FixedRental } from "@/helpers/types";
 
 export default function ApproveFixedRentalButton({
     rental
-}: any) {
+}: {
+    rental: FixedRental;
+}) {
     const session = useSession();
     const router = useRouter();
 
@@ -68,7 +71,7 @@ export default function ApproveFixedRentalButton({
                 variant="solid"
                 size="lg"
             >
-                {alreadyVoted ? "Voted" : "Vote for approval"}
+                {rental.isApproved ? "Approved" : alreadyVoted ? "Voted" : "Vote for approval"}
             </Button>
 
             {/*isSuccess && <Text pt=".5rem">Successfully voted your approve!</Text>*/}

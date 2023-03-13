@@ -232,7 +232,9 @@ export default function ShareholdersPage({ user, asset, fixedRentals, isRentable
                                     </Flex>
                                 ))}
                             </Stack>) : (
-                            <Text fontSize="lg">You do not have any upcoming trips!</Text>
+                            <Center h="85%">
+                                <Text fontSize="lg">There aren&apos;t any rental requests</Text>
+                            </Center>
                         )}
                     </Box>
                     <Box mt="1rem" w="25%" h="24rem" rounded="3xl" border="1px solid rgb(0,0,0,0.2)">

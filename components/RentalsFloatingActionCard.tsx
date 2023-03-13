@@ -2,7 +2,7 @@ import { Box, Heading, HStack, Input, Stack, VStack, Text, Divider, Flex, Center
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import ApproveFixedRentalButton from "./Buttons/ApproveFixedRentalButton";
 import ApproveMonthlyRentalButton from "./Buttons/ApproveMonthlyRentalButton";
@@ -32,6 +32,22 @@ export default function RentalsFloatingActionCard({ tokenId, sharesBalance, fixe
             setCheckoutDate(new Date(date.getTime() + 60 * 60 * 24 * 1000));
         }
     }
+
+    const handleCheckoutChange = (date: Date) => {
+        setCheckoutDate(date);
+        if (date.getTime() <= checkinDate.getTime()) {
+            setCheckinDate(new Date(date.getTime() + 60 * 60 * 24 * 1000));
+        }
+    }
+
+    const [totalPrice, setTotalPrice] = useState(0);
+
+    useEffect(() => {
+        const days = Math.round((Number(checkoutDate) - Number(checkinDate)) / (1000 * 60 * 60 * 24));
+        const reservationPriceUsd = (pricePerDay / 1e6) * days;
+        const feesPriceUsd = 210;
+        setTotalPrice(reservationPriceUsd + feesPriceUsd);
+    }, [checkinDate, checkoutDate]);
 
     return (
         <VStack shadow="xl" border="1px solid rgb(0,0,0,0.2)" rounded="3xl" w="30%" h="65vh" mt="2rem" position={"sticky"} top="15vh" p="2rem" spacing="2rem">
@@ -98,11 +114,11 @@ export default function RentalsFloatingActionCard({ tokenId, sharesBalance, fixe
                     <SingleDatepicker
                         name="checkout-date-input"
                         date={checkoutDate}
-                        onDateChange={setCheckoutDate}
+                        onDateChange={handleCheckoutChange}
                         minDate={
                             new Date(
                                 new Date(
-                                    new Date().getTime() + 60 * 60 * 24 * 1000
+                                    checkinDate.getTime() + 60 * 60 * 24 * 1000
                                 ).setHours(0, 0, 0, 0)
                             )
                         }
@@ -156,7 +172,7 @@ export default function RentalsFloatingActionCard({ tokenId, sharesBalance, fixe
             <Flex w="100%">
                 <Text fontSize="lg" fontWeight="bold">Total</Text>
                 <Spacer />
-                <Text fontSize="lg">{420}$</Text>
+                <Text fontSize="lg">{totalPrice}$</Text>
             </Flex>
         </VStack >
     );

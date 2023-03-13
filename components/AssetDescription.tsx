@@ -1,4 +1,4 @@
-import { assetsContractAddress } from "@/helpers/contractAddresses";
+import { assetsContractAddress, sharesContractAddress } from "@/helpers/contractAddresses";
 import { SharesListing, SharesListingPool } from "@/helpers/types";
 import { Box, Button, Center, Flex, HStack, Icon, Link, Spacer, Text } from "@chakra-ui/react";
 import PulseDot from 'react-pulse-dot';
@@ -34,11 +34,11 @@ export default function AssetDescription({ tokenId, sharesBalance, sharesTotalSu
 
                 <Spacer />
 
-                <Link href={`https://testnets.opensea.io/assets/mumbai/${assetsContractAddress}/${tokenId}`} target="_blank">
+                <Link href={`https://testnets.opensea.io/assets/mumbai/${sharesContractAddress}/${tokenId}`} target="_blank">
                     <Icon as={SiOpensea} w={"3rem"} h={"3rem"} p=".25rem" rounded="full" border="1px solid black" _hover={{ background: "gray.200" }} />
                 </Link>
 
-                <Link href={`https://testnet.rarible.com/collection/polygon/${assetsContractAddress}/${tokenId}`} target="_blank">
+                <Link href={`https://testnet.rarible.com/collection/polygon/${sharesContractAddress}/items`} target="_blank">
                     <Icon as={SiRarible} w={"3rem"} h={"3rem"} p=".25rem" rounded="full" border="1px solid black" _hover={{ background: "gray.200" }} />
                 </Link>
             </HStack>

@@ -5,11 +5,15 @@ import { useState } from "react";
 import PulseDot from 'react-pulse-dot';
 import 'react-pulse-dot/dist/index.css';
 import CreateSharesListingPoolModal from "./Modals/CreateSharesListingPoolModal";
+import PurchaseSharesListingPoolModal from "./Modals/PurchaseSharesListingPoolModal";
+import UpdateSharesListingPoolModal from "./Modals/UpdateSharesListingPoolModal";
 
 export default function AssetInvestListingsTab({ tokenId, sharesBalance, listingPools }: any) {
     const session = useSession();
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen: listModalIsOpen, onOpen: listModalOnOpen, onClose: listModalOnClose } = useDisclosure();
+    const { isOpen: updateModalIsOpen, onOpen: updateModalOnOpen, onClose: updateModalOnClose } = useDisclosure();
+    const { isOpen: purchaseModalIsOpen, onOpen: purchaseModalOnOpen, onClose: purchaseModalOnClose } = useDisclosure();
 
     const [filter, setFilter] = useState(3);
 
@@ -39,12 +43,12 @@ export default function AssetInvestListingsTab({ tokenId, sharesBalance, listing
                             colorScheme={"blue"}
                             rounded="full"
                             variant={"solid"}
-                            onClick={onOpen}
+                            onClick={listModalOnOpen}
                             fontSize="lg"
                         >
                             List your shares
                         </Button>
-                        <CreateSharesListingPoolModal tokenId={tokenId} sharesBalance={sharesBalance} isOpen={isOpen} onClose={onClose} />
+                        <CreateSharesListingPoolModal tokenId={tokenId} sharesBalance={sharesBalance} isOpen={listModalIsOpen} onClose={listModalOnClose} />
                     </Box>}
             </Box>
 
@@ -65,10 +69,34 @@ export default function AssetInvestListingsTab({ tokenId, sharesBalance, listing
                                     <Td>{(listingPool.price / 1e6).toLocaleString()}$</Td>
                                     <Td>{listingPool.amount.toLocaleString()}</Td>
                                     <Td>
-                                        <Link href={`/profiles/${listingPool.seller}`}>{listingPool.seller == session?.data?.user?.address ? `You (${listingPool.seller.slice(2, 9)})` : listingPool.seller.slice(2, 9)}</Link>
+                                        <Link href={`/profiles/${listingPool.seller}`}>{listingPool.seller == session?.data?.user?.address ? `${listingPool.seller.slice(2, 8)} (You)` : listingPool.seller.slice(2, 8)}</Link>
                                     </Td>
                                     <Td>
-                                        <Button>Buy</Button>
+                                        {listingPool.seller == session?.data?.user?.address ?
+                                            <Box>
+                                                <Button
+                                                    onClick={updateModalOnOpen}
+                                                    rounded="full"
+                                                    variant="ghost"
+                                                    size="lg"
+                                                    w="8rem"
+                                                >
+                                                    Update
+                                                </Button>
+                                                <UpdateSharesListingPoolModal sharesListingPoolId={listingPool.sharesListingPoolId} isOpen={updateModalIsOpen} onClose={updateModalOnClose} />
+                                            </Box> :
+                                            <Box>
+                                                <Button
+                                                    onClick={purchaseModalOnOpen}
+                                                    rounded="full"
+                                                    size="lg"
+                                                    colorScheme="blue"
+                                                    w="8rem"
+                                                >
+                                                    Buy
+                                                </Button>
+                                                <PurchaseSharesListingPoolModal sharesListingPool={listingPool} isOpen={purchaseModalIsOpen} onClose={purchaseModalOnClose} />
+                                            </Box>}
                                     </Td>
                                 </Tr>)}
                         </Tbody>

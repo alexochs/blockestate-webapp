@@ -58,11 +58,14 @@ export default function AssetInvestShareholdersTab({ shareholderInfos, sharesTot
                             </Tr >
                         </Thead >
                         <Tbody fontSize="xl">
-                            {shareholderInfos.filter((info: any) => info.address.includes(search)).sort((a: any, b: any) => b.balance - a.balance).map((shareholderInfo: any) =>
-                                <Tr key={shareholderInfo.address}>
-                                    <Td><Link href={`/profiles/${shareholderInfo.address}`}>{shareholderInfo.address === session?.data?.user?.address ? `You (${shareholderInfo.address.slice(2, 9)})` : shareholderInfo.address.slice(2, 9)}</Link></Td>
-                                    <Td>{shareholderInfo.balance.toLocaleString()} ({(shareholderInfo.balance / sharesTotalSupply) * 100}%)</Td>
-                                </Tr>)}
+                            {shareholderInfos
+                                .filter((info: any) => info.address.includes(search))
+                                .sort((a: any, b: any) => filter === 1 ? b.balance - a.balance : a.balance - b.balance)
+                                .map((shareholderInfo: any) =>
+                                    <Tr key={shareholderInfo.address}>
+                                        <Td><Link href={`/profiles/${shareholderInfo.address}`}>{shareholderInfo.address === session?.data?.user?.address ? `${shareholderInfo.address.slice(2, 8)} (You)` : shareholderInfo.address.slice(2, 8)}</Link></Td>
+                                        <Td>{shareholderInfo.balance.toLocaleString()} ({(shareholderInfo.balance / sharesTotalSupply) * 100}%)</Td>
+                                    </Tr>)}
                         </Tbody>
                     </Table>
                 </TableContainer>
