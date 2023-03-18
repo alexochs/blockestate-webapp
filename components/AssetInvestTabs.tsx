@@ -1,8 +1,32 @@
+import { MarketEvent } from "@/helpers/types";
+import { supabase } from "@/lib/supabaseClient";
 import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import AssetInvestActivityTab from "./AssetInvestActivityTab";
+import AssetInvestAnalyticsTab from "./AssetInvestAnalyticsTab";
 import AssetInvestListingsTab from "./AssetInvestListingsTab";
 import AssetInvestShareholdersTab from "./AssetInvestShareholdersTab";
 
-export default function AssetInvestTabs({ tokenId, sharesBalance, listingPools, shareholderInfos, sharesTotalSupply }: any) {
+export default function AssetInvestTabs({ tokenId, sharesBalance, listingPools, shareholderInfos, sharesTotalSupply, floorPrice }: any) {
+    const [events, setEvents] = useState<MarketEvent[]>([]);
+
+    useEffect(() => {
+        const fetchEvents = async () => {
+            const { data, error } = await supabase
+                .from('market')
+                .select('*')
+                //.order('timestamp', { ascending: false })
+                //.limit(25)
+                .eq("tokenId", tokenId);
+
+            console.log(data);
+            console.log(error);
+            setEvents(data as MarketEvent[]);
+        }
+
+        fetchEvents();
+    }, []);
+
     return (
         <Tabs pt="2rem" colorScheme="blue">
             <TabList>
@@ -19,10 +43,14 @@ export default function AssetInvestTabs({ tokenId, sharesBalance, listingPools, 
                     </Box>
                 </TabPanel>
                 <TabPanel>
-                    <p>two!</p>
+                    <Box pt="1rem">
+                        <AssetInvestAnalyticsTab events={events} floorPrice={floorPrice} />
+                    </Box>
                 </TabPanel>
                 <TabPanel>
-                    <p>three!</p>
+                    <Box pt="1rem">
+                        <AssetInvestActivityTab events={events} />
+                    </Box>
                 </TabPanel>
                 <TabPanel>
                     <Box pt="1rem">

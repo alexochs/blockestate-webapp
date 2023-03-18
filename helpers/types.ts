@@ -235,4 +235,30 @@ class MonthlyRental {
     }
 }
 
-export { Asset, AssetCategory, AssetListing, SharesListing, SharesListingPool, GroupInvestment, FixedRental, MonthlyRental };
+class MarketEvent {
+    id: number;
+    created_at: any;
+    event: string;
+    sharesListingPoolId: number;
+    tokenId: number;
+    price: number;
+    amount: number;
+    seller: string;
+    buyer: string;
+    tx: number;
+
+    constructor() {
+        this.id = 0;
+        this.created_at = null;
+        this.event = '';
+        this.sharesListingPoolId = 0;
+        this.tokenId = 0;
+        this.price = 0;
+        this.amount = 0;
+        this.seller = '';
+        this.buyer = '';
+        this.tx = 0;
+    }
+}
+
+export { Asset, AssetCategory, AssetListing, SharesListing, SharesListingPool, GroupInvestment, FixedRental, MonthlyRental, MarketEvent };

@@ -2,7 +2,7 @@ import { assetsContractAddress, sharesContractAddress } from "@/helpers/contract
 import { SharesListing, SharesListingPool } from "@/helpers/types";
 import { Box, Button, Center, Flex, HStack, Icon, Link, Spacer, Text } from "@chakra-ui/react";
 import PulseDot from 'react-pulse-dot';
-import { SiOpensea, SiRarible } from "react-icons/si";
+import { SiEthereum, SiOpensea, SiPoly, SiRarible } from "react-icons/si";
 
 export default function AssetDescription({ tokenId, sharesBalance, sharesTotalSupply, shareholders, listingPools }: any) {
     const floorListingPool = listingPools.sort((a: SharesListingPool, b: SharesListingPool) => a.price - b.price)[0];

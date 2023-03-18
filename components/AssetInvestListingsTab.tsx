@@ -17,10 +17,8 @@ export default function AssetInvestListingsTab({ tokenId, sharesBalance, listing
 
     const [filter, setFilter] = useState(3);
 
-    console.log(listingPools);
-
     return (
-        <Flex minH="25vh">
+        <Flex minH="25vh" w="100%">
             <Box w="25%">
                 <Select
                     fontSize="lg"
@@ -66,10 +64,10 @@ export default function AssetInvestListingsTab({ tokenId, sharesBalance, listing
                         <Tbody fontSize="xl">
                             {listingPools.sort((a: SharesListingPool, b: SharesListingPool) => a.price - b.price).map((listingPool: SharesListingPool) =>
                                 <Tr key={listingPool.sharesListingPoolId}>
-                                    <Td>{(listingPool.price / 1e6).toLocaleString()}$</Td>
-                                    <Td>{listingPool.amount.toLocaleString()}</Td>
+                                    <Td fontWeight={"bold"}>{(listingPool.price / 1e6).toLocaleString()}$</Td>
+                                    <Td fontWeight={"bold"}>{listingPool.amount.toLocaleString()}</Td>
                                     <Td>
-                                        <Link href={`/profiles/${listingPool.seller}`}>{listingPool.seller == session?.data?.user?.address ? `${listingPool.seller.slice(2, 8)} (You)` : listingPool.seller.slice(2, 8)}</Link>
+                                        <Link color="blue.500" href={`/profiles/${listingPool.seller}`} target="_blank">{listingPool.seller == session?.data?.user?.address ? `${listingPool.seller.slice(2, 8)} (You)` : listingPool.seller.slice(2, 8)}</Link>
                                     </Td>
                                     <Td>
                                         {listingPool.seller == session?.data?.user?.address ?

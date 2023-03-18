@@ -233,6 +233,9 @@ export default function RentAssetsPage({
     const { chain } = useNetwork();
     const { chains, error: switchNetworkError, isLoading: switchNetworkIsLoading, pendingChainId, switchNetwork } = useSwitchNetwork();
 
+    const floorListingPool = listingPools.sort((a: SharesListingPool, b: SharesListingPool) => a.price - b.price)[0];
+    const floorPrice = floorListingPool ? (floorListingPool.price / 10 ** 6).toLocaleString() : 0;
+
     useEffect(() => {
         if (chain && chain.id !== 80001) {
             switchNetwork?.(80001);
@@ -274,6 +277,7 @@ export default function RentAssetsPage({
                 tokenId={tokenId}
                 shareholderInfos={shareholderInfos}
                 sharesTotalSupply={sharesTotalSupply}
+                floorPrice={floorPrice}
             />
         </Box >
     );
