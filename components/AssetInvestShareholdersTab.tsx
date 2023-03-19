@@ -63,10 +63,16 @@ export default function AssetInvestShareholdersTab({ shareholderInfos, sharesTot
                                 .sort((a: any, b: any) => filter === 1 ? b.balance - a.balance : a.balance - b.balance)
                                 .map((shareholderInfo: any) =>
                                     <Tr key={shareholderInfo.address}>
-                                        <Td><Link color="blue.500" href={`/profiles/${shareholderInfo.address}`} target="_blank">{shareholderInfo.address === session?.data?.user?.address ? `${shareholderInfo.address.slice(2, 8)} (You)` : shareholderInfo.address.slice(2, 8)}</Link></Td>
+                                        <Td>
+                                            <Link color="blue.500" href={`/profiles/${shareholderInfo.address}`} target="_blank">
+                                                {shareholderInfo.address === session?.data?.user?.address ?
+                                                    `${shareholderInfo.address.slice(2, 8)} (You)` :
+                                                    shareholderInfo.address.slice(2, 8)}
+                                            </Link>
+                                        </Td>
                                         <Td>
                                             <Text fontWeight="bold">
-                                                {shareholderInfo.balance.toLocaleString()} ({(shareholderInfo.balance / sharesTotalSupply) * 100}%)
+                                                {shareholderInfo.balance.toLocaleString()} ({((shareholderInfo.balance / sharesTotalSupply) * 100).toFixed(2)}%)
                                             </Text>
                                         </Td>
                                     </Tr>)}
