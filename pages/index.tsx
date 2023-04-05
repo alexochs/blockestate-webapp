@@ -10,10 +10,10 @@ export default function Home() {
     return (
         <>
             <Head>
-                <title>BlockEstate</title>
+                <title>ImmoVerse</title>
                 <meta
                     name="description"
-                    content="BlockEstate: An Ethereum-based Real Estate Protocol. Made by Alex Ochs."
+                    content="ImmoVerse: An Ethereum-based Real Estate Protocol. Made by Alex Ochs."
                 />
                 <meta
                     name="viewport"
@@ -24,13 +24,13 @@ export default function Home() {
             <main>
                 <Center h="80vh" flexDir="column">
                     <HStack spacing="1rem">
-                        <Icon as={FaHome} w="8rem" h="8rem" bg="blue.500" p=".75rem" rounded="full" color="white" />
+                        {/*<Icon as={FaHome} w="8rem" h="8rem" bg="blue.500" p=".75rem" rounded="full" color="white" />*/}
                         <Flex>
                             <Heading fontSize="8xl">
-                                Block
+                                Immo
                             </Heading >
-                            <Heading color="blue.500" fontSize="8xl">
-                                Estate
+                            <Heading color="cyan.400" fontSize="8xl">
+                                Verse
                             </Heading >
                         </Flex>
                     </HStack>

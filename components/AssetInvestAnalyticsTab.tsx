@@ -42,9 +42,11 @@ const options = {
     },
 };
 
-export default function AssetInvestAnalyticsTab({ events, floorPrice }: { events: MarketEvent[], floorPrice: number }) {
+export default function AssetInvestAnalyticsTab({ events, floorPrice, isRentable, pricePerDay, sharesTotalSupply }: { events: MarketEvent[], floorPrice: number, isRentable: boolean, pricePerDay: number, sharesTotalSupply: number }) {
     dayjs.extend(relativeTime);
     dayjs.extend(LocalizedFormat)
+
+    const pricePerMonth = pricePerDay * 30;
 
     const allSales = events.filter((e) => e.event.includes("Purchase")).sort((a, b) => a.created_at - b.created_at);
     const allListings = events.filter((e) => e.event.includes("Created")).sort((a, b) => a.created_at - b.created_at);
@@ -120,9 +122,24 @@ export default function AssetInvestAnalyticsTab({ events, floorPrice }: { events
                     </Box>
                     <Box p="1rem" w="33%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
                         <Text color="gray.500">Floor Price</Text>
-                        <Heading>{floorPrice ? floorPrice + "$" : "N/A"}</Heading>
+                        <Heading>{floorPrice ? floorPrice.toLocaleString() + "$" : "N/A"}</Heading>
                     </Box>
                 </Flex>
+
+                {isRentable && <Flex w="100%" mt="1rem">
+                    <Box p="1rem" mr="1rem" w="33%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+                        <Text color="gray.500">Monthly Recurring Revenue</Text>
+                        <Heading>{(pricePerMonth / 1e6).toLocaleString()}$</Heading>
+                    </Box>
+                    <Box p="1rem" mr="1rem" w="33%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+                        <Text color="gray.500">Annual Rate Of Interest</Text>
+                        <Heading>{((((((pricePerMonth / 1e6) * 12) * (1 / sharesTotalSupply)) - floorPrice) / floorPrice) * 100).toFixed(2)}%</Heading>
+                    </Box>
+                    <Box p="1rem" w="33%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+                        <Text color="gray.500">Break Even</Text>
+                        <Heading>{(floorPrice / ((pricePerMonth / 1e6) * (1 / sharesTotalSupply))).toFixed(2)} Months</Heading>
+                    </Box>
+                </Flex>}
 
                 <Flex w="100%" mt="1rem">
                     <Box p="1rem" mr="1rem" w="50%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">

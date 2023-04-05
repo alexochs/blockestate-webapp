@@ -234,7 +234,7 @@ export default function RentAssetsPage({
     const { chains, error: switchNetworkError, isLoading: switchNetworkIsLoading, pendingChainId, switchNetwork } = useSwitchNetwork();
 
     const floorListingPool = listingPools.sort((a: SharesListingPool, b: SharesListingPool) => a.price - b.price)[0];
-    const floorPrice = floorListingPool ? (floorListingPool.price / 10 ** 6).toLocaleString() : 0;
+    const floorPrice = floorListingPool ? (floorListingPool.price / 10 ** 6) : 0;
 
     useEffect(() => {
         if (chain && chain.id !== 80001) {
@@ -265,7 +265,7 @@ export default function RentAssetsPage({
 
                 {sharesBalance > 0 &&
                     <Link href={"/shareholders/" + tokenId} style={{ textDecoration: "none" }}>
-                        <Button rounded="full" variant="outline" size="lg" color="gray.600">
+                        <Button rounded="full" variant="outline" size="lg" color="gray.500">
                             Shareholders Area
                         </Button>
                     </Link>}
@@ -278,6 +278,9 @@ export default function RentAssetsPage({
                 shareholderInfos={shareholderInfos}
                 sharesTotalSupply={sharesTotalSupply}
                 floorPrice={floorPrice}
+                pricePerMonth={pricePerMonth}
+                pricePerDay={pricePerDay}
+                isRentable={isRentable}
             />
         </Box >
     );

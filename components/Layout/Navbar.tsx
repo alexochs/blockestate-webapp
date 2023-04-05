@@ -55,13 +55,13 @@ export default function Navbar({ account }: any) {
             <Center flex={1}>
                 <Link href="/" style={{ textDecoration: "none" }}>
                     <HStack>
-                        <Icon as={FaHome} w="3rem" h="3rem" bg="blue.500" p=".35rem" rounded="full" color="white" />
+                        {/*<Icon as={FaHome} w="3rem" h="3rem" bg="blue.500" p=".35rem" rounded="full" color="white" />*/}
                         <Flex>
                             <Heading>
-                                Block
+                                Immo
                             </Heading >
-                            <Heading color="blue.500">
-                                Estate
+                            <Heading color="cyan.400">
+                                Verse
                             </Heading >
                         </Flex>
                     </HStack>
@@ -120,7 +120,7 @@ export default function Navbar({ account }: any) {
                                         <Text>{(fundsBalance / 1e6).toLocaleString() + "$"}</Text>
 
                                         <Image
-                                            src="https://yt3.ggpht.com/_cHyQKa7gmPyFY61sKrYV50KMvqhrfcYZ9XqahIOXqlLwc2bBv1bUgPUwGaPwYtzheXOP8-j=s600-c-k-c0x00ffffff-no-rj-rp-mo"
+                                            src="https://profile-images.xing.com/images/e680d104f7fba5c447b9e687dd9bc5ef-3/paul-misar.1024x1024.jpg"
                                             w="3rem"
                                             h="3rem"
                                             rounded="full"

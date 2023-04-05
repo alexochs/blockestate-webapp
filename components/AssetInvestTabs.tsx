@@ -7,7 +7,7 @@ import AssetInvestAnalyticsTab from "./AssetInvestAnalyticsTab";
 import AssetInvestListingsTab from "./AssetInvestListingsTab";
 import AssetInvestShareholdersTab from "./AssetInvestShareholdersTab";
 
-export default function AssetInvestTabs({ tokenId, sharesBalance, listingPools, shareholderInfos, sharesTotalSupply, floorPrice }: any) {
+export default function AssetInvestTabs({ tokenId, sharesBalance, listingPools, shareholderInfos, sharesTotalSupply, floorPrice, pricePerDay, isRentable }: any) {
     const [events, setEvents] = useState<MarketEvent[]>([]);
 
     useEffect(() => {
@@ -44,7 +44,7 @@ export default function AssetInvestTabs({ tokenId, sharesBalance, listingPools, 
                 </TabPanel>
                 <TabPanel>
                     <Box pt="1rem">
-                        <AssetInvestAnalyticsTab events={events} floorPrice={floorPrice} />
+                        <AssetInvestAnalyticsTab events={events} floorPrice={floorPrice} pricePerDay={pricePerDay} sharesTotalSupply={sharesTotalSupply} isRentable={isRentable} />
                     </Box>
                 </TabPanel>
                 <TabPanel>

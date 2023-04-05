@@ -31,7 +31,7 @@ export async function getServerSideProps(context: any) {
 export default function InvestPage({ allAssets }: any) {
     return (
         <Box>
-            <AssetTrendingHero />
+            <AssetTrendingHero asset={allAssets.length > 0 ? allAssets[0] : null} />
 
             <Box pt="4rem">
                 {!allAssets ? (

@@ -23,6 +23,7 @@ import { abi } from "@/helpers/BlockEstateAssets.json";
 import { assetsContractAddress } from "@/helpers/contractAddresses";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import confetti from "canvas-confetti";
 
 export default function CreateAssetButton({
     category,
@@ -50,7 +51,7 @@ export default function CreateAssetButton({
             category,
             street,
             number,
-            apNumber,
+            category === 0 ? apNumber : 0,
             city,
             zip,
             country,
@@ -73,6 +74,11 @@ export default function CreateAssetButton({
             if (from == "0x0000000000000000000000000000000000000000") {
                 const _tokenId = tokenId as any;
                 router.push(`/invest/${parseInt(_tokenId._hex)}`);
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                });
             }
         },
     });

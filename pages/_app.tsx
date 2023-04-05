@@ -17,7 +17,7 @@ const { provider, webSocketProvider, chains } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-    appName: "BlockEstate",
+    appName: "ImmoVerse",
     chains,
 });
 
