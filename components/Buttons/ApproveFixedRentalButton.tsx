@@ -38,7 +38,7 @@ export default function ApproveFixedRentalButton({
     const session = useSession();
     const router = useRouter();
 
-    const alreadyVoted = rental.approved.includes(session?.data?.user?.address);
+    const alreadyVoted = rental.approved.includes(session?.data?.user?.address!);
 
     const {
         config,
