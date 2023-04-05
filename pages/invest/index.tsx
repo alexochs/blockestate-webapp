@@ -41,7 +41,7 @@ export default function InvestPage({ allAssets }: any) {
                 ) : allAssets.length > 0 ? (
                     <SimpleGrid columns={[2, 3]} spacing="1rem">
                         {allAssets.map((asset: any) => (
-                            <AssetPreviewCard asset={asset} />
+                            <AssetPreviewCard key={asset.tokenId} asset={asset} />
                         ))}
                     </SimpleGrid>
                 ) : (

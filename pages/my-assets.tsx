@@ -100,12 +100,12 @@ export default function MyAssetsPage({ userAssets }: any) {
             {userAssets && userAssets.length > 0 ? (
                 <SimpleGrid columns={[2, 3]} spacing="1rem" mt="2rem">
                     {userAssets.map((asset: any) => (
-                        <AssetPreview asset={asset} />
+                        <AssetPreview key={asset.tokenId} asset={asset} />
                     ))}
                 </SimpleGrid>
             ) : (
                 <Center flexDir={"column"} mt="2rem">
-                    <Text fontSize="2xl">You don't own any assets yet.</Text>
+                    <Text fontSize="2xl">You don&apos;t own any assets yet.</Text>
 
                     <Flex pt="1rem">
                         <Link href="/assets/create">

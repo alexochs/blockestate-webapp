@@ -70,7 +70,7 @@ export default function InvestPage({ allAssets }: any) {
             ) : allAssets.filter((asset: Asset) => asset).length > 0 ? (
                 <SimpleGrid columns={[2, 3]} spacing="1rem">
                     {assets.map((asset: any) => (
-                        <AssetRentPreviewCard asset={asset} filterFixed={filterFixed} filterMonthly={filterMonthly} />
+                        <AssetRentPreviewCard key={asset.tokenId} asset={asset} filterFixed={filterFixed} filterMonthly={filterMonthly} />
                     ))}
                 </SimpleGrid>
             ) : (
