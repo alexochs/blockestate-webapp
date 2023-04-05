@@ -22,12 +22,12 @@ export default function Auth() {
         </Button>
     ) : (
         <Button
-            onClick={() => router.push("/profiles/" + session.data?.user!.address)}
+            onClick={() => router.push("/profiles/" + session.data?.user?.address)}
             rounded="full"
             colorScheme="blue"
             variant="outline"
         >
-            {session.data.user!.address.slice(0, 8) + "..."}
+            {session.data?.user?.address.slice(0, 8) + "..."}
         </Button>
     );
 }
