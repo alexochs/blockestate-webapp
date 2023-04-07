@@ -207,7 +207,7 @@ export default function Navbar({ account }: any) {
                                     <HStack w="100%" spacing="1rem" pl="1rem" py="1rem" roundedBottom={"3xl"} _hover={{ bg: "gray.100" }}>
                                         <Icon as={FaMoon} w="1.5rem" h="1.5rem" />
                                         <Text fontWeight={"bold"} fontSize={["lg"]}>Dark Mode</Text>
-                                        <Switch />
+                                        <Switch isDisabled={true} />
                                     </HStack>
                                 </VStack>
                             </PopoverBody>
