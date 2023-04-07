@@ -38,7 +38,6 @@ export default function AssetTrendingHero({ asset }: { asset: Asset }) {
         args: [asset.tokenId],
         onSuccess(result: any) {
             setPricePerMonth(parseInt(result._hex, 16) / 1e6 * 30);
-            alert(pricePerMonth);
         }
     });
 
