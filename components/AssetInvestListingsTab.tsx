@@ -16,6 +16,7 @@ export default function AssetInvestListingsTab({ tokenId, sharesBalance, listing
     const { isOpen: purchaseModalIsOpen, onOpen: purchaseModalOnOpen, onClose: purchaseModalOnClose } = useDisclosure();
 
     const [filter, setFilter] = useState(3);
+    const [selectedListingPool, setSelectedListingPool] = useState<SharesListingPool>();
 
     return (
         <Flex minH="25vh" w="100%">
@@ -85,7 +86,10 @@ export default function AssetInvestListingsTab({ tokenId, sharesBalance, listing
                                             </Box> :
                                             <Box>
                                                 <Button
-                                                    onClick={purchaseModalOnOpen}
+                                                    onClick={() => {
+                                                        setSelectedListingPool(listingPool);
+                                                        purchaseModalOnOpen();
+                                                    }}
                                                     rounded="full"
                                                     size="lg"
                                                     colorScheme="blue"
@@ -93,7 +97,7 @@ export default function AssetInvestListingsTab({ tokenId, sharesBalance, listing
                                                 >
                                                     Buy
                                                 </Button>
-                                                <PurchaseSharesListingPoolModal sharesListingPool={listingPool} isOpen={purchaseModalIsOpen} onClose={purchaseModalOnClose} />
+                                                <PurchaseSharesListingPoolModal sharesListingPool={selectedListingPool} isOpen={purchaseModalIsOpen} onClose={purchaseModalOnClose} />
                                             </Box>}
                                     </Td>
                                 </Tr>)}
