@@ -64,6 +64,10 @@ export default function Navbar({ account }: any) {
                                 Verse
                             </Heading >
                         </Flex>
+
+                        <Text border="1px" rounded="full" px=".5rem" py=".25rem" color="gray.500">
+                            Testnet Beta
+                        </Text>
                     </HStack>
                 </Link >
             </Center >
