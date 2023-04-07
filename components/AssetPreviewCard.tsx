@@ -6,7 +6,7 @@ export default function AssetPreview({ asset }: any) {
 
     return (
         <Link
-            href={"/invest/" + _asset.tokenId}
+            href={"/assets/" + _asset.tokenId}
             style={{ textDecoration: "none" }}
             _hover={{ transform: "scale(1.025)" }}
         >

@@ -11,7 +11,7 @@ export default function Footer() {
             </Center>
 
             <Center flex={1}>
-                <Link href="https://alexochs.de">
+                <Link href="https://alexochs.de" target="_blank">
                     <Text>Made with 💙 by Alex Ochs</Text>
                 </Link>
             </Center>

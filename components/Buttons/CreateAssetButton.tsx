@@ -73,7 +73,7 @@ export default function CreateAssetButton({
             console.log("Transfer", from, to, tokenId);
             if (from == "0x0000000000000000000000000000000000000000") {
                 const _tokenId = tokenId as any;
-                router.push(`/invest/${parseInt(_tokenId._hex)}`);
+                router.push(`/assets/${parseInt(_tokenId._hex)}`);
                 confetti({
                     particleCount: 100,
                     spread: 70,

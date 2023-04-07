@@ -53,6 +53,7 @@ import AssetDescription from "@/components/AssetDescription";
 import AssetInvestTabs from "@/components/AssetInvestTabs";
 import { SiOpensea } from "react-icons/si";
 import { ethers } from "ethers";
+import Head from "next/head";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -243,45 +244,50 @@ export default function RentAssetsPage({
     });
 
     return (
-        <Box>
-            <AssetHeader
-                asset={asset}
-            />
+        <>
+            <Head>
+                <title>{`${asset.street} ${asset.number} | ImmoVerse`}</title>
+            </Head>
+            <Box>
+                <AssetHeader
+                    asset={asset}
+                />
 
-            <AssetDescription
-                tokenId={tokenId}
-                sharesBalance={sharesBalance}
-                sharesTotalSupply={sharesTotalSupply}
-                shareholders={shareholders}
-                listingPools={listingPools}
-            />
+                <AssetDescription
+                    tokenId={tokenId}
+                    sharesBalance={sharesBalance}
+                    sharesTotalSupply={sharesTotalSupply}
+                    shareholders={shareholders}
+                    listingPools={listingPools}
+                />
 
-            <HStack pt="1rem" spacing="1rem">
-                <Link href={"/rent/" + tokenId} style={{ textDecoration: "none" }}>
-                    <Button rounded="full" variant="outline" size="lg" colorScheme="blue">
-                        Rent this asset
-                    </Button>
-                </Link>
-
-                {sharesBalance > 0 &&
-                    <Link href={"/shareholders/" + tokenId} style={{ textDecoration: "none" }}>
-                        <Button rounded="full" variant="outline" size="lg" color="gray.500">
-                            Shareholders Area
+                <HStack pt="1rem" spacing="1rem">
+                    <Link href={"/rent/" + tokenId} style={{ textDecoration: "none" }}>
+                        <Button rounded="full" variant="outline" size="lg" colorScheme="blue">
+                            Rent this asset
                         </Button>
-                    </Link>}
-            </HStack>
+                    </Link>
 
-            <AssetInvestTabs
-                sharesBalance={sharesBalance}
-                listingPools={listingPools}
-                tokenId={tokenId}
-                shareholderInfos={shareholderInfos}
-                sharesTotalSupply={sharesTotalSupply}
-                floorPrice={floorPrice}
-                pricePerMonth={pricePerMonth}
-                pricePerDay={pricePerDay}
-                isRentable={isRentable}
-            />
-        </Box >
+                    {sharesBalance > 0 &&
+                        <Link href={"/shareholders/" + tokenId} style={{ textDecoration: "none" }}>
+                            <Button rounded="full" variant="outline" size="lg" color="gray.500">
+                                Shareholders Area
+                            </Button>
+                        </Link>}
+                </HStack>
+
+                <AssetInvestTabs
+                    sharesBalance={sharesBalance}
+                    listingPools={listingPools}
+                    tokenId={tokenId}
+                    shareholderInfos={shareholderInfos}
+                    sharesTotalSupply={sharesTotalSupply}
+                    floorPrice={floorPrice}
+                    pricePerMonth={pricePerMonth}
+                    pricePerDay={pricePerDay}
+                    isRentable={isRentable}
+                />
+            </Box>
+        </>
     );
 }

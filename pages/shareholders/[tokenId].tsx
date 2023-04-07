@@ -7,6 +7,7 @@ import { getSession } from "next-auth/react";
 import { Box, Center, Flex, Image, Heading, HStack, Link, Stack, Stat, StatArrow, StatHelpText, Text, Spacer, Button, Divider } from "@chakra-ui/react";
 import SetFixedRentableButton from "@/components/Buttons/SetFixedRentableButton";
 import ApproveFixedRentalButton from "@/components/Buttons/ApproveFixedRentalButton";
+import Head from "next/head";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -102,9 +103,13 @@ export default function ShareholdersPage({ user, asset, fixedRentals, isRentable
 
     return (
         <Box>
+            <Head>
+                <title>{`${asset.street + " " + asset.number} Shareolders Area | ImmoVerse`}</title>
+            </Head>
+
             <Heading fontSize="8xl">Shareholders Area</Heading>
 
-            <Link href={"/invest/" + asset.tokenId} style={{ textDecoration: "none" }}>
+            <Link href={"/assets/" + asset.tokenId} style={{ textDecoration: "none" }}>
                 <Box pt="1rem">
                     <Flex p="1rem" border="1px solid rgb(0, 0, 0, 0.2)" rounded="3xl" _hover={{ background: "gray.100" }}>
                         <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/e5596519-efcf-4a65-bd12-3191ebd33ee6.jpeg" fit="cover" h="8rem" w="8rem" rounded="2xl" />

@@ -74,26 +74,26 @@ export default function Navbar({ account }: any) {
 
             <Center flex={1}>
                 <HStack spacing="4rem">
-                    <Link href="/invest" style={{ textDecoration: "none" }}>
+                    <Link href="/assets" style={{ textDecoration: "none" }}>
                         <Button
-                            color={router.asPath.includes("/invest")
+                            color={router.asPath.includes("/assets")
                                 ? "blue.500"
                                 : ""}
                             rounded="full"
-                            variant={router.asPath.includes("/invest")
+                            variant={router.asPath.includes("/assets")
                                 ? "outline"
                                 : "ghost"}
                             fontWeight={
-                                router.asPath.includes("/invest")
+                                router.asPath.includes("/assets")
                                     ? "bold"
                                     : "normal"
                             }
                         >
-                            Invest
+                            Assets
                         </Button>
                     </Link>
 
-                    <Link href="/rent" style={{ textDecoration: "none" }}>
+                    {/*<Link href="/rent" style={{ textDecoration: "none" }}>
                         <Button
                             color={router.asPath.includes("/rent")
                                 ? "blue.500"
@@ -110,7 +110,7 @@ export default function Navbar({ account }: any) {
                         >
                             Rent
                         </Button>
-                    </Link>
+                    </Link>*/}
                 </HStack>
             </Center>
 
@@ -130,7 +130,7 @@ export default function Navbar({ account }: any) {
                                             rounded="full"
                                         />
 
-                                        <Text>{session?.data?.user?.address ? session?.data?.user?.address?.slice(2, 8) : "..."}</Text>
+                                        <Text>{session?.data?.user?.address ? session?.data?.user?.address?.slice(0, 8) : "..."}</Text>
                                     </HStack>
                                 </Button> :
                                 <Box>

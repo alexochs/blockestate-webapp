@@ -10,7 +10,7 @@ export default function Home() {
     return (
         <>
             <Head>
-                <title>ImmoVerse</title>
+                <title>ImmoVerse | Real Estate Investing Made Easy</title>
                 <meta
                     name="description"
                     content="ImmoVerse: An Ethereum-based Real Estate Protocol. Made by Alex Ochs."

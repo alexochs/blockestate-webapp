@@ -9,6 +9,7 @@ import { useAuthRequestChallengeEvm } from "@moralisweb3/next";
 import { Box, Button, Center, Heading, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { baseGoerli, polygonMumbai } from "wagmi/chains";
+import Head from "next/head";
 
 function SignIn() {
     const { connectAsync } = useConnect();
@@ -51,6 +52,9 @@ function SignIn() {
 
     return (
         <Center h="80vh">
+            <Head>
+                <title>Sign In | ImmoVerse</title>
+            </Head>
             <VStack spacing="1rem">
                 <Heading fontSize="6xl" pb="1rem">
                     Connect your wallet

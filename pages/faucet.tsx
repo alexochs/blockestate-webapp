@@ -9,6 +9,7 @@ import { readContract } from "@wagmi/core";
 import AssetPreview from "@/components/AssetPreviewCard";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import router from "next/router";
+import Head from "next/head";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -54,28 +55,33 @@ export default function FaucetPage({ user }: any) {
     });
 
     return (
-        <Box>
-            <Heading fontSize="8xl" mb="2rem">Faucet</Heading>
+        <>
+            <Head>
+                <title>Faucet | ImmoVerse</title>
+            </Head>
+            <Box>
+                <Heading fontSize="8xl" mb="2rem">Faucet</Heading>
 
-            <Flex>
-                <Box w="50%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl" p="1rem" h="20rem">
-                    <Heading>
-                        Drip some MATIC
-                    </Heading>
+                <Flex>
+                    <Box w="50%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl" p="1rem" h="20rem">
+                        <Heading>
+                            Drip some MATIC
+                        </Heading>
 
-                    <Link href="https://faucet.polygon.technology/" target="_blank" style={{ textDecoration: "none" }}>
-                        <Button mt="2rem" size="lg" w="100%" rounded="full" colorScheme="blue">Polygon Faucet</Button>
-                    </Link>
-                </Box>
+                        <Link href="https://faucet.polygon.technology/" target="_blank" style={{ textDecoration: "none" }}>
+                            <Button mt="2rem" size="lg" w="100%" rounded="full" colorScheme="blue">Polygon Faucet</Button>
+                        </Link>
+                    </Box>
 
-                <Box ml="1rem" w="50%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl" p="1rem" h="20rem">
-                    <Heading>
-                        Mint USD Tokens
-                    </Heading>
+                    <Box ml="1rem" w="50%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl" p="1rem" h="20rem">
+                        <Heading>
+                            Mint USD Tokens
+                        </Heading>
 
-                    <Button isLoading={isLoading} isDisabled={!write || !user} onClick={() => write?.()} mt="2rem" size="lg" w="100%" rounded="full" colorScheme="blue">Mint {(100_000).toLocaleString()}$</Button>
-                </Box>
-            </Flex>
-        </Box >
+                        <Button isLoading={isLoading} isDisabled={!write || !user} onClick={() => write?.()} mt="2rem" size="lg" w="100%" rounded="full" colorScheme="blue">Mint {(100_000).toLocaleString()}$</Button>
+                    </Box>
+                </Flex>
+            </Box>
+        </>
     );
 }

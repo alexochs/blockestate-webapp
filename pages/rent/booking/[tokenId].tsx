@@ -60,6 +60,7 @@ import RentalInfoFloatingCard from "@/components/RentalInfoFloatingCard";
 import ApproveFixedRentalButton from "@/components/Buttons/ApproveFixedRentalButton";
 import CreateFixedRentalButton from "@/components/Buttons/CreateFixedRentalButton";
 import { abi as usdAbi } from "@/helpers/USDToken.json";
+import Head from "next/head";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -262,29 +263,33 @@ export default function BookingAssetPage({
     }, []);
 
     return (
-        <Box>
-            <HStack>
-                <IconButton w="3rem" h="3rem" cursor="pointer" variant="ghost" rounded="full" aria-label="back" as={ChevronLeftIcon} onClick={() => router.push("/rent/" + tokenId)}>{"<"}</IconButton>
-                <Heading fontSize="6xl">Approve and deposit</Heading>
-            </HStack>
+        <>
+            <Head>
+                <title>{`Booking ${asset.street} ${asset.number} | ImmoVerse`}</title>
+            </Head>
+            <Box>
+                <HStack>
+                    <IconButton w="3rem" h="3rem" cursor="pointer" variant="ghost" rounded="full" aria-label="back" as={ChevronLeftIcon} onClick={() => router.push("/rent/" + tokenId)}>{"<"}</IconButton>
+                    <Heading fontSize="6xl">Approve and deposit</Heading>
+                </HStack>
 
-            <Flex mt="2rem">
-                <Box w="60%" mr="2rem">
-                    <Box>
-                        <Heading size="2xl">Your stay</Heading>
+                <Flex mt="2rem">
+                    <Box w="60%" mr="2rem">
+                        <Box>
+                            <Heading size="2xl">Your stay</Heading>
 
-                        <Box pt="1rem">
-                            <Heading fontSize="xl">Check-in</Heading>
-                            <Text>{new Date(Number(checkinDate)).toISOString()}</Text>
+                            <Box pt="1rem">
+                                <Heading fontSize="xl">Check-in</Heading>
+                                <Text>{new Date(Number(checkinDate)).toISOString()}</Text>
+                            </Box>
+
+                            <Box pt="1rem">
+                                <Heading fontSize="xl">Check-out</Heading>
+                                <Text>{new Date(Number(checkoutDate)).toISOString()}</Text>
+                            </Box>
                         </Box>
 
-                        <Box pt="1rem">
-                            <Heading fontSize="xl">Check-out</Heading>
-                            <Text>{new Date(Number(checkoutDate)).toISOString()}</Text>
-                        </Box>
-                    </Box>
-
-                    {/*<Box pt="4rem">
+                        {/*<Box pt="4rem">
                         <Heading size="2xl">1. Approve funds for transfer</Heading>
 
                         <Text mt="2rem">Allow the BlockEstate Rentals contract to transfer your funds on your behalf.<br />This is necessary for your reservation and will not transfer any funds immediately.</Text>
@@ -311,36 +316,37 @@ export default function BookingAssetPage({
                         {prepareAllowanceError && <Text pt="1rem" color="red">Error: {prepareAllowanceError?.message}</Text>}
                     </Box>*/}
 
-                    <Box pt="4rem">
-                        <Heading size="2xl">Request your reservation</Heading>
+                        <Box pt="4rem">
+                            <Heading size="2xl">Request your reservation</Heading>
 
-                        <Text mt="2rem">Shareholders will be able to approve your reservation.<br />Your reservation will be canceled if you do not have enough funds deposited upon approval.</Text>
+                            <Text mt="2rem">Shareholders will be able to approve your reservation.<br />Your reservation will be canceled if you do not have enough funds deposited upon approval.</Text>
 
-                        <Button
-                            h="4rem"
-                            mt="2rem"
-                            w="75%"
-                            size="lg"
-                            rounded="full"
-                            colorScheme={"blue"}
-                            variant="solid"
-                            isDisabled={!write || prepareError != null || !session.data}
-                            isLoading={isLoading}
-                            onClick={() => write?.()}>
-                            <Center>
-                                <Icon as={BiHappyBeaming} w={"1.75rem"} h={"1.75rem"} mr=".5rem" />
-                                <Text fontSize="xl" >
-                                    Request reservation
-                                </Text>
-                            </Center>
-                        </Button>
+                            <Button
+                                h="4rem"
+                                mt="2rem"
+                                w="75%"
+                                size="lg"
+                                rounded="full"
+                                colorScheme={"blue"}
+                                variant="solid"
+                                isDisabled={!write || prepareError != null || !session.data}
+                                isLoading={isLoading}
+                                onClick={() => write?.()}>
+                                <Center>
+                                    <Icon as={BiHappyBeaming} w={"1.75rem"} h={"1.75rem"} mr=".5rem" />
+                                    <Text fontSize="xl" >
+                                        Request reservation
+                                    </Text>
+                                </Center>
+                            </Button>
 
-                        {isPrepareError && <Text pt="1rem" color="red">{prepareError?.message}</Text>}
+                            {isPrepareError && <Text pt="1rem" color="red">{prepareError?.message}</Text>}
+                        </Box>
                     </Box>
-                </Box>
 
-                <RentalInfoFloatingCard pricePerDay={pricePerDay} asset={asset} days={days} />
-            </Flex>
-        </Box>
+                    <RentalInfoFloatingCard pricePerDay={pricePerDay} asset={asset} days={days} />
+                </Flex>
+            </Box>
+        </>
     );
 }

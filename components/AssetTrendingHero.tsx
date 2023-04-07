@@ -64,7 +64,7 @@ export default function AssetTrendingHero({ asset }: { asset: Asset }) {
 
     if (!loading) {
         return (
-            <Link href={"/invest/" + asset.tokenId} cursor="pointer" style={{ textDecoration: "none" }}>
+            <Link href={"/assets/" + asset.tokenId} cursor="pointer" style={{ textDecoration: "none" }}>
                 <Box w="100%"
                     rounded="3xl"
                     h="65vh"

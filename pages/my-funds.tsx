@@ -11,6 +11,7 @@ import AssetPreview from "@/components/AssetPreviewCard";
 import { useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -139,6 +140,10 @@ export default function MyFundsPage({ user, usdBalance, fundsBalance }: any) {
 
     return (
         <Box>
+            <Head>
+                <title>My Funds | ImmoVerse</title>
+            </Head>
+
             <Heading fontSize="8xl" mb="2rem">My Funds</Heading>
 
             <Flex h="8rem" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">

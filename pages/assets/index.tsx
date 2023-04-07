@@ -6,6 +6,7 @@ import { readContract } from "@wagmi/core";
 import { getSession } from "next-auth/react";
 import { Asset } from "@/helpers/types";
 import AssetTrendingHero from "@/components/AssetTrendingHero";
+import Head from "next/head";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -30,27 +31,32 @@ export async function getServerSideProps(context: any) {
 
 export default function InvestPage({ allAssets }: any) {
     return (
-        <Box>
-            <AssetTrendingHero asset={allAssets.length > 0 ? allAssets[0] : null} />
+        <>
+            <Head>
+                <title>Assets | ImmoVerse</title>
+            </Head>
+            <Box>
+                <AssetTrendingHero asset={allAssets.length > 0 ? allAssets[0] : null} />
 
-            <Box pt="4rem">
-                {!allAssets ? (
-                    <Center>
-                        <Spinner size="xl" />
-                    </Center>
-                ) : allAssets.length > 0 ? (
-                    <SimpleGrid columns={[2, 3]} spacing="1rem">
-                        {allAssets.map((asset: any) => (
-                            <AssetPreviewCard key={asset.tokenId} asset={asset} />
-                        ))}
-                    </SimpleGrid>
-                ) : (
-                    <Center flexDir={"column"}>
-                        <Text>No assets have been tokenized yet.</Text>
-                        <Text fontWeight={"bold"}>Be the first one!</Text>
-                    </Center>
-                )}
+                <Box pt="4rem">
+                    {!allAssets ? (
+                        <Center>
+                            <Spinner size="xl" />
+                        </Center>
+                    ) : allAssets.length > 0 ? (
+                        <SimpleGrid columns={[2, 3]} spacing="1rem">
+                            {allAssets.map((asset: any) => (
+                                <AssetPreviewCard key={asset.tokenId} asset={asset} />
+                            ))}
+                        </SimpleGrid>
+                    ) : (
+                        <Center flexDir={"column"}>
+                            <Text>No assets have been tokenized yet.</Text>
+                            <Text fontWeight={"bold"}>Be the first one!</Text>
+                        </Center>
+                    )}
+                </Box>
             </Box>
-        </Box >
+        </>
     );
 }

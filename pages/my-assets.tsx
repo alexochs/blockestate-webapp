@@ -6,6 +6,7 @@ import { getSession } from "next-auth/react";
 import { Asset } from "@/helpers/types";
 import { readContract } from "@wagmi/core";
 import AssetPreview from "@/components/AssetPreviewCard";
+import Head from "next/head";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -85,41 +86,47 @@ export async function getServerSideProps(context: any) {
 
 export default function MyAssetsPage({ userAssets }: any) {
     return (
-        <Box>
-            <Heading fontSize="8xl" mb="2rem">My Assets</Heading>
+        <>
+            <Head>
+                <title>My Assets | ImmoVerse</title>
+            </Head>
+            <Box>
+                <Heading fontSize="8xl" mb="2rem">My Assets</Heading>
 
-            <Link
-                href="/assets/create"
-                style={{ textDecoration: "none" }}
-            >
-                <Button rounded="full" size="lg" variant="outline" color="gray.600">
-                    Tokenize your asset
-                </Button>
-            </Link>
+                <Link
+                    href="/assets/create"
+                    style={{ textDecoration: "none" }}
+                >
+                    <Button rounded="full" size="lg" variant="outline" color="gray.600">
+                        Tokenize your asset
+                    </Button>
+                </Link>
 
-            {userAssets && userAssets.length > 0 ? (
-                <SimpleGrid columns={[2, 3]} spacing="1rem" mt="2rem">
-                    {userAssets.map((asset: any) => (
-                        <AssetPreview key={asset.tokenId} asset={asset} />
-                    ))}
-                </SimpleGrid>
-            ) : (
-                <Center flexDir={"column"} mt="2rem">
-                    <Text fontSize="2xl">You don&apos;t own any assets yet.</Text>
+                {userAssets && userAssets.length > 0 ? (
+                    <SimpleGrid columns={[2, 3]} spacing="1rem" mt="2rem">
+                        {userAssets.map((asset: any) => (
+                            <AssetPreview key={asset.tokenId} asset={asset} />
+                        ))}
+                    </SimpleGrid>
+                ) : (
+                    <Center flexDir={"column"} mt="2rem">
+                        <Text fontSize="2xl">You don&apos;t own any assets yet.</Text>
 
-                    <Flex pt="1rem">
-                        <Link href="/assets/create">
-                            <Text fontWeight="bold">Tokenize your asset&nbsp;</Text>
-                        </Link>
+                        <Flex pt="1rem">
+                            <Link href="/assets/create">
+                                <Text fontWeight="bold">Tokenize your asset&nbsp;</Text>
+                            </Link>
 
-                        <Text>or&nbsp;</Text>
+                            <Text>or&nbsp;</Text>
 
-                        <Link href="/invest">
-                            <Text fontWeight="bold">buy some shares.</Text>
-                        </Link>
-                    </Flex>
-                </Center>
-            )}
-        </Box>
+                            <Link href="/assets">
+                                <Text fontWeight="bold">buy some shares.</Text>
+                            </Link>
+                        </Flex>
+                    </Center>
+                )}
+            </Box>
+        </>
+
     );
 }
