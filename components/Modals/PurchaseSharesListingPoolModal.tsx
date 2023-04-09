@@ -56,13 +56,13 @@ export default function PurchaseSharesListingPoolModal({
                         </Center>
 
 
-                        <Text fontSize="lg">
+                        {sharesListingPool && <Text fontSize="lg">
                             Price per share: {(sharesListingPool.price / 1e6).toLocaleString() + "$"}
-                        </Text>
+                        </Text>}
 
-                        <Text fontSize="lg" fontWeight="bold">
+                        {sharesListingPool && <Text fontSize="lg" fontWeight="bold">
                             Total: {(sharesListingPool.price * amount / 1e6).toLocaleString() + "$"}
-                        </Text>
+                        </Text>}
                     </VStack>
                 </ModalBody>
 

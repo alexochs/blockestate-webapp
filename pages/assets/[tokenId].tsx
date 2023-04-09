@@ -127,33 +127,11 @@ export async function getServerSideProps(context: any) {
         .map((listingPoolData: any) => SharesListingPool.fromSingleEntry(listingPoolData))
         .filter((listingPool: SharesListingPool) => listingPool.tokenId != 0 && listingPool.amount > 0);
 
-    // read all group investments
-    const groupInvestmentsData = (await readContract({
-        address: marketContractAddress,
-        abi: marketAbi,
-        functionName: "readAllGroupInvestments",
-    })) as any;
-
-    const groupInvestments = groupInvestmentsData
-        .map((groupInvestmentData: any) =>
-            GroupInvestment.fromSingleEntry(groupInvestmentData)
-        )
-        .filter((groupInvestment: GroupInvestment) =>
-            groupInvestment.investors.includes(session?.user?.address)
-        );
-
     // read rentable and price per day of asset
     const isRentable = (await readContract({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "isRentable",
-        args: [tokenId],
-    })) as any;
-
-    const isMonthlyRentable = (await readContract({
-        address: rentalsContractAddress,
-        abi: rentalsAbi,
-        functionName: "isMonthlyRentable",
         args: [tokenId],
     })) as any;
 
@@ -173,25 +151,6 @@ export async function getServerSideProps(context: any) {
     })) as any;
     const pricePerMonth = parseInt(pricePerMonthData._hex, 16);
 
-    // read rentals of asset
-    const fixedRentalsData = (await readContract({
-        address: rentalsContractAddress,
-        abi: rentalsAbi,
-        functionName: "readFixedRentalsByToken",
-        args: [tokenId],
-    })) as any;
-    const fixedRentals = fixedRentalsData.map((entry: any) => new FixedRental(entry));
-
-    const monthlyRentalsData = (await readContract({
-        address: rentalsContractAddress,
-        abi: rentalsAbi,
-        functionName: "readMonthlyRentalsByToken",
-        args: [tokenId],
-    })) as any;
-    const monthlyRentals = monthlyRentalsData.map((entry: any) => new MonthlyRental(entry));
-
-    console.log(listingPools);
-
     // return props to page
     return {
         props: {
@@ -200,12 +159,8 @@ export async function getServerSideProps(context: any) {
             sharesTotalSupply,
             shareholders,
             listingPools: JSON.parse(JSON.stringify(listingPools)),
-            userGroupInvestments: JSON.parse(JSON.stringify(groupInvestments)),
-            fixedRentals: JSON.parse(JSON.stringify(fixedRentals)),
             isRentable,
             pricePerDay,
-            monthlyRentals: JSON.parse(JSON.stringify(monthlyRentals)),
-            isMonthlyRentable,
             pricePerMonth,
             shareholderInfos,
         },
@@ -218,12 +173,8 @@ export default function RentAssetsPage({
     sharesTotalSupply,
     shareholders,
     listingPools,
-    userGroupInvestments,
-    fixedRentals,
     isRentable,
     pricePerDay,
-    monthlyRentals,
-    isMonthlyRentable,
     pricePerMonth,
     shareholderInfos
 }: any) {
