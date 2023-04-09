@@ -10,6 +10,7 @@ import Moralis from "moralis";
 import Layout from "@/components/Layout/Layout";
 import "@fontsource/poppins/400.css";
 import "@fontsource/poppins/700.css";
+import { Analytics } from '@vercel/analytics/react';
 
 const { provider, webSocketProvider, chains } = configureChains(
     [polygonMumbai],
@@ -54,6 +55,7 @@ export default function App({ Component, pageProps }: AppProps) {
                     </RainbowKitProvider>
                 </SessionProvider>
             </WagmiConfig>
+            <Analytics />
         </ChakraProvider>
     );
 }
