@@ -54,7 +54,8 @@ export default function AssetTrendingHero({ asset }: { asset: Asset }) {
         for (const sale of sales) {
             salesVolume += sale.price * sale.amount;
         }
-        setSalesVolume(salesVolume);
+
+        setSalesVolume(salesVolume / 1e6);
     }
 
     useEffect(() => {

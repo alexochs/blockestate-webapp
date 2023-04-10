@@ -7,56 +7,59 @@ import { getSession } from "next-auth/react";
 import { Asset } from "@/helpers/types";
 import AssetTrendingHero from "@/components/AssetTrendingHero";
 import Head from "next/head";
+import { useContractRead } from "wagmi";
+import { useState } from "react";
 
-export async function getServerSideProps(context: any) {
-    const session = await getSession(context);
+export default function InvestPage() {
+    const [allAssets, setAllAssets] = useState([]);
+    const [loadingAssets, setLoadingAssets] = useState(true);
 
-    const allAssetsData = (await readContract({
+    const readAllAssets = useContractRead({
         address: assetsContractAddress,
         abi: assetsAbi,
         functionName: "readAllAssets",
-    })) as any;
+        onSuccess: (allAssetsData: any) => {
+            setAllAssets(
+                allAssetsData.map((asset: any) =>
+                    Asset.fromSingleEntry(asset)
+                )
+            )
 
-    const allAssets = allAssetsData.map((asset: any) =>
-        Asset.fromSingleEntry(asset)
-    );
-
-
-    return {
-        props: {
-            allAssets: JSON.parse(JSON.stringify(allAssets)),
+            setLoadingAssets(false);
         },
-    };
-}
+    });
 
-export default function InvestPage({ allAssets }: any) {
     return (
         <>
             <Head>
                 <title>Assets | ImmoVerse</title>
             </Head>
-            <Box>
-                <AssetTrendingHero asset={allAssets.length > 0 ? allAssets[0] : null} />
+            {loadingAssets ?
+                <Center minH="50vh">
+                    <Spinner size="xl" />
+                </Center> :
+                <Box>
+                    {allAssets.length > 0 && <AssetTrendingHero asset={allAssets[0]} />}
 
-                <Box pt="4rem">
-                    {!allAssets ? (
-                        <Center>
-                            <Spinner size="xl" />
-                        </Center>
-                    ) : allAssets.length > 0 ? (
-                        <SimpleGrid columns={[2, 3]} spacing="1rem">
-                            {allAssets.map((asset: any) => (
-                                <AssetPreviewCard key={asset.tokenId} asset={asset} />
-                            ))}
-                        </SimpleGrid>
-                    ) : (
-                        <Center flexDir={"column"}>
-                            <Text>No assets have been tokenized yet.</Text>
-                            <Text fontWeight={"bold"}>Be the first one!</Text>
-                        </Center>
-                    )}
-                </Box>
-            </Box>
+                    <Box pt="4rem">
+                        {!allAssets ? (
+                            <Center>
+                                <Spinner size="xl" />
+                            </Center>
+                        ) : allAssets.length > 0 ? (
+                            <SimpleGrid columns={[2, 3]} spacing="1rem">
+                                {allAssets.map((asset: any) => (
+                                    <AssetPreviewCard key={asset.tokenId} asset={asset} />
+                                ))}
+                            </SimpleGrid>
+                        ) : (
+                            <Center flexDir={"column"}>
+                                <Text>No assets have been tokenized yet.</Text>
+                                <Text fontWeight={"bold"}>Be the first one!</Text>
+                            </Center>
+                        )}
+                    </Box>
+                </Box>}
         </>
     );
 }
