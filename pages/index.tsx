@@ -1,19 +1,41 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
-import { Button, Center, Flex, Heading, HStack, Icon, Link, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Center, Flex, Heading, HStack, Icon, Link, Text, VStack } from "@chakra-ui/react";
 import { FaHome } from "react-icons/fa";
-
-const inter = Inter({ subsets: ["latin"] });
+import { useContractRead } from "wagmi";
+import { useState } from "react";
+import { assetsContractAddress } from "@/helpers/contractAddresses";
+import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
+import { Asset } from "@/helpers/types";
+import AssetTrendingHero from "@/components/AssetTrendingHero";
 
 export default function Home() {
+    const [allAssets, setAllAssets] = useState<Asset[]>([]);
+    const [loadingAssets, setLoadingAssets] = useState(true);
+
+    const readAllAssets = useContractRead({
+        address: assetsContractAddress,
+        abi: assetsAbi,
+        functionName: "readAllAssets",
+        onSuccess: (allAssetsData: any) => {
+            setAllAssets(
+                allAssetsData.map((asset: any) =>
+                    Asset.fromSingleEntry(asset)
+                )
+            )
+
+            setLoadingAssets(false);
+        },
+    });
+
     return (
         <>
             <Head>
                 <title>ImmoVerse | Real Estate Investing Made Easy</title>
                 <meta
                     name="description"
-                    content="ImmoVerse: An Ethereum-based Real Estate Protocol. Made by Alex Ochs."
+                    content="ImmoVerse is a decentralized real estate marketplace. Invest in real estate, find your new home, and more. 100% on-chain. 100% transparent. 100% secure."
                 />
                 <meta
                     name="viewport"
@@ -22,26 +44,14 @@ export default function Home() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-                <Center h="80vh" flexDir="column">
-                    <HStack spacing="1rem">
-                        {/*<Icon as={FaHome} w="8rem" h="8rem" bg="blue.500" p=".75rem" rounded="full" color="white" />*/}
-                        <Flex>
-                            <Heading fontSize="8xl">
-                                Immo
-                            </Heading >
-                            <Heading color="cyan.400" fontSize="8xl">
-                                Verse
-                            </Heading >
-                        </Flex>
-                    </HStack>
+                <Box>
+                    {allAssets.length > 0 && <AssetTrendingHero asset={allAssets[0]} />}
 
-                    <VStack spacing=".5rem" fontSize="3xl" pt="2rem" color="gray.600">
-                        <Text>Invest in real estate.</Text>
-                        <Text>Find your new home.</Text>
-                        <Text>100% on-chain.</Text>
-                    </VStack>
-                </Center>
-            </main>
+                    {/*<Box mt="2rem" p="1rem" bg="gray.100" rounded="3xl">
+                        <Heading>Trending</Heading>
+                    </Box>*/}
+                </Box>
+            </main >
         </>
     );
 }

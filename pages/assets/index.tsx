@@ -39,9 +39,7 @@ export default function InvestPage() {
                     <Spinner size="xl" />
                 </Center> :
                 <Box>
-                    {allAssets.length > 0 && <AssetTrendingHero asset={allAssets[0]} />}
-
-                    <Box pt="4rem">
+                    <Box>
                         {!allAssets ? (
                             <Center>
                                 <Spinner size="xl" />

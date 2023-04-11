@@ -8,8 +8,8 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import Moralis from "moralis";
 import Layout from "@/components/Layout/Layout";
-import "@fontsource/poppins/400.css";
-import "@fontsource/poppins/700.css";
+import "@fontsource/raleway/400.css";
+import "@fontsource/raleway/700.css";
 import { Analytics } from '@vercel/analytics/react';
 
 const { provider, webSocketProvider, chains } = configureChains(
@@ -35,8 +35,8 @@ const client = createClient({
 
 const theme = extendTheme({
     fonts: {
-        heading: `'Poppins', sans-serif`,
-        body: `'Poppins', sans-serif`,
+        heading: `'Raleway', sans-serif`,
+        body: `'Raleway', sans-serif`,
     },
 })
 
