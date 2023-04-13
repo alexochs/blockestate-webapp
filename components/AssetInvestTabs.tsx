@@ -29,7 +29,7 @@ export default function AssetInvestTabs({ tokenId, sharesBalance, listingPools, 
 
     return (
         <Tabs pt="2rem" colorScheme="blue">
-            <TabList>
+            <TabList overflowX="scroll" w={["100vw", "auto"]} ml={["-5vw", "0"]}>
                 <Tab roundedTop="2xl" fontWeight="bold" fontSize="lg">Listings</Tab>
                 <Tab roundedTop="2xl" fontWeight="bold" fontSize="lg">Analytics</Tab>
                 <Tab roundedTop="2xl" fontWeight="bold" fontSize="lg">Activity</Tab>

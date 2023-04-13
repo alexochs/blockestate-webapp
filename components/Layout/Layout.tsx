@@ -13,7 +13,7 @@ export default function Layout({ children }: any) {
     return (
         <Box color="gray.700" bg="gray.50">
             <Navbar account={account} />
-            <Box minH="90vh" px="10vw" pt="15vh" pb="5vh">
+            <Box minH="90vh" px={["5vw", "10vw"]} pt="15vh" pb="5vh">
                 <main>{children}</main>
             </Box>
             <Footer />

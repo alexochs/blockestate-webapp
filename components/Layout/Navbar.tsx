@@ -21,6 +21,7 @@ import {
     Text,
     Image,
     VStack,
+    useMediaQuery,
 } from "@chakra-ui/react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -32,6 +33,8 @@ import { useAccount, useBalance, useContractRead, useEnsAvatar, useEnsName } fro
 import Auth from "../Auth";
 
 export default function Navbar({ account }: any) {
+    const isMobile = useMediaQuery("(max-width: 768px)")[0];
+
     const session = useSession();
     const router = useRouter();
 
@@ -50,7 +53,7 @@ export default function Navbar({ account }: any) {
     });
 
     return (
-        <Flex roundedBottom="full" w="100vw" px="10vw" h="10vh" borderBottom="1px solid rgb(0, 0, 0, 0.1)" position="fixed" zIndex={1} backdropFilter={"blur(0.5rem)"} bg="rgb(255, 255, 255, 0.9)"
+        <Flex roundedBottom={["3xl", "full"]} w="100vw" px={["10vw", "10vw"]} h="10vh" borderBottom="1px solid rgb(0, 0, 0, 0.1)" position="fixed" zIndex={1} backdropFilter={"blur(0.5rem)"} bg="rgb(255, 255, 255, 0.9)"
         >
             <Center flex={1}>
                 <Link href="/" style={{ textDecoration: "none" }}>
@@ -65,14 +68,14 @@ export default function Navbar({ account }: any) {
                             </Heading >
                         </Flex>
 
-                        <Text border="1px" rounded="full" px=".5rem" py=".25rem" color="gray.500">
+                        {/*<Text border="1px" rounded="full" px=".5rem" py=".25rem" color="gray.500">
                             Testnet Beta
-                        </Text>
+                        </Text>*/}
                     </HStack>
                 </Link >
             </Center >
 
-            <Center flex={1}>
+            {!isMobile && <Center flex={1}>
                 <HStack spacing="4rem">
                     <Link href="/assets" style={{ textDecoration: "none" }}>
                         <Button
@@ -112,9 +115,9 @@ export default function Navbar({ account }: any) {
                         </Button>
                     </Link>*/}
                 </HStack>
-            </Center>
+            </Center>}
 
-            <Center flex={1}>
+            {true && <Center flex={1} justifyContent="end">
                 <Box cursor="pointer">
                     <Popover trigger="hover">
                         <PopoverTrigger>
@@ -220,7 +223,7 @@ export default function Navbar({ account }: any) {
                 </Box>
 
                 {/*<Auth />*/}
-            </Center>
+            </Center>}
         </Flex >
     );
 }

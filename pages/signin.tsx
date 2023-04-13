@@ -6,12 +6,14 @@ import { signIn } from "next-auth/react";
 import { useAccount, useConnect, useSignMessage, useDisconnect } from "wagmi";
 import { useRouter } from "next/router";
 import { useAuthRequestChallengeEvm } from "@moralisweb3/next";
-import { Box, Button, Center, Heading, VStack } from "@chakra-ui/react";
+import { Box, Button, Center, Heading, useMediaQuery, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { baseGoerli, polygonMumbai } from "wagmi/chains";
 import Head from "next/head";
 
 function SignIn() {
+    const isMobile = useMediaQuery("(max-width: 768px)")[0];
+
     const { connectAsync } = useConnect();
     const { disconnectAsync } = useDisconnect();
     const { isConnected } = useAccount();
@@ -55,73 +57,78 @@ function SignIn() {
             <Head>
                 <title>Sign In | ImmoVerse</title>
             </Head>
-            <VStack spacing="1rem">
-                <Heading fontSize="6xl" pb="1rem">
-                    Connect your wallet
-                </Heading>
 
-                <Button
-                    onClick={() => handleAuth(new MetaMaskConnector())}
-                    rounded="full"
-                    w="16rem"
-                    size="lg"
-                    variant="outline"
-                >
-                    Metamask
-                </Button>
+            {!isMobile ?
+                <VStack spacing="1rem">
+                    <Heading fontSize="6xl" pb="1rem" textAlign={"center"}>
+                        Connect your wallet
+                    </Heading>
 
-                <Button
-                    onClick={() =>
-                        handleAuth(
-                            new WalletConnectConnector({
-                                options: { qrcode: true },
-                            })
-                        )
-                    }
-                    rounded="full"
-                    w="16rem"
-                    size="lg"
-                    variant="outline"
-                >
-                    WalletConnect
-                </Button>
+                    <Button
+                        onClick={() => handleAuth(new MetaMaskConnector())}
+                        rounded="full"
+                        w="16rem"
+                        size="lg"
+                        variant="outline"
+                    >
+                        Metamask
+                    </Button>
 
-                <Button
-                    onClick={() =>
-                        handleAuth(
-                            new CoinbaseWalletConnector({
-                                options: {
-                                    appName: "wagmi.sh",
-                                    jsonRpcUrl:
-                                        "https://eth-mainnet.alchemyapi.io/v2/yourAlchemyId",
-                                },
-                            })
-                        )
-                    }
-                    rounded="full"
-                    w="16rem"
-                    size="lg"
-                    variant="outline"
-                >
-                    Coinbase
-                </Button>
+                    <Button
+                        onClick={() =>
+                            handleAuth(
+                                new WalletConnectConnector({
+                                    options: { qrcode: true },
+                                })
+                            )
+                        }
+                        rounded="full"
+                        w="16rem"
+                        size="lg"
+                        variant="outline"
+                    >
+                        WalletConnect
+                    </Button>
 
-                <Button
-                    onClick={() =>
-                        handleAuth(
-                            new LedgerConnector({
-                                chains: [polygonMumbai],
-                            })
-                        )
-                    }
-                    rounded="full"
-                    w="16rem"
-                    size="lg"
-                    variant="outline"
-                >
-                    Ledger
-                </Button>
-            </VStack>
+                    <Button
+                        onClick={() =>
+                            handleAuth(
+                                new CoinbaseWalletConnector({
+                                    options: {
+                                        appName: "wagmi.sh",
+                                        jsonRpcUrl:
+                                            "https://eth-mainnet.alchemyapi.io/v2/yourAlchemyId",
+                                    },
+                                })
+                            )
+                        }
+                        rounded="full"
+                        w="16rem"
+                        size="lg"
+                        variant="outline"
+                    >
+                        Coinbase
+                    </Button>
+
+                    <Button
+                        onClick={() =>
+                            handleAuth(
+                                new LedgerConnector({
+                                    chains: [polygonMumbai],
+                                })
+                            )
+                        }
+                        rounded="full"
+                        w="16rem"
+                        size="lg"
+                        variant="outline"
+                    >
+                        Ledger
+                    </Button>
+                </VStack> :
+                <Heading fontSize="4xl" pb="1rem" textAlign={"center"}>
+                    Sign in is not supported on mobile devices yet.
+                </Heading>}
         </Center>
     );
 }

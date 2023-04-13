@@ -45,7 +45,7 @@ export default function InvestPage() {
                                 <Spinner size="xl" />
                             </Center>
                         ) : allAssets.length > 0 ? (
-                            <SimpleGrid columns={[2, 3]} spacing="1rem">
+                            <SimpleGrid columns={[1, 3]} spacing="2rem">
                                 {allAssets.map((asset: any) => (
                                     <AssetPreviewCard key={asset.tokenId} asset={asset} />
                                 ))}

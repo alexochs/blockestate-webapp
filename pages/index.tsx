@@ -1,17 +1,17 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "@next/font/google";
-import { Box, Button, Center, Flex, Heading, HStack, Icon, Link, Text, VStack } from "@chakra-ui/react";
-import { FaHome } from "react-icons/fa";
-import { useContractRead } from "wagmi";
-import { useState } from "react";
+import AssetPreviewCard from "@/components/AssetPreviewCard";
 import { assetsContractAddress } from "@/helpers/contractAddresses";
 import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
+import { Box, Center, Heading, SimpleGrid, Spinner, Text, Image, Flex, HStack, VStack, Stack, Button, Spacer, Link, Stat, StatHelpText, StatArrow } from "@chakra-ui/react";
+import { readContract } from "@wagmi/core";
+import { getSession } from "next-auth/react";
 import { Asset } from "@/helpers/types";
 import AssetTrendingHero from "@/components/AssetTrendingHero";
+import Head from "next/head";
+import { useContractRead } from "wagmi";
+import { useState } from "react";
 
-export default function Home() {
-    const [allAssets, setAllAssets] = useState<Asset[]>([]);
+export default function InvestPage() {
+    const [allAssets, setAllAssets] = useState([]);
     const [loadingAssets, setLoadingAssets] = useState(true);
 
     const readAllAssets = useContractRead({
@@ -32,26 +32,32 @@ export default function Home() {
     return (
         <>
             <Head>
-                <title>ImmoVerse | Real Estate Investing Made Easy</title>
-                <meta
-                    name="description"
-                    content="ImmoVerse is a decentralized real estate marketplace. Invest in real estate, find your new home, and more. 100% on-chain. 100% transparent. 100% secure."
-                />
-                <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1"
-                />
-                <link rel="icon" href="/favicon.ico" />
+                <title>Assets | ImmoVerse</title>
             </Head>
-            <main>
+            {loadingAssets ?
+                <Center minH="50vh">
+                    <Spinner size="xl" />
+                </Center> :
                 <Box>
-                    {allAssets.length > 0 && <AssetTrendingHero asset={allAssets[0]} />}
-
-                    {/*<Box mt="2rem" p="1rem" bg="gray.100" rounded="3xl">
-                        <Heading>Trending</Heading>
-                    </Box>*/}
-                </Box>
-            </main >
+                    <Box>
+                        {!allAssets ? (
+                            <Center>
+                                <Spinner size="xl" />
+                            </Center>
+                        ) : allAssets.length > 0 ? (
+                            <SimpleGrid columns={[1, 3]} spacing="2rem">
+                                {allAssets.map((asset: any) => (
+                                    <AssetPreviewCard key={asset.tokenId} asset={asset} />
+                                ))}
+                            </SimpleGrid>
+                        ) : (
+                            <Center flexDir={"column"}>
+                                <Text>No assets have been tokenized yet.</Text>
+                                <Text fontWeight={"bold"}>Be the first one!</Text>
+                            </Center>
+                        )}
+                    </Box>
+                </Box>}
         </>
     );
 }

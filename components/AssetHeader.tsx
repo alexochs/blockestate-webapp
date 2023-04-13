@@ -7,12 +7,12 @@ export default function AssetHeader({ asset }: any) {
         <Box>
             <AssetHeaderImages />
 
-            <Box>
-                <Heading fontSize="8xl">
+            <Box pt="1rem">
+                <Heading fontSize={["4xl", "8xl"]} overflowWrap="break-word">
                     {asset?.street + " " + asset?.number}
                 </Heading>
 
-                <Text fontSize="5xl" color="gray.600">
+                <Text fontSize={["2xl", "5xl"]} color="gray.600">
                     {asset?.city + ", " + asset?.country}
                 </Text>
 
@@ -20,6 +20,6 @@ export default function AssetHeader({ asset }: any) {
                     <Text fontSize="2xl" color="gray.500">Apartment {asset?.apNumber}</Text>
                 )}
             </Box>
-        </Box>
+        </Box >
     );
 }

@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Select, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, Select, SimpleGrid, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
     Chart as ChartJS,
@@ -93,7 +93,7 @@ export default function AssetInvestAnalyticsTab({ events, floorPrice, isRentable
     }, [events, filter]);
 
     return (
-        <Flex minH="25vh" w="100%">
+        <Flex flexDir={["column", "row"]} minH="25vh" w="100%">
             <Box w="25%">
                 <Select
                     fontSize="lg"
@@ -110,51 +110,52 @@ export default function AssetInvestAnalyticsTab({ events, floorPrice, isRentable
                     <option value={FILTER_ALLTIME}>All-time</option>
                 </Select>
             </Box>
-            <Box w="100%">
-                <Flex w="100%">
-                    <Box p="1rem" mr="1rem" w="33%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+
+            <Box w="100%" mt={["2rem", "0"]}>
+                <SimpleGrid gap="1rem" columns={[1, 3]} w="100%">
+                    <Box p="1rem" w="100%" mr="1rem" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
                         <Text color="gray.500">Volume</Text>
                         <Heading>{(salesVolume / 1e6).toLocaleString()}$</Heading>
                     </Box>
-                    <Box p="1rem" mr="1rem" w="33%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+                    <Box p="1rem" w="100%" mr="1rem" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
                         <Text color="gray.500">Sales</Text>
                         <Heading>{sales.length}</Heading>
                     </Box>
-                    <Box p="1rem" w="33%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+                    <Box p="1rem" w="100%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
                         <Text color="gray.500">Floor Price</Text>
                         <Heading>{floorPrice ? floorPrice.toLocaleString() + "$" : "N/A"}</Heading>
                     </Box>
-                </Flex>
+                </SimpleGrid>
 
-                {isRentable && <Flex w="100%" mt="1rem">
-                    <Box p="1rem" mr="1rem" w="33%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+                {isRentable && <SimpleGrid gap="1rem" columns={[1, 3]} w="100%" mt="1rem">
+                    <Box p="1rem" mr="1rem" w="100%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
                         <Text color="gray.500">Monthly Recurring Revenue</Text>
                         <Heading>{(pricePerMonth / 1e6).toLocaleString()}$</Heading>
                     </Box>
-                    <Box p="1rem" mr="1rem" w="33%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+                    <Box p="1rem" mr="1rem" w="100%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
                         <Text color="gray.500">Annual Rate Of Interest</Text>
                         <Heading>{((((((pricePerMonth / 1e6) * 12) * (1 / sharesTotalSupply)) - floorPrice) / floorPrice) * 100).toFixed(2)}%</Heading>
                     </Box>
-                    <Box p="1rem" w="33%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+                    <Box p="1rem" w="100%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
                         <Text color="gray.500">Break Even</Text>
                         <Heading>{(floorPrice / ((pricePerMonth / 1e6) * (1 / sharesTotalSupply))).toFixed(2)} Months</Heading>
                     </Box>
-                </Flex>}
+                </SimpleGrid>}
 
-                <Flex w="100%" mt="1rem">
-                    <Box p="1rem" mr="1rem" w="50%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+                <SimpleGrid gap="1rem" columns={[1, 2]} w="100%" mt="1rem">
+                    <Box p="1rem" w="100%" mr="1rem" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
                         <Heading>Volume and Price</Heading>
-                        <Box p="1rem">
+                        <Box minH="auto" w="100%">
                             {salesData && <Line options={options} data={salesData} />}
                         </Box>
                     </Box>
-                    <Box p="1rem" w="50%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
+                    <Box p="1rem" w="100%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl">
                         <Heading>Floor Price</Heading>
-                        <Box p="1rem">
+                        <Box minH="auto" w="100%">
                             {listingsData && <Line options={options} data={listingsData} />}
                         </Box>
                     </Box>
-                </Flex>
+                </SimpleGrid>
             </Box>
         </Flex >
     );

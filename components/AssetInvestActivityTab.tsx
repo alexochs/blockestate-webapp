@@ -29,8 +29,8 @@ export default function AssetInvestActivityTab({ events }: any) {
     const [showWithdraws, setShowWithdraws] = useState(false);
 
     return (
-        <Flex minH="25vh" w="100%">
-            <Box w="25%">
+        <Flex flexDir={["column", "row"]} minH="25vh" w="100%">
+            <Box w={["100%", "25%"]}>
                 <Input
                     value={search}
                     onChange={handleSearchChange}
@@ -113,21 +113,21 @@ export default function AssetInvestActivityTab({ events }: any) {
                 </CheckboxGroup>
             </Box>
 
-            <Box w="100%" border="1px solid rgb(0,0,0,0.0)" rounded="3xl">
+            <Box ml={["-10vw", "0"]} mt={["2rem", "0"]} w={["100vw", "100%"]} border="1px solid rgb(0,0,0,0.0)" rounded="3xl">
                 <TableContainer>
                     <Table variant='simple'>
                         <Thead>
                             <Tr>
-                                <Th fontSize="lg">Event</Th>
-                                <Th fontSize="lg">Listing</Th>
-                                <Th fontSize="lg">Price</Th>
-                                <Th fontSize="lg">Amount</Th>
-                                <Th fontSize="lg">Seller</Th>
-                                <Th fontSize="lg">Buyer</Th>
-                                <Th fontSize="lg">Time</Th>
+                                <Th fontSize={["sm", "lg"]}>Event</Th>
+                                <Th fontSize={["sm", "lg"]}>Listing</Th>
+                                <Th fontSize={["sm", "lg"]}>Price</Th>
+                                <Th fontSize={["sm", "lg"]}>Amount</Th>
+                                <Th fontSize={["sm", "lg"]}>Seller</Th>
+                                <Th fontSize={["sm", "lg"]}>Buyer</Th>
+                                <Th fontSize={["sm", "lg"]}>Time</Th>
                             </Tr >
                         </Thead>
-                        <Tbody fontSize="xl">
+                        <Tbody fontSize={["lg", "xl"]}>
                             {events ?
                                 events
                                     .filter((event: MarketEvent) => (event.seller && event.seller.includes(search) || (event.buyer && event.buyer.includes(search) || !event.seller && !event.buyer)))

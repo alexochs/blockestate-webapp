@@ -22,8 +22,8 @@ export default function AssetInvestShareholdersTab({ shareholderInfos, sharesTot
     }
 
     return (
-        <Flex minH="25vh">
-            <Box w="25%">
+        <Flex flexDir={["column", "row"]} minH="25vh" w="100%">
+            <Box w={["100%", "25%"]}>
                 <Input
                     value={search}
                     onChange={handleSearchChange}
@@ -48,16 +48,16 @@ export default function AssetInvestShareholdersTab({ shareholderInfos, sharesTot
                 </Select>
             </Box>
 
-            <Box w="100%" border="1px solid rgb(0,0,0,0.0)" rounded="3xl">
+            <Box ml={["-10vw", "0"]} mt={["2rem", "0"]} w={["100vw", "100%"]} border="1px solid rgb(0,0,0,0.0)" rounded="3xl">
                 <TableContainer>
                     <Table variant='simple'>
                         <Thead>
                             <Tr>
-                                <Th fontSize="lg">Address</Th>
-                                <Th fontSize="lg">Shares</Th>
+                                <Th fontSize={["sm", "lg"]}>Address</Th>
+                                <Th fontSize={["sm", "lg"]}>Shares</Th>
                             </Tr >
                         </Thead >
-                        <Tbody fontSize="xl">
+                        <Tbody fontSize={["lg", "xl"]}>
                             {shareholderInfos
                                 .filter((info: any) => info.address.includes(search))
                                 .sort((a: any, b: any) => filter === 1 ? b.balance - a.balance : a.balance - b.balance)

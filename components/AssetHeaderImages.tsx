@@ -1,7 +1,9 @@
-import { Flex, Image } from "@chakra-ui/react";
+import { Flex, Image, useMediaQuery } from "@chakra-ui/react";
 
 export default function AssetHeaderImages() {
-    return (
+    const isMobile = useMediaQuery("(max-width: 768px)")[0];
+
+    return !isMobile ? (
         <Flex>
             <Image
                 src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/0cf46569-a5cd-4aa0-bbbd-156162c84e7e.jpeg"
@@ -22,5 +24,15 @@ export default function AssetHeaderImages() {
                 <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/44777246-61ff-408c-be6d-f1c9262e340e.jpeg?im_w=720" fit="cover" h="30vh" roundedRight={"3xl"} />
             </Flex>
         </Flex>
+    ) : (
+        <Image
+            src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/0cf46569-a5cd-4aa0-bbbd-156162c84e7e.jpeg"
+            fit="cover"
+            h="56vw"
+            w="100vw"
+            rounded="3xl"
+            pr=".25rem"
+        />
     );
+
 }

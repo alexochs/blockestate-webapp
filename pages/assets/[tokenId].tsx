@@ -19,6 +19,7 @@ import {
     TabPanel,
     Link,
     Icon,
+    useMediaQuery,
 } from "@chakra-ui/react";
 import { useContractRead, useNetwork, useSwitchNetwork } from "wagmi";
 import { readContract } from "@wagmi/core";
@@ -102,6 +103,8 @@ export default function RentAssetsPage({
     sharesBalance,
     sharesTotalSupply,
 }: any) {
+    const isMobile = useMediaQuery("(max-width: 768px)")[0];
+
     const session = useSession();
     const router = useRouter();
     const tokenId = asset.tokenId;
@@ -228,20 +231,24 @@ export default function RentAssetsPage({
                     listingPools={listingPools}
                 />
 
-                <HStack pt="1rem" spacing="1rem">
-                    <Link href={"/rent/" + tokenId} style={{ textDecoration: "none" }}>
-                        <Button rounded="full" variant="outline" size="lg" colorScheme="blue">
+                <Stack direction={["column", "row"]} pt="1rem" spacing="1rem">
+                    {!isMobile ?
+                        <Link href={"/rent/" + tokenId} style={{ textDecoration: "none" }}>
+                            <Button rounded="full" variant="outline" size="lg" colorScheme="blue">
+                                Rent this asset
+                            </Button>
+                        </Link> :
+                        <Button isDisabled rounded="full" variant="outline" size="lg" colorScheme="blue">
                             Rent this asset
-                        </Button>
-                    </Link>
+                        </Button>}
 
                     {sharesBalance > 0 &&
-                        <Link href={"/shareholders/" + tokenId} style={{ textDecoration: "none" }}>
-                            <Button rounded="full" variant="outline" size="lg" color="gray.500">
+                        <Button rounded="full" variant="outline" size="lg" color="gray.500">
+                            <Link href={"/shareholders/" + tokenId} style={{ textDecoration: "none" }}>
                                 Shareholders Area
-                            </Button>
-                        </Link>}
-                </HStack>
+                            </Link>
+                        </Button>}
+                </Stack>
 
                 <AssetInvestTabs
                     sharesBalance={sharesBalance}
