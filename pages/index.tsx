@@ -32,7 +32,7 @@ export default function InvestPage() {
     return (
         <>
             <Head>
-                <title>Assets | ImmoVerse</title>
+                <title>Real Estate Investing Made Easy | ImmoVerse</title>
             </Head>
             {loadingAssets ?
                 <Center minH="50vh">
