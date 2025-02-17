@@ -8,15 +8,16 @@ import { getSession } from "next-auth/react";
 import { Asset } from "@/helpers/types";
 import { readContract } from "@wagmi/core";
 import AssetPreview from "@/components/AssetPreviewCard";
-import { useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
-import { useState } from "react";
+import { useReadContract, useWriteContract, useSimulateContract, useWaitForTransactionReceipt } from "wagmi";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import { createPublicClient, http, Chain } from 'viem';
+import { polygonAmoy } from "viem/chains";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
 
-    // redirect if not authenticated
     if (!session) {
         return {
             redirect: {
@@ -26,21 +27,27 @@ export async function getServerSideProps(context: any) {
         };
     }
 
-    const usdBalanceData = (await readContract({
+    const client = createPublicClient({
+        chain: polygonAmoy,
+        transport: http()
+    });
+
+    const usdBalanceData = await client.readContract({
         address: usdTokenAddress,
         abi: usdAbi,
         functionName: "balanceOf",
         args: [session.user?.address]
-    })) as any;
-    const usdBalance = parseInt(usdBalanceData._hex, 16);
+    });
 
-    const fundsBalanceData = (await readContract({
+    const fundsBalanceData = await client.readContract({
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "fundsPool",
         args: [session.user?.address]
-    })) as any;
-    const fundsBalance = parseInt(fundsBalanceData._hex, 16);
+    });
+
+    const usdBalance = Number(usdBalanceData);
+    const fundsBalance = Number(fundsBalanceData);
 
     return {
         props: {
@@ -58,83 +65,80 @@ export default function MyFundsPage({ user, usdBalance, fundsBalance }: any) {
     const [withdrawAmount, setWithdrawAmount] = useState(0);
     const [allowance, setAllowance] = useState(0);
 
-    // Allowance / Approval
-
-    const getAllowance = useContractRead({
+    // Allowance
+    const { data: allowanceData } = useReadContract({
         address: usdTokenAddress,
         abi: usdAbi,
         functionName: "allowance",
         args: [user.address, marketContractAddress],
-        onError: (error) => {
-            console.log("allowance() => ", error);
-        },
-        onSuccess: (data: any) => {
-            setAllowance(parseInt(data._hex, 16));
-        },
     });
 
-    const prepareApproval = usePrepareContractWrite({
+    useEffect(() => {
+        if (allowanceData) {
+            setAllowance(Number(allowanceData));
+        }
+    }, [allowanceData]);
+
+    // Approve
+    const { data: approveSimulation } = useSimulateContract({
         address: usdTokenAddress,
         abi: usdAbi,
         functionName: "approve",
-        args: [marketContractAddress, depositAmount * 1e6],
-        onError: (error) => {
-            console.log("prepareApproval() => ", error);
-        },
+        args: [marketContractAddress, BigInt(depositAmount * 1e6)],
     });
 
-    const writeApproval = useContractWrite(prepareApproval.config);
+    const { writeContract: writeApprove, data: approveHash } = useWriteContract();
 
-    const txApproval = useWaitForTransaction({
-        hash: writeApproval.data?.hash,
-        onSuccess: () => {
-            router.reload(); // fix this later, deposit throws allowance error even after successful approval
+    const { isLoading: isApproving, isSuccess: isApproved } = useWaitForTransactionReceipt({
+        hash: approveHash,
+    });
+
+    useEffect(() => {
+        if (isApproved) {
             setAllowance(depositAmount * 1e6);
-        },
-    });
+            router.reload();
+        }
+    }, [isApproved, depositAmount]);
 
     // Deposit
-
-    const prepareDeposit = usePrepareContractWrite({
+    const { data: depositSimulation } = useSimulateContract({
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "deposit",
-        args: [depositAmount * 1e6],
-        cacheTime: 1_000,
-        onError: (error) => {
-            console.log("prepareDeposit() => ", error);
-        },
+        args: [BigInt(depositAmount * 1e6)],
     });
 
-    const writeDeposit = useContractWrite(prepareDeposit.config);
+    const { writeContract: writeDeposit, data: depositHash } = useWriteContract();
 
-    const txDeposit = useWaitForTransaction({
-        hash: writeDeposit.data?.hash,
-        onSuccess: () => {
+    const { isLoading: isDepositing, isSuccess: isDeposited } = useWaitForTransactionReceipt({
+        hash: depositHash,
+    });
+
+    useEffect(() => {
+        if (isDeposited) {
             router.reload();
-        },
-    });
+        }
+    }, [isDeposited]);
 
     // Withdraw
-
-    const prepareWithdraw = usePrepareContractWrite({
+    const { data: withdrawSimulation } = useSimulateContract({
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "withdraw",
-        args: [withdrawAmount * 1e6],
-        onError: (error) => {
-            console.log("prepareWithdraw() => ", error);
-        },
+        args: [BigInt(withdrawAmount * 1e6)],
     });
 
-    const writeWithdraw = useContractWrite(prepareWithdraw.config);
+    const { writeContract: writeWithdraw, data: withdrawHash } = useWriteContract();
 
-    const txWithdraw = useWaitForTransaction({
-        hash: writeWithdraw.data?.hash,
-        onSuccess: () => {
+    const { isLoading: isWithdrawing, isSuccess: isWithdrawn } = useWaitForTransactionReceipt({
+        hash: withdrawHash,
+    });
+
+    useEffect(() => {
+        if (isWithdrawn) {
             router.reload();
-        },
-    });
+        }
+    }, [isWithdrawn]);
 
     // Render view
 
@@ -170,7 +174,14 @@ export default function MyFundsPage({ user, usdBalance, fundsBalance }: any) {
                     <TabPanel>
                         <Box p="1rem">
                             <Center>
-                                <Input onChange={(e: any) => setDepositAmount(e.target.valueAsNumber)} type="number" w="16rem" placeholder="Amount" size="lg" rounded="full" />
+                                <Input
+                                    onChange={(e) => setDepositAmount(Number(e.target.value))}
+                                    type="number"
+                                    w="16rem"
+                                    placeholder="Amount"
+                                    size="lg"
+                                    rounded="full"
+                                />
                             </Center>
 
                             <Center pt="1rem">
@@ -178,16 +189,11 @@ export default function MyFundsPage({ user, usdBalance, fundsBalance }: any) {
                                     <Button
                                         size="lg"
                                         rounded="full"
-                                        colorScheme={"blue"}
+                                        colorScheme="blue"
                                         w="16rem"
-                                        isDisabled={!depositAmount ||
-                                            depositAmount <= 0 ||
-                                            allowance >= depositAmount * 1e6 ||
-                                            txApproval.isLoading ||
-                                            prepareApproval.isError
-                                        }
-                                        isLoading={txApproval.isLoading}
-                                        onClick={() => writeApproval.write?.()}
+                                        isDisabled={!depositAmount || depositAmount <= 0 || !approveSimulation?.request}
+                                        isLoading={isApproving}
+                                        onClick={() => writeApprove(approveSimulation?.request)}
                                     >
                                         Approve
                                     </Button>
@@ -195,56 +201,44 @@ export default function MyFundsPage({ user, usdBalance, fundsBalance }: any) {
                                     <Button
                                         size="lg"
                                         rounded="full"
-                                        colorScheme={"blue"}
+                                        colorScheme="blue"
                                         w="16rem"
-                                        isDisabled={!depositAmount ||
-                                            allowance < depositAmount * 1e6 ||
-                                            depositAmount <= 0 ||
-                                            txDeposit.isSuccess
-                                        }
-                                        isLoading={txDeposit.isLoading}
-                                        onClick={() => writeDeposit.write?.()}
+                                        isDisabled={!depositAmount || depositAmount <= 0 || !depositSimulation?.request}
+                                        isLoading={isDepositing}
+                                        onClick={() => writeDeposit(depositSimulation?.request)}
                                     >
                                         Deposit
-                                    </Button>)}
+                                    </Button>
+                                )}
                             </Center>
-
-                            {prepareApproval.isError && (
-                                <Text pt="1rem" textAlign={"center"} color="red.500">{prepareApproval.error?.message}</Text>
-                            )}
-
-                            {prepareDeposit.isError && (
-                                <Text pt="1rem" textAlign={"center"} color="red.500">{prepareDeposit.error?.message}</Text>
-                            )}
                         </Box>
                     </TabPanel>
                     <TabPanel>
                         <Box p="1rem">
                             <Center>
-                                <Input onChange={(e: any) => setWithdrawAmount(e.target.valueAsNumber)} type="number" w="16rem" placeholder="Amount" size="lg" rounded="full" />
+                                <Input
+                                    onChange={(e) => setWithdrawAmount(Number(e.target.value))}
+                                    type="number"
+                                    w="16rem"
+                                    placeholder="Amount"
+                                    size="lg"
+                                    rounded="full"
+                                />
                             </Center>
 
                             <Center pt="1rem">
                                 <Button
                                     size="lg"
                                     rounded="full"
-                                    colorScheme={"blue"}
+                                    colorScheme="blue"
                                     w="16rem"
-                                    isDisabled={!withdrawAmount ||
-                                        withdrawAmount <= 0 ||
-                                        withdrawAmount > (fundsBalance / 1e6) ||
-                                        txWithdraw.isSuccess
-                                    }
-                                    isLoading={txWithdraw.isLoading}
-                                    onClick={() => writeWithdraw.write?.()}
+                                    isDisabled={!withdrawAmount || withdrawAmount <= 0 || withdrawAmount > (fundsBalance / 1e6) || !withdrawSimulation?.request}
+                                    isLoading={isWithdrawing}
+                                    onClick={() => writeWithdraw(withdrawSimulation?.request)}
                                 >
                                     Withdraw
                                 </Button>
                             </Center>
-
-                            {prepareWithdraw.isError && (
-                                <Text pt="1rem" textAlign={"center"} color="red.500">{prepareWithdraw.error?.message}</Text>
-                            )}
                         </Box>
                     </TabPanel>
                 </TabPanels>
