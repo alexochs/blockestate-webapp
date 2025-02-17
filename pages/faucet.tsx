@@ -7,9 +7,10 @@ import { getSession } from "next-auth/react";
 import { Asset } from "@/helpers/types";
 import { readContract } from "@wagmi/core";
 import AssetPreview from "@/components/AssetPreviewCard";
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi";
+import { useSimulateContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import router from "next/router";
 import Head from "next/head";
+import { useEffect } from "react";
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -36,26 +37,24 @@ export async function getServerSideProps(context: any) {
 
 export default function FaucetPage({ user }: any) {
     const {
-        config,
-        error: prepareError,
-        isError: isPrepareError,
-    } = usePrepareContractWrite({
+        data,
+    } = useSimulateContract({
         address: usdTokenAddress,
         abi: usdAbi,
         functionName: "faucet",
-        onError: (error) => {
-            console.log("preparePurchaseShares() => ", error);
-        },
     });
 
-    const { data, error, isError, write } = useContractWrite(config);
+    const { writeContract, data: hash } = useWriteContract();
 
-    const { isLoading, isSuccess } = useWaitForTransaction({
-        hash: data?.hash,
-        onSuccess: () => {
+    const { isLoading, isSuccess } = useWaitForTransactionReceipt({
+        hash,
+    });
+
+    useEffect(() => {
+        if (isSuccess) {
             router.push("/my-funds");
-        },
-    });
+        }
+    }, [isSuccess]);
 
     return (
         <>
@@ -81,7 +80,7 @@ export default function FaucetPage({ user }: any) {
                             Mint USD Tokens
                         </Heading>
 
-                        <Button isLoading={isLoading} isDisabled={!write || !user} onClick={() => write?.()} mt="2rem" size="lg" w="100%" rounded="full" colorScheme="blue">Mint {(100_000).toLocaleString()}$</Button>
+                        <Button isLoading={isLoading} isDisabled={!Boolean(data?.request) || !user} onClick={() => writeContract(data!.request)} mt="2rem" size="lg" w="100%" rounded="full" colorScheme="blue">Mint {(100_000).toLocaleString()}$</Button>
                     </Box>
                 </Flex>
             </Box>
