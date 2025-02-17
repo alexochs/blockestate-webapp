@@ -1,7 +1,4 @@
-import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
-import { LedgerConnector } from "wagmi/connectors/ledger";
+import { metaMask, injected } from "wagmi/connectors";
 import { signIn } from "next-auth/react";
 import { useAccount, useConnect, useSignMessage, useDisconnect } from "wagmi";
 import { useRouter } from "next/router";
@@ -26,13 +23,13 @@ function SignIn() {
             await disconnectAsync();
         }
 
-        const { account, chain } = await connectAsync({
+        const { accounts, chainId } = await connectAsync({
             connector,
         });
 
         const { message }: any = await requestChallengeAsync({
-            address: account,
-            chainId: chain.id,
+            address: accounts[0],
+            chainId: chainId,
         });
 
         const signature = await signMessageAsync({ message });
@@ -42,7 +39,7 @@ function SignIn() {
             message,
             signature,
             redirect: false,
-            callbackUrl: "/profiles/" + account,
+            callbackUrl: "/profiles/" + accounts[0],
         });
 
         /*
@@ -65,7 +62,7 @@ function SignIn() {
                     </Heading>
 
                     <Button
-                        onClick={() => handleAuth(new MetaMaskConnector())}
+                        onClick={() => handleAuth(injected({ target: 'metaMask' }))}
                         rounded="full"
                         w="16rem"
                         size="lg"
@@ -75,13 +72,7 @@ function SignIn() {
                     </Button>
 
                     <Button
-                        onClick={() =>
-                            handleAuth(
-                                new WalletConnectConnector({
-                                    options: { qrcode: true },
-                                })
-                            )
-                        }
+                        isDisabled
                         rounded="full"
                         w="16rem"
                         size="lg"
@@ -91,17 +82,7 @@ function SignIn() {
                     </Button>
 
                     <Button
-                        onClick={() =>
-                            handleAuth(
-                                new CoinbaseWalletConnector({
-                                    options: {
-                                        appName: "wagmi.sh",
-                                        jsonRpcUrl:
-                                            "https://eth-mainnet.alchemyapi.io/v2/yourAlchemyId",
-                                    },
-                                })
-                            )
-                        }
+                        isDisabled
                         rounded="full"
                         w="16rem"
                         size="lg"
@@ -111,13 +92,7 @@ function SignIn() {
                     </Button>
 
                     <Button
-                        onClick={() =>
-                            handleAuth(
-                                new LedgerConnector({
-                                    chains: [polygonMumbai],
-                                })
-                            )
-                        }
+                        isDisabled
                         rounded="full"
                         w="16rem"
                         size="lg"

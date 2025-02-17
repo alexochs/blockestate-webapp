@@ -1,37 +1,27 @@
 import type { AppProps } from "next/app";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import { createClient, configureChains, WagmiConfig } from "wagmi";
-import { publicProvider } from "wagmi/providers/public";
-import { mainnet, goerli, polygonMumbai, baseGoerli } from "wagmi/chains";
+import { http, createConfig, WagmiProvider } from "wagmi";
+import { polygonAmoy } from "wagmi/chains";
 import { SessionProvider } from "next-auth/react";
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import Moralis from "moralis";
 import Layout from "@/components/Layout/Layout";
 import "@fontsource/raleway/400.css";
 import "@fontsource/raleway/700.css";
 import { Analytics } from '@vercel/analytics/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-const { provider, webSocketProvider, chains } = configureChains(
-    [polygonAmoy],
-    [publicProvider()]
-);
+const config = getDefaultConfig({
+    appName: 'ImmoVerse',
+    projectId: 'YOUR_PROJECT_ID',
+    chains: [polygonAmoy],
+    transports: {
+        [polygonAmoy.id]: http(),
+    },
+})
 
-const { connectors } = getDefaultWallets({
-    appName: "ImmoVerse",
-    chains,
-});
-
-const client = createClient({
-    provider,
-    webSocketProvider,
-    autoConnect: true,
-    connectors,
-});
-
-/*Moralis.start({
-  apiKey: "s2suL7NNBzruq1sh5388dE8gGvHfryjc4GuskhPInusulgHK6siJguaWzdCjgeya",
-});*/
+const queryClient = new QueryClient()
 
 const theme = extendTheme({
     fonts: {
@@ -43,18 +33,20 @@ const theme = extendTheme({
 export default function App({ Component, pageProps }: AppProps) {
     return (
         <ChakraProvider theme={theme}>
-            <WagmiConfig client={client}>
-                <SessionProvider
-                    session={pageProps.session}
-                    refetchInterval={10}
-                >
-                    <RainbowKitProvider chains={chains}>
-                        <Layout>
-                            <Component {...pageProps} />
-                        </Layout>
-                    </RainbowKitProvider>
-                </SessionProvider>
-            </WagmiConfig>
+            <WagmiProvider config={config}>
+                <QueryClientProvider client={queryClient}>
+                    <SessionProvider
+                        session={pageProps.session}
+                        refetchInterval={10}
+                    >
+                        <RainbowKitProvider>
+                            <Layout>
+                                <Component {...pageProps} />
+                            </Layout>
+                        </RainbowKitProvider>
+                    </SessionProvider>
+                </QueryClientProvider>
+            </WagmiProvider>
             <Analytics />
         </ChakraProvider>
     );
