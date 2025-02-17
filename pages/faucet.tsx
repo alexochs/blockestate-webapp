@@ -24,6 +24,9 @@ export async function getServerSideProps(context: any) {
         };
     }
 
+    console.log("session", session);
+    console.log("session.user", session.user);
+
     return {
         props: {
             user: session.user,
@@ -65,10 +68,10 @@ export default function FaucetPage({ user }: any) {
                 <Flex>
                     <Box w="50%" border="1px solid rgb(0,0,0,0.2)" rounded="3xl" p="1rem" h="20rem">
                         <Heading>
-                            Drip some MATIC
+                            Drip some POL
                         </Heading>
 
-                        <Link href="https://faucet.polygon.technology/" target="_blank" style={{ textDecoration: "none" }}>
+                        <Link href="https://faucet.stakepool.dev.br/amoy" target="_blank" style={{ textDecoration: "none" }}>
                             <Button mt="2rem" size="lg" w="100%" rounded="full" colorScheme="blue">Polygon Faucet</Button>
                         </Link>
                     </Box>

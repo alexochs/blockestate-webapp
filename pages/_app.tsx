@@ -13,7 +13,7 @@ import "@fontsource/raleway/700.css";
 import { Analytics } from '@vercel/analytics/react';
 
 const { provider, webSocketProvider, chains } = configureChains(
-    [polygonMumbai],
+    [polygonAmoy],
     [publicProvider()]
 );
 
