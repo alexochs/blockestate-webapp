@@ -21,8 +21,9 @@ import {
     Icon,
     useMediaQuery,
 } from "@chakra-ui/react";
-import { useContractRead, useNetwork, useSwitchNetwork } from "wagmi";
-import { readContract } from "@wagmi/core";
+import { useReadContract, useChainId, useSwitchChain } from "wagmi";
+import { createPublicClient, http } from 'viem';
+import { polygonAmoy } from 'viem/chains';
 import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
 import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
 import { abi as marketAbi } from "@/helpers/BlockEstateMarket.json";
@@ -60,35 +61,36 @@ export async function getServerSideProps(context: any) {
     const session = await getSession(context);
     const tokenId = context.params.tokenId;
 
+    const client = createPublicClient({
+        chain: polygonAmoy,
+        transport: http()
+    });
+
     // read asset
-    const assetData = (await readContract({
+    const assetData = await client.readContract({
         address: assetsContractAddress,
         abi: assetsAbi,
         functionName: "readAsset",
-        args: [tokenId],
-    })) as any;
+        args: [BigInt(tokenId)],
+    });
 
     const asset = Asset.fromSingleEntry(assetData);
 
     // read balance and total supply of shares
-    const sharesBalanceData = session ? (await readContract({
+    const sharesBalance = session ? Number(await client.readContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "balanceOf",
-        args: [session.user?.address, tokenId],
-    })) as any : null;
+        args: [session.user?.address, BigInt(tokenId)],
+    })) : 0;
 
-    const sharesTotalSupplyData = (await readContract({
+    const sharesTotalSupply = Number(await client.readContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "totalSupply",
-        args: [tokenId],
-    })) as any;
+        args: [BigInt(tokenId)],
+    }));
 
-    const sharesBalance = sharesBalanceData ? parseInt(sharesBalanceData._hex, 16) : 0;
-    const sharesTotalSupply = parseInt(sharesTotalSupplyData._hex, 16);
-
-    // return props to page
     return {
         props: {
             asset: JSON.parse(JSON.stringify(asset)),
@@ -104,114 +106,129 @@ export default function RentAssetsPage({
     sharesTotalSupply,
 }: any) {
     const isMobile = useMediaQuery("(max-width: 768px)")[0];
-
     const session = useSession();
     const router = useRouter();
     const tokenId = asset.tokenId;
 
-    const { chain } = useNetwork();
-    const { chains, error: switchNetworkError, isLoading: switchNetworkIsLoading, pendingChainId, switchNetwork } = useSwitchNetwork();
+    const chainId = useChainId();
+    const { switchChain } = useSwitchChain();
 
     useEffect(() => {
-        if (chain && chain.id !== 80001) {
-            switchNetwork?.(80001);
+        if (chainId !== 80002) {
+            switchChain?.({ chainId: 80002 });
         }
-    });
+    }, [chainId, switchChain]);
 
     const [pricePerMonth, setPricePerMonth] = useState(0);
-    const readPricePerMonth = useContractRead({
+    const { data: pricePerMonthData } = useReadContract({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "pricePerMonth",
-        args: [tokenId],
-        onSuccess: (pricePerMonthData: any) => setPricePerMonth(parseInt(pricePerMonthData._hex, 16))
+        args: [BigInt(tokenId)],
     });
 
+    useEffect(() => {
+        if (pricePerMonthData) setPricePerMonth(Number(pricePerMonthData));
+    }, [pricePerMonthData]);
+
     const [pricePerDay, setPricePerDay] = useState(0);
-    const readPricePerDay = useContractRead({
+    const { data: pricePerDayData } = useReadContract({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "pricePerDay",
-        args: [tokenId],
-        onSuccess: (pricePerDayData: any) => setPricePerDay(parseInt(pricePerDayData._hex, 16))
+        args: [BigInt(tokenId)],
     });
 
+    useEffect(() => {
+        if (pricePerDayData) setPricePerDay(Number(pricePerDayData));
+    }, [pricePerDayData]);
+
     const [isRentable, setIsRentable] = useState(false);
-    const readIsRentable = useContractRead({
+    const { data: isRentableData } = useReadContract({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "isRentable",
-        args: [tokenId],
-        onSuccess: (isRentableData: any) => setIsRentable(isRentableData)
+        args: [BigInt(tokenId)],
     });
 
-    const [listingPools, setListingPools] = useState<SharesListingPool[]>([])
+    useEffect(() => {
+        if (isRentableData !== undefined) setIsRentable(Boolean(isRentableData));
+    }, [isRentableData]);
+
+    const [listingPools, setListingPools] = useState<SharesListingPool[]>([]);
     const [floorListingPool, setFloorListingPool] = useState<SharesListingPool>();
     const [floorPrice, setFloorPrice] = useState<number>(0);
-    const readListingPools = useContractRead({
+    const { data: listingPoolsData } = useReadContract({
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "readSharesListingPoolsByAsset",
-        args: [tokenId],
-        onSuccess: (listingPoolsData: any) => {
-            const listingPools = listingPoolsData
-                .map((listingPoolData: any) => SharesListingPool.fromSingleEntry(listingPoolData))
-                .filter((listingPool: SharesListingPool) => listingPool.tokenId != 0 && listingPool.amount > 0)
+        args: [BigInt(tokenId)],
+    }) as { data: any[] };
 
-            setListingPools(listingPools);
+    useEffect(() => {
+        if (listingPoolsData) {
+            const pools = listingPoolsData
+                .map((data: any) => SharesListingPool.fromSingleEntry(data))
+                .filter((pool: SharesListingPool) => pool.tokenId !== 0 && pool.amount > 0);
 
-            const floorListingPool = listingPools.sort(
+            setListingPools(pools);
+
+            const floorPool = pools.sort(
                 (a: SharesListingPool, b: SharesListingPool) => a.price - b.price
             )[0];
 
-            setFloorListingPool(floorListingPool);
-
-            setFloorPrice(
-                floorListingPool ? (floorListingPool.price / 10 ** 6) : 0
-            );
+            setFloorListingPool(floorPool);
+            setFloorPrice(floorPool ? (floorPool.price / 10 ** 6) : 0);
         }
-    });
+    }, [listingPoolsData]);
 
     const [shareholders, setShareholders] = useState<string[]>([]);
     const [shareholderInfos, setShareholderInfos] = useState<any[]>([]);
-    const readShareholders = useContractRead({
+    const { data: shareholdersData } = useReadContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "readShareholdersByToken",
-        args: [tokenId],
-        onSuccess: async (shareholdersData: string[]) => {
-            const shareholders = shareholdersData.filter(
-                (shareholder: string) =>
-                    shareholder != ethers.constants.AddressZero &&
-                    shareholder != marketContractAddress
-            );
+        args: [BigInt(tokenId)],
+    }) as { data: string[] };
 
-            setShareholders(shareholders);
-
-            const shareholderInfos = [];
-
-            for (let i = 0; i < shareholders.length; i++) {
-                const shareholder = shareholders[i];
-
-                const sharesBalanceData = (await readContract({
-                    address: sharesContractAddress,
-                    abi: sharesAbi,
-                    functionName: "balanceOf",
-                    args: [shareholder, tokenId],
-                })) as any;
-
-                const sharesBalance = parseInt(sharesBalanceData._hex, 16);
-
-                shareholderInfos.push({
-                    address: shareholder,
-                    balance: sharesBalance,
+    useEffect(() => {
+        async function updateShareholderInfos() {
+            if (shareholdersData) {
+                const client = createPublicClient({
+                    chain: polygonAmoy,
+                    transport: http()
                 });
+
+                const filteredShareholders = shareholdersData.filter(
+                    (shareholder: string) =>
+                        shareholder !== ethers.constants.AddressZero &&
+                        shareholder !== marketContractAddress
+                );
+
+                setShareholders(filteredShareholders);
+
+                const infos = await Promise.all(
+                    filteredShareholders.map(async (shareholder: string) => {
+                        const balance = await client.readContract({
+                            address: sharesContractAddress,
+                            abi: sharesAbi,
+                            functionName: "balanceOf",
+                            args: [shareholder, BigInt(tokenId)],
+                        });
+
+                        return {
+                            address: shareholder,
+                            balance: Number(balance),
+                        };
+                    })
+                );
+
+                setShareholderInfos(infos);
             }
-
-            setShareholderInfos(shareholderInfos);
         }
-    });
 
+        updateShareholderInfos();
+    }, [shareholdersData, tokenId]);
 
     return (
         <>

@@ -48,8 +48,10 @@ export default function AssetInvestAnalyticsTab({ events, floorPrice, isRentable
 
     const pricePerMonth = pricePerDay * 30;
 
-    const allSales = events.filter((e) => e.event.includes("Purchase")).sort((a, b) => a.created_at - b.created_at);
-    const allListings = events.filter((e) => e.event.includes("Created")).sort((a, b) => a.created_at - b.created_at);
+    const allSales = (events || []).filter((e) => e.event.includes("Purchase"))
+        .sort((a, b) => a.created_at - b.created_at);
+    const allListings = (events || []).filter((e) => e.event.includes("Created"))
+        .sort((a, b) => a.created_at - b.created_at);
 
     const [sales, setSales] = useState(allSales);
     const [salesVolume, setSalesVolume] = useState(0);
