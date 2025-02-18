@@ -35,14 +35,14 @@ class Asset {
 
     static fromSingleEntry(entry: any): Asset {
         return new Asset(
-            parseInt(entry[0]._hex, 16),
-            entry[1],
-            entry[2][0],
-            entry[2][1],
-            entry[2][2],
-            entry[2][3],
-            entry[2][4],
-            entry[2][5]
+            Number(entry.tokenId),
+            entry.category,
+            entry.location.street,
+            entry.location.number,
+            entry.location.apNumber,
+            entry.location.city,
+            entry.location.zip,
+            entry.location.country
         );
     }
 }
@@ -131,7 +131,7 @@ class SharesListingPool {
         tokenId: number,
         seller: string,
         price: number,
-        amount: number,
+        amount: number
     ) {
         this.sharesListingPoolId = sharesListingPoolId;
         this.tokenId = tokenId;
@@ -198,9 +198,7 @@ class FixedRental {
     approved: string[];
     isApproved: boolean;
 
-    constructor(
-        entry: any
-    ) {
+    constructor(entry: any) {
         this.rentalId = parseInt(entry[0]._hex, 16);
         this.tokenId = parseInt(entry[1]._hex, 16);
         this.renter = entry[2];
@@ -222,9 +220,7 @@ class MonthlyRental {
     approved: string[];
     isApproved: boolean;
 
-    constructor(
-        entry: any
-    ) {
+    constructor(entry: any) {
         this.rentalId = parseInt(entry[0]._hex, 16);
         this.tokenId = parseInt(entry[1]._hex, 16);
         this.renter = entry[2];
@@ -250,15 +246,25 @@ class MarketEvent {
     constructor() {
         this.id = 0;
         this.created_at = null;
-        this.event = '';
+        this.event = "";
         this.sharesListingPoolId = 0;
         this.tokenId = 0;
         this.price = 0;
         this.amount = 0;
-        this.seller = '';
-        this.buyer = '';
+        this.seller = "";
+        this.buyer = "";
         this.tx = 0;
     }
 }
 
-export { Asset, AssetCategory, AssetListing, SharesListing, SharesListingPool, GroupInvestment, FixedRental, MonthlyRental, MarketEvent };
+export {
+    Asset,
+    AssetCategory,
+    AssetListing,
+    SharesListing,
+    SharesListingPool,
+    GroupInvestment,
+    FixedRental,
+    MonthlyRental,
+    MarketEvent,
+};

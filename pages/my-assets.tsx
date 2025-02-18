@@ -4,9 +4,10 @@ import { abi as sharesAbi } from "helpers/BlockEstateShares.json";
 import { abi as assetsAbi } from "helpers/BlockEstateAssets.json";
 import { getSession } from "next-auth/react";
 import { Asset } from "@/helpers/types";
-import { readContract } from "@wagmi/core";
 import AssetPreview from "@/components/AssetPreviewCard";
 import Head from "next/head";
+import { createPublicClient, http } from 'viem';
+import { polygonAmoy } from 'viem/chains';
 
 export async function getServerSideProps(context: any) {
     const session = await getSession(context);
@@ -21,35 +22,39 @@ export async function getServerSideProps(context: any) {
         };
     }
 
+    const client = createPublicClient({
+        chain: polygonAmoy,
+        transport: http()
+    });
+
     // read all assets
-    const allAssetsData = (await readContract({
+    const allAssetsData = await client.readContract({
         address: assetsContractAddress,
         abi: assetsAbi,
         functionName: "readAllAssets",
-        args: []
-    })) as any;
+    }) as any[];
 
     const allAssets = allAssetsData.map((asset: any) =>
         Asset.fromSingleEntry(asset)
     );
 
     // read history of held shares
-    const tokenHistoryData = (await readContract({
+    const tokenHistoryData = await client.readContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "readSharesByHolder",
         args: [session.user?.address],
-    })) as any;
+    }) as bigint[];
 
     const tokenHistory = tokenHistoryData
-        .map((share: any) => parseInt(share._hex, 16))
+        .map((share: bigint) => Number(share))
         .filter(
             (value: number, index: number, array: number[]) =>
                 array.indexOf(value) === index
         );
 
     // read balances of held shares
-    const sharesBalancesData = (await readContract({
+    const sharesBalancesData = await client.readContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "balanceOfBatch",
@@ -57,10 +62,10 @@ export async function getServerSideProps(context: any) {
             Array(tokenHistory.length).fill(session.user?.address),
             tokenHistory,
         ],
-    })) as any;
+    }) as bigint[];
 
-    const sharesBalances = sharesBalancesData.map((balance: any) =>
-        parseInt(balance._hex, 16)
+    const sharesBalances = sharesBalancesData.map((balance: bigint) =>
+        Number(balance)
     );
 
     // create tokenId + balance pairs and filter out 0 balances

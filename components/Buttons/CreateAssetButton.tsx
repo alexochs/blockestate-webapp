@@ -14,16 +14,20 @@ import { EvmChain } from "@moralisweb3/common-evm-utils";
 import Moralis from "moralis";
 import { useSession } from "next-auth/react";
 import {
-    useContractEvent,
-    useContractWrite,
-    usePrepareContractWrite,
-    useWaitForTransaction,
+    useWriteContract,
+    useSimulateContract,
+    useWaitForTransactionReceipt,
 } from "wagmi";
 import { abi } from "@/helpers/BlockEstateAssets.json";
 import { assetsContractAddress } from "@/helpers/contractAddresses";
-import { useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 import confetti from "canvas-confetti";
+import { Log } from 'viem';
+
+type TransferLog = Log & {
+    args: { from: string; tokenId: bigint };
+};
 
 export default function CreateAssetButton({
     category,
@@ -37,58 +41,46 @@ export default function CreateAssetButton({
 }: any) {
     const router = useRouter();
     const session = useSession();
-    const functionName = "createAsset";
 
-    const {
-        config,
-        error: prepareError,
-        isError: isPrepareError,
-    } = usePrepareContractWrite({
+    const { data: simulateData, error: prepareError } = useSimulateContract({
         address: assetsContractAddress,
         abi,
-        functionName,
+        functionName: "createAsset",
         args: [
-            category,
-            street,
-            number,
-            category === 0 ? apNumber : 0,
-            city,
-            zip,
-            country,
-            sharesOption,
+            BigInt(category),
+            String(street),
+            BigInt(number),
+            BigInt(category === 0 ? apNumber : 0),
+            String(city),
+            String(zip),
+            String(country),
+            BigInt(sharesOption),
         ],
     });
 
-    const { data, error, isError, write } = useContractWrite(config);
+    const { writeContract, data: hash, error } = useWriteContract();
 
-    const { isLoading, isSuccess } = useWaitForTransaction({
-        hash: data?.hash,
+    const { isLoading, isSuccess } = useWaitForTransactionReceipt({
+        hash,
     });
 
-    useContractEvent({
-        address: assetsContractAddress,
-        abi,
-        eventName: "Transfer",
-        listener(from, to, tokenId) {
-            console.log("Transfer", from, to, tokenId);
-            if (from == "0x0000000000000000000000000000000000000000") {
-                const _tokenId = tokenId as any;
-                router.push(`/assets/${parseInt(_tokenId._hex)}`);
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 },
-                });
-            }
-        },
-    });
+    useEffect(() => {
+        if (isSuccess) {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+            });
+            router.push("/my-assets");
+        }
+    }, [isSuccess, router]);
 
     return (
         <Center flexDir={"column"}>
             <Button
-                isDisabled={!session.data}
+                isDisabled={!session.data || !simulateData?.request}
                 isLoading={isLoading}
-                onClick={() => write?.()}
+                onClick={() => writeContract(simulateData!.request)}
                 size="lg"
                 colorScheme="blue"
                 rounded="full"
@@ -97,7 +89,7 @@ export default function CreateAssetButton({
             </Button>
 
             {isSuccess && <Text pt=".5rem">Successfully created Asset!</Text>}
-            {(isPrepareError || isError) && (
+            {(prepareError || error) && (
                 <Text pt=".5rem" maxW={"90vw"}>
                     Error: {(prepareError || error)?.message}
                 </Text>
