@@ -14,11 +14,10 @@ import { EvmChain } from "@moralisweb3/common-evm-utils";
 import Moralis from "moralis";
 import { useSession } from "next-auth/react";
 import {
-    useContractEvent,
-    useContractRead,
-    useContractWrite,
-    usePrepareContractWrite,
-    useWaitForTransaction,
+    useSimulateContract,
+    useWaitForTransactionReceipt,
+    useReadContract,
+    useWriteContract,
 } from "wagmi";
 import { abi as sharesAbi } from "@/helpers/BlockEstateShares.json";
 import { abi as marketAbi } from "@/helpers/BlockEstateMarket.json";
@@ -26,7 +25,7 @@ import {
     sharesContractAddress,
     marketContractAddress,
 } from "@/helpers/contractAddresses";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 
@@ -40,71 +39,56 @@ export default function CreateSharesListingPoolButton({
 
     const [isApprovedForAll, setIsApprovedForAll] = useState(false);
 
-    const {
-        config,
-        error: prepareError,
-        isError: isPrepareError,
-    } = usePrepareContractWrite({
+    const { data: simulateData } = useSimulateContract({
         address: marketContractAddress,
         abi: marketAbi,
         functionName: "createSharesListingPool",
-        args: [tokenId, price * 10 ** 6, amount],
+        args: [BigInt(tokenId), BigInt(amount), BigInt(price * 1e6)],
     });
 
-    const { data, error, isError, write } = useContractWrite(config);
-
-    const { isLoading, isSuccess } = useWaitForTransaction({
-        hash: data?.hash,
-        onSuccess: () => {
-            router.reload();
-        },
-    });
-
-    const prepareApprovalForAll = usePrepareContractWrite({
+    const { data: simulateApprovalData, error: simulateError } = useSimulateContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "setApprovalForAll",
         args: [marketContractAddress, true],
     });
 
-    const writeApprovalForAll = useContractWrite(prepareApprovalForAll.config);
+    const { writeContract, data: hash } = useWriteContract();
 
-    const {
-        isLoading: approvalForAllLoading,
-        isSuccess: approvalForAllSuccess,
-    } = useWaitForTransaction({
-        hash: writeApprovalForAll.data?.hash,
-        onSuccess(data) {
-            setIsApprovedForAll(true);
-        },
+    const { isLoading, isSuccess } = useWaitForTransactionReceipt({
+        hash,
     });
 
-    const getIsApprovedForAll = useContractRead({
+    const { data: isApprovedForAllData } = useReadContract({
         address: sharesContractAddress,
         abi: sharesAbi,
         functionName: "isApprovedForAll",
         args: [session.data?.user?.address, marketContractAddress],
-        watch: true,
-        cacheTime: 2_000,
-        onError: (error) => {
-            console.log("isApprovedForAll() => ", error);
-        },
-        onSuccess: (data: any) => {
-            setIsApprovedForAll(data);
-        },
     });
+
+    useEffect(() => {
+        if (isApprovedForAllData !== undefined) {
+            setIsApprovedForAll(Boolean(isApprovedForAllData));
+        }
+    }, [isApprovedForAllData]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            router.reload();
+        }
+    }, [isSuccess, router]);
 
     return (
         <Center flexDir={"column"}>
             {isApprovedForAll ? (
                 <Button
-                    isDisabled={!write || !session.data}
+                    isDisabled={!simulateData?.request}
                     isLoading={isLoading}
                     colorScheme={"blue"}
                     border="rgb(0, 0, 0, 0.5)"
                     rounded="full"
                     onClick={() => {
-                        write?.();
+                        writeContract(simulateData!.request);
                     }}
                     size="lg"
                 >
@@ -114,39 +98,31 @@ export default function CreateSharesListingPoolButton({
                 </Button>
             ) : (
                 <Button
-                    isDisabled={!writeApprovalForAll.write || !session.data}
-                    isLoading={approvalForAllLoading}
+                    isDisabled={!simulateApprovalData?.request || !session.data}
+                    isLoading={isLoading}
                     colorScheme={"blue"}
                     border="rgb(0, 0, 0, 0.5)"
                     rounded="full"
-                    onClick={() => {
-                        writeApprovalForAll.write?.();
-                    }}
+                    onClick={() => writeContract(simulateApprovalData!.request)}
                     size="lg"
                 >
                     {session.data ? `Set Approval` : `Connect to list Shares`}
                 </Button>
             )}
 
-            {/*{isSuccess && <Text pt=".5rem">Successfully listed Shares!</Text>}
-            {(isPrepareError || isError) && (
+            {isSuccess && <Text pt=".5rem">Successfully listed Shares!</Text>}
+            {simulateError && (
                 <Text pt=".5rem" maxW={"90vw"}>
-                    List Error: {(prepareError || error)?.message}
+                    List Error: {simulateError.message}
                 </Text>
-            )}*/}
+            )}
 
-            {approvalForAllSuccess && (
+            {isSuccess && (
                 <Text pt=".5rem">{/*Approval successful!*/}</Text>
             )}
-            {(prepareApprovalForAll.error || prepareApprovalForAll.isError) && (
+            {simulateError && (
                 <Text pt=".5rem" maxW={"90vw"}>
-                    Approval Error:{" "}
-                    {
-                        (
-                            prepareApprovalForAll.error ||
-                            prepareApprovalForAll.error
-                        )?.message
-                    }
+                    Approval Error: {simulateError.message}
                 </Text>
             )}
         </Center>
