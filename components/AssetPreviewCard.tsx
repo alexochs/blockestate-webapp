@@ -12,7 +12,7 @@ export default function AssetPreview({ asset }: any) {
         >
             <Card rounded="3xl" w={["100%", "25vw"]} _hover={{ background: "gray.100" }}>
                 <CardHeader p="0">
-                    <Image src="https://cdn.fertighauswelt.de/85c04f5301d5d668cbbfb45e848a68a5ab7bfb6d/villa-bauen.jpg" roundedTop="3xl" h="16rem" fit="cover" />
+                    <Image src="https://a0.muscache.com/im/pictures/prohost-api/Hosting-814167510478568514/original/f5fca80b-f5ec-4ff8-a773-6ea92382826e.jpeg?im_w=1200&im_format=avif" roundedTop="3xl" h="16rem" fit="cover" />
                 </CardHeader>
 
                 <CardBody>

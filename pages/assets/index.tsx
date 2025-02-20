@@ -7,27 +7,29 @@ import { getSession } from "next-auth/react";
 import { Asset } from "@/helpers/types";
 import AssetTrendingHero from "@/components/AssetTrendingHero";
 import Head from "next/head";
-import { useContractRead } from "wagmi";
-import { useState } from "react";
+import { useReadContract } from "wagmi";
+import { useState, useEffect } from "react";
 
 export default function InvestPage() {
-    const [allAssets, setAllAssets] = useState([]);
+    const [allAssets, setAllAssets] = useState<Asset[]>([]);
     const [loadingAssets, setLoadingAssets] = useState(true);
 
-    const readAllAssets = useContractRead({
+    const { data: allAssetsData } = useReadContract({
         address: assetsContractAddress,
         abi: assetsAbi,
         functionName: "readAllAssets",
-        onSuccess: (allAssetsData: any) => {
+    }) as { data: any[] };
+
+    useEffect(() => {
+        if (allAssetsData && Array.isArray(allAssetsData)) {
             setAllAssets(
                 allAssetsData.map((asset: any) =>
                     Asset.fromSingleEntry(asset)
                 )
-            )
-
+            );
             setLoadingAssets(false);
-        },
-    });
+        }
+    }, [allAssetsData]);
 
     return (
         <>

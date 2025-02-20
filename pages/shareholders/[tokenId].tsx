@@ -1,9 +1,11 @@
-import { assetsContractAddress, rentalsContractAddress } from "@/helpers/contractAddresses";
-import { abi as assetsAbi } from "@/helpers/BlockEstateAssets.json";
-import { abi as rentalsAbi } from "@/helpers/BlockEstateRentals.json";
-import { Asset, FixedRental, MonthlyRental } from "@/helpers/types";
-import { readContract } from "@wagmi/core";
+import { createPublicClient, http } from 'viem';
+import { polygonAmoy } from 'viem/chains';
 import { getSession } from "next-auth/react";
+import { Asset, FixedRental, MonthlyRental } from "@/helpers/types";
+import { assetsContractAddress, sharesContractAddress, rentalsContractAddress } from "@/helpers/contractAddresses";
+import { abi as assetsAbi } from "helpers/BlockEstateAssets.json";
+import { abi as sharesAbi } from "helpers/BlockEstateShares.json";
+import { abi as rentalsAbi } from "helpers/BlockEstateRentals.json";
 import { Box, Center, Flex, Image, Heading, HStack, Link, Stack, Stat, StatArrow, StatHelpText, Text, Spacer, Button, Divider } from "@chakra-ui/react";
 import SetFixedRentableButton from "@/components/Buttons/SetFixedRentableButton";
 import ApproveFixedRentalButton from "@/components/Buttons/ApproveFixedRentalButton";
@@ -13,8 +15,7 @@ export async function getServerSideProps(context: any) {
     const session = await getSession(context);
     const tokenId = context.params.tokenId;
 
-    // redirect if not authenticated
-    if (!session || !tokenId) {
+    if (!session) {
         return {
             redirect: {
                 destination: "/signin",
@@ -23,69 +24,97 @@ export async function getServerSideProps(context: any) {
         };
     }
 
+    const client = createPublicClient({
+        chain: polygonAmoy,
+        transport: http()
+    });
+
     // read asset
-    const assetData = (await readContract({
+    const assetData = await client.readContract({
         address: assetsContractAddress,
         abi: assetsAbi,
         functionName: "readAsset",
-        args: [tokenId],
-    })) as any;
+        args: [BigInt(tokenId)],
+    });
 
     const asset = Asset.fromSingleEntry(assetData);
 
-    // read fixed rentals
-    const fixedRentalsData = (await readContract({
+    // read shares data
+    const sharesBalance = Number(await client.readContract({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "balanceOf",
+        args: [session.user?.address, BigInt(tokenId)],
+    }));
+
+    const sharesTotalSupply = Number(await client.readContract({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "totalSupply",
+        args: [BigInt(tokenId)],
+    }));
+
+    const shareholdersData = await client.readContract({
+        address: sharesContractAddress,
+        abi: sharesAbi,
+        functionName: "readShareholdersByToken",
+        args: [BigInt(tokenId)],
+    }) as string[];
+
+    // read rentals data
+    const fixedRentalsData = await client.readContract({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "readFixedRentalsByToken",
-        args: [tokenId],
-    })) as any;
+        args: [BigInt(tokenId)],
+    }) as any[];
+
     const fixedRentals = fixedRentalsData.map((entry: any) => new FixedRental(entry));
 
-    const isRentable = (await readContract({
+    const isRentable = await client.readContract({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "isRentable",
-        args: [tokenId],
-    })) as any;
+        args: [BigInt(tokenId)],
+    });
 
-    const pricePerDayData = (await readContract({
+    const pricePerDay = Number(await client.readContract({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "pricePerDay",
-        args: [tokenId],
-    })) as any;
-    const pricePerDay = parseInt(pricePerDayData._hex, 16);
+        args: [BigInt(tokenId)],
+    }));
 
-    // read monthly rentals
-    const monthlyRentalsData = (await readContract({
+    const monthlyRentalsData = await client.readContract({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "readMonthlyRentalsByToken",
-        args: [tokenId],
-    })) as any;
+        args: [BigInt(tokenId)],
+    }) as any[];
+
     const monthlyRentals = monthlyRentalsData.map((entry: any) => new MonthlyRental(entry));
 
-    const isMonthlyRentable = (await readContract({
+    const isMonthlyRentable = await client.readContract({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "isMonthlyRentable",
-        args: [tokenId],
-    })) as any;
+        args: [BigInt(tokenId)],
+    });
 
-    const pricePerMonthData = (await readContract({
+    const pricePerMonth = Number(await client.readContract({
         address: rentalsContractAddress,
         abi: rentalsAbi,
         functionName: "pricePerMonth",
-        args: [tokenId],
-    })) as any;
-    const pricePerMonth = parseInt(pricePerMonthData._hex, 16);
+        args: [BigInt(tokenId)],
+    }));
 
-    // return props to page
     return {
         props: {
             user: session.user,
             asset: JSON.parse(JSON.stringify(asset)),
+            sharesBalance,
+            sharesTotalSupply,
+            shareholders: shareholdersData,
             fixedRentals: JSON.parse(JSON.stringify(fixedRentals)),
             isRentable,
             pricePerDay,
@@ -96,8 +125,9 @@ export async function getServerSideProps(context: any) {
     };
 }
 
-export default function ShareholdersPage({ user, asset, fixedRentals, isRentable, pricePerDay, monthlyRentals, isMonthlyRentable, pricePerMonth }:
-    { user: any, asset: Asset, fixedRentals: FixedRental[], isRentable: boolean, pricePerDay: number, monthlyRentals: MonthlyRental[], isMonthlyRentable: boolean, pricePerMonth: number }) {
+export default function ShareholdersPage({ user, asset, sharesBalance, sharesTotalSupply, shareholders, fixedRentals, isRentable, pricePerDay, monthlyRentals, isMonthlyRentable, pricePerMonth }:
+    { user: any, asset: Asset, sharesBalance: number, sharesTotalSupply: number, shareholders: string[], fixedRentals: FixedRental[], isRentable: boolean, pricePerDay: number, monthlyRentals: MonthlyRental[], isMonthlyRentable: boolean, pricePerMonth: number }) {
+
     const upcomingRentals = fixedRentals.filter((rental) => rental.start > Date.now() / 1000).sort((a, b) => a.start - b.start);
     const currentRental = fixedRentals.find((rental) => rental.start < Date.now() / 1000 && rental.end > Date.now() / 1000);
 
