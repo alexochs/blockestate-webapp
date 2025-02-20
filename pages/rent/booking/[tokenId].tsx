@@ -257,8 +257,8 @@ export default function BookingAssetPage({
     });
 
     useEffect(() => {
-        if (chain && chain.id != 80001) {
-            switchNetwork?.(80001);
+        if (chain && chain.id != 80002) {
+            switchNetwork?.(80002);
         }
     }, []);
 

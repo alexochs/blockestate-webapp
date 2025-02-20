@@ -112,7 +112,7 @@ export default function ShareholdersPage({ user, asset, fixedRentals, isRentable
             <Link href={"/assets/" + asset.tokenId} style={{ textDecoration: "none" }}>
                 <Box pt="1rem">
                     <Flex p="1rem" border="1px solid rgb(0, 0, 0, 0.2)" rounded="3xl" _hover={{ background: "gray.100" }}>
-                        <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/e5596519-efcf-4a65-bd12-3191ebd33ee6.jpeg" fit="cover" h="8rem" w="8rem" rounded="2xl" />
+                        <Image src="https://a0.muscache.com/im/pictures/prohost-api/Hosting-814167510478568514/original/f5fca80b-f5ec-4ff8-a773-6ea92382826e.jpeg?im_w=1200&im_format=avif" fit="cover" h="8rem" w="8rem" rounded="2xl" />
 
                         <Center ml="2rem" flexDir="column" alignItems={"start"}>
                             <Heading fontSize="3xl">{asset.street} {asset.number}</Heading>
