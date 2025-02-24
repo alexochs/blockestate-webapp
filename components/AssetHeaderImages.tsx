@@ -6,7 +6,7 @@ export default function AssetHeaderImages() {
     return !isMobile ? (
         <Flex>
             <Image
-                src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/0cf46569-a5cd-4aa0-bbbd-156162c84e7e.jpeg"
+                src="https://a0.muscache.com/im/pictures/prohost-api/Hosting-814167510478568514/original/f5fca80b-f5ec-4ff8-a773-6ea92382826e.jpeg?im_w=1200&im_format=avif"
                 fit="cover"
                 h="60vh"
                 w="50%"
@@ -15,18 +15,18 @@ export default function AssetHeaderImages() {
             />
 
             <Flex flexDir="column" px=".25rem" w="25%">
-                <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/e5596519-efcf-4a65-bd12-3191ebd33ee6.jpeg" fit="cover" h="30vh" pb=".5rem" />
-                <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/a4a94c93-df0c-45db-90fe-2ee46654df8d.jpeg" fit="cover" h="30vh" />
+                <Image src="https://a0.muscache.com/im/pictures/prohost-api/Hosting-814167510478568514/original/0edd2289-acbf-4891-81a4-153042bd74bf.jpeg?im_w=1200&im_format=avif" fit="cover" h="30vh" pb=".5rem" />
+                <Image src="https://a0.muscache.com/im/pictures/prohost-api/Hosting-814167510478568514/original/12b890a8-8b5e-41d6-8e52-e7e83c627c19.jpeg?im_w=720&im_format=avif" fit="cover" h="30vh" />
             </Flex>
 
             <Flex flexDir="column" pl=".25rem" w="25%">
-                <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/6c5c0a5e-ea60-417d-8c1c-cdcdaa0d0c21.jpeg?im_w=720" fit="cover" h="30vh" pb=".5rem" roundedRight={"3xl"} />
-                <Image src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/44777246-61ff-408c-be6d-f1c9262e340e.jpeg?im_w=720" fit="cover" h="30vh" roundedRight={"3xl"} />
+                <Image src="https://a0.muscache.com/im/pictures/prohost-api/Hosting-814167510478568514/original/3fe982eb-562a-4dce-b176-25d57f54b728.jpeg?im_w=720&im_format=avif" fit="cover" h="30vh" pb=".5rem" roundedRight={"3xl"} />
+                <Image src="https://a0.muscache.com/im/pictures/prohost-api/Hosting-814167510478568514/original/99df409a-2ede-4ae1-a7ac-2747b4ac976a.jpeg?im_w=1200&im_format=avif" fit="cover" h="30vh" roundedRight={"3xl"} />
             </Flex>
         </Flex>
     ) : (
         <Image
-            src="https://a0.muscache.com/im/pictures/miso/Hosting-52250528/original/0cf46569-a5cd-4aa0-bbbd-156162c84e7e.jpeg"
+            src="https://a0.muscache.com/im/pictures/prohost-api/Hosting-814167510478568514/original/f5fca80b-f5ec-4ff8-a773-6ea92382826e.jpeg?im_w=1200&im_format=avif"
             fit="cover"
             h="56vw"
             w="100vw"

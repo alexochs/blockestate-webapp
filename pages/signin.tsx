@@ -75,6 +75,7 @@ function SignIn() {
                     </Button>
 
                     <Button
+                        isDisabled={true}
                         onClick={() =>
                             handleAuth(
                                 new WalletConnectConnector({

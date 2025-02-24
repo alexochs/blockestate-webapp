@@ -1,6 +1,6 @@
 import type { AppProps } from "next/app";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import { createClient, configureChains, WagmiConfig } from "wagmi";
+import { createClient, configureChains, WagmiConfig, Chain } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { mainnet, goerli, polygonMumbai, baseGoerli } from "wagmi/chains";
 import { SessionProvider } from "next-auth/react";
@@ -12,8 +12,30 @@ import "@fontsource/raleway/400.css";
 import "@fontsource/raleway/700.css";
 import { Analytics } from '@vercel/analytics/react';
 
+export const polygonAmoy = {
+    id: 80_002,
+    name: 'Polygon Amoy',
+    network: 'amoy',
+    nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+    rpcUrls: {
+        public: { http: ['https://rpc-amoy.polygon.technology'] },
+        default: { http: ['https://rpc-amoy.polygon.technology'] },
+    },
+    blockExplorers: {
+        etherscan: { name: 'PolygonScan', url: 'https://amoy.polygonscan.com' },
+        default: { name: 'PolygonScan', url: 'https://amoy.polygonscan.com' },
+    },
+    contracts: {
+        multicall3: {
+            address: '0xca11bde05977b3631167028862be2a173976ca11',
+            blockCreated: 3127388,
+        },
+    },
+    testnet: true,
+} as const satisfies Chain;
+
 const { provider, webSocketProvider, chains } = configureChains(
-    [polygonMumbai],
+    [polygonAmoy],
     [publicProvider()]
 );
 
